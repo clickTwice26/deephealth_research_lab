@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBrain, faRobot, faEye, faUserMd, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import CardSwap, { Card } from './CardSwap';
 
 const researchAreas = [
   {
@@ -55,7 +56,7 @@ export default function ResearchAreasSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="mb-16"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -67,50 +68,55 @@ export default function ResearchAreasSection() {
           <h3 className="text-2xl text-purple-400 mb-6">at DeepHealth Lab</h3>
         </motion.div>
 
-        {/* Research Area Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {researchAreas.map((area, index) => (
-            <motion.div
-              key={area.number}
-              className="relative glass-strong rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -5 }}
-            >
-              {/* Number Badge */}
-              <div className="absolute top-6 right-6 text-6xl font-bold text-white/5">
-                {area.number}
-              </div>
+        {/* Card Swap Container */}
+        <div className="flex justify-center items-center" style={{ minHeight: '600px' }}>
+          <CardSwap
+            width={520}
+            height={420}
+            cardDistance={40}
+            verticalDistance={50}
+            delay={4000}
+            pauseOnHover={true}
+            easing="elastic"
+            skewAmount={4}
+          >
+            {researchAreas.map((area) => (
+              <Card key={area.number}>
+                <div className="relative w-full h-full p-10 flex flex-col bg-gradient-to-br from-gray-900 to-gray-950">
+                  {/* Number Badge */}
+                  <div className="absolute top-6 right-8 text-7xl font-bold text-white/5">
+                    {area.number}
+                  </div>
 
-              {/* Icon */}
-              <div className="mb-6 relative z-10">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-xl bg-purple-600/20 ${area.color}`}>
-                  <FontAwesomeIcon icon={area.icon} className="text-3xl" />
+                  {/* Icon */}
+                  <div className="mb-6 relative z-10">
+                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-purple-600/20 border border-purple-500/30 ${area.color}`}>
+                      <FontAwesomeIcon icon={area.icon} className="text-4xl" />
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-10 flex-1 flex flex-col">
+                    <h3 className="text-3xl font-bold text-white mb-4">
+                      {area.title}
+                    </h3>
+                    <p className="text-gray-300 text-base leading-relaxed mb-8 flex-1">
+                      {area.description}
+                    </p>
+
+                    {/* Learn More Link */}
+                    <button className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors group/btn self-start">
+                      <span className="font-semibold">Learn More</span>
+                      <FontAwesomeIcon 
+                        icon={faArrowRight} 
+                        className="text-sm group-hover/btn:translate-x-1 transition-transform" 
+                      />
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              {/* Content */}
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
-                  {area.title}
-                </h3>
-                <p className="text-gray-300 leading-relaxed mb-6">
-                  {area.description}
-                </p>
-
-                {/* Learn More Link */}
-                <button className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors group/btn">
-                  <span className="font-medium">Learn More</span>
-                  <FontAwesomeIcon 
-                    icon={faArrowRight} 
-                    className="text-sm group-hover/btn:translate-x-1 transition-transform" 
-                  />
-                </button>
-              </div>
-            </motion.div>
-          ))}
+              </Card>
+            ))}
+          </CardSwap>
         </div>
       </div>
     </section>

@@ -48,22 +48,22 @@ export default function Navbar() {
       >
         {/* Main Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <motion.a
               href="#home"
-              className="flex items-center gap-3 group"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 sm:gap-3 group"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-purple-500 rounded-lg blur-md opacity-50 group-hover:opacity-75 transition-opacity" />
-                <div className="relative bg-purple-600 rounded-lg p-2.5">
-                  <FontAwesomeIcon icon={faMicrochip} className="text-white text-xl" />
+                <div className="absolute inset-0 bg-purple-500 rounded-lg blur-sm opacity-40 group-hover:opacity-60 transition-opacity" />
+                <div className="relative bg-purple-600 rounded-lg p-2">
+                  <FontAwesomeIcon icon={faMicrochip} className="text-white text-base sm:text-lg" />
                 </div>
               </div>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-white">
+                <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-white">
                   DeepHealth
                   <span className="text-purple-400"> Research Lab</span>
                 </h1>
@@ -71,17 +71,17 @@ export default function Navbar() {
             </motion.a>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-0.5">
               {navItems.map((item, index) => (
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="relative px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors group"
-                  initial={{ opacity: 0, y: -20 }}
+                  className="relative px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors group"
+                  initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  transition={{ delay: index * 0.03 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   {item.name}
                   <motion.div
@@ -134,7 +134,7 @@ export default function Navbar() {
       </motion.nav>
 
       {/* Spacer to prevent content from going under navbar */}
-      <div className="h-16 sm:h-20" />
+      <div className="h-14 sm:h-16" />
     </>
   );
 }
