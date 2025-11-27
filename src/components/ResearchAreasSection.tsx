@@ -69,54 +69,56 @@ export default function ResearchAreasSection() {
         </motion.div>
 
         {/* Card Swap Container */}
-        <div className="flex justify-center items-center" style={{ minHeight: '500px' }}>
-          <CardSwap
-            width={450}
-            height={360}
-            cardDistance={35}
-            verticalDistance={45}
-            delay={4000}
-            pauseOnHover={true}
-            easing="elastic"
-            skewAmount={4}
-          >
-            {researchAreas.map((area) => (
-              <Card key={area.number}>
-                <div className="relative w-full h-full p-6 flex flex-col bg-gradient-to-br from-gray-900 to-gray-950">
+        <div className="flex justify-center items-center w-full px-4">
+          <div className="w-full max-w-2xl">
+            <CardSwap
+              width={0}
+              height={0}
+              cardDistance={20}
+              verticalDistance={30}
+              delay={4000}
+              pauseOnHover={true}
+              easing="elastic"
+              skewAmount={2}
+            >
+              {researchAreas.map((area) => (
+                <Card key={area.number}>
+                  <div className="relative w-full h-full p-5 sm:p-6 md:p-8 flex flex-col bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-blue-500/20">
                   {/* Number Badge */}
-                  <div className="absolute top-6 right-8 text-7xl font-bold text-white/5">
+                  <div className="absolute top-4 sm:top-6 right-4 sm:right-8 text-5xl sm:text-7xl font-bold text-white/5">
                     {area.number}
                   </div>
 
                   {/* Icon */}
-                  <div className="mb-4 relative z-10">
-                    <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
-                      <FontAwesomeIcon icon={area.icon} className="text-2xl" />
+                  <div className="mb-3 sm:mb-4 relative z-10">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
+                      <FontAwesomeIcon icon={area.icon} className="text-xl sm:text-2xl" />
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="relative z-10 flex-1 flex flex-col">
-                    <h3 className="text-xl font-bold text-white mb-2">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 sm:mb-3">
                       {area.title}
                     </h3>
-                    <p className="text-gray-300 text-xs leading-relaxed mb-4 flex-1">
+                    <p className="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-5 flex-1">
                       {area.description}
                     </p>
 
                     {/* Learn More Link */}
                     <button className="flex items-center gap-2 text-blue-400 hover:text-cyan-400 transition-colors group/btn self-start">
-                      <span className="font-semibold">Learn More</span>
+                      <span className="font-semibold text-xs sm:text-sm">Learn More</span>
                       <FontAwesomeIcon 
                         icon={faArrowRight} 
-                        className="text-sm group-hover/btn:translate-x-1 transition-transform" 
+                        className="text-xs sm:text-sm group-hover/btn:translate-x-1 transition-transform" 
                       />
                     </button>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </CardSwap>
+                  </div>
+                </Card>
+              ))}
+            </CardSwap>
+          </div>
         </div>
       </div>
     </section>

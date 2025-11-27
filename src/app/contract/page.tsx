@@ -204,6 +204,75 @@ export default function ContractPage() {
             </div>
           </motion.div>
 
+          {/* Previous Projects Portfolio */}
+          <motion.div
+            variants={itemVariants}
+            className="glass-strong rounded-xl p-6 border border-blue-500/30 mb-8"
+          >
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <FontAwesomeIcon icon={faCode} className="text-blue-400" />
+              Previous Production Projects
+            </h2>
+            <p className="text-sm text-gray-400 mb-6">
+              View some of our live production projects to see the quality of work we deliver
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* SAT Practice Platform */}
+              <a
+                href="https://practice.dsatschool.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group glass-strong rounded-lg p-5 border border-blue-500/30 hover:border-blue-500/60 transition-all hover:scale-105"
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600/40 transition-colors">
+                    <FontAwesomeIcon icon={faCode} className="text-blue-400 text-lg" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white group-hover:text-blue-400 transition-colors">
+                      SAT Practice Platform
+                    </h3>
+                    <p className="text-xs text-gray-400">practice.dsatschool.com</p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  Complete SAT practicing platform with interactive exercises, progress tracking, and performance analytics.
+                </p>
+                <div className="mt-3 text-xs text-cyan-400 font-semibold flex items-center gap-2">
+                  Visit Live Site
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </a>
+
+              {/* Learning Management System */}
+              <a
+                href="https://lms.dsatschool.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group glass-strong rounded-lg p-5 border border-cyan-500/30 hover:border-cyan-500/60 transition-all hover:scale-105"
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-cyan-600/20 flex items-center justify-center flex-shrink-0 group-hover:bg-cyan-600/40 transition-colors">
+                    <FontAwesomeIcon icon={faServer} className="text-cyan-400 text-lg" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">
+                      Learning Management System
+                    </h3>
+                    <p className="text-xs text-gray-400">lms.dsatschool.com</p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  Full-featured LMS with course management, student enrollment, assignments, and comprehensive admin dashboard.
+                </p>
+                <div className="mt-3 text-xs text-cyan-400 font-semibold flex items-center gap-2">
+                  Visit Live Site
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </a>
+            </div>
+          </motion.div>
+
           {/* Project Overview */}
           <motion.div
             variants={itemVariants}
