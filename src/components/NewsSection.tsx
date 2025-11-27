@@ -44,7 +44,7 @@ export default function NewsSection() {
       <div className="absolute inset-0 bg-gray-950" />
       
       {/* Decorative Elements */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,7 +67,7 @@ export default function NewsSection() {
         {/* Timeline */}
         <div className="relative">
           {/* Center Line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-purple-500/30 hidden md:block" />
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-blue-500/30 hidden md:block" />
 
           {/* News Items */}
           <div className="space-y-8">
@@ -82,18 +82,18 @@ export default function NewsSection() {
               >
                 <div className="flex gap-6 items-start">
                   {/* Date Badge */}
-                  <div className="hidden md:flex items-center justify-center w-16 h-16 rounded-full bg-purple-600 border-4 border-gray-950 z-10 flex-shrink-0">
+                  <div className="hidden md:flex items-center justify-center w-16 h-16 rounded-full bg-blue-600 border-4 border-gray-950 z-10 flex-shrink-0">
                     <FontAwesomeIcon icon={faNewspaper} className="text-white text-xl" />
                   </div>
 
                   {/* Content Card */}
-                  <div className="flex-1 glass-strong rounded-xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all group">
+                  <div className="flex-1 glass-strong rounded-xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all group">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
                       <span className="text-cyan-400 font-semibold text-sm">
                         {item.date}
                       </span>
-                      <div className="hidden sm:block w-2 h-2 rounded-full bg-purple-500" />
-                      <h3 className="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">
+                      <div className="hidden sm:block w-2 h-2 rounded-full bg-blue-500" />
+                      <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
                         {item.title}
                       </h3>
                     </div>

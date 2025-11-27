@@ -20,12 +20,12 @@ export default function NewsletterSection() {
       <div className="absolute inset-0 bg-gray-900" />
 
       {/* Decorative Elements */}
-      <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
-      <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl" />
       
       {/* Floating Icons */}
       <motion.div
-        className="absolute top-20 left-20 text-purple-500/20"
+        className="absolute top-20 left-20 text-blue-500/20"
         animate={{
           y: [0, -20, 0],
           rotate: [0, 10, 0],
@@ -53,7 +53,7 @@ export default function NewsletterSection() {
       </motion.div>
 
       <motion.div
-        className="absolute top-40 right-1/3 text-pink-500/20"
+        className="absolute top-40 right-1/3 text-teal-500/20"
         animate={{
           x: [0, 20, 0],
           scale: [1, 1.2, 1],
@@ -77,7 +77,7 @@ export default function NewsletterSection() {
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
             Subscribe to newsletter &
           </h2>
-          <p className="text-3xl sm:text-4xl font-bold text-purple-400 mb-8">
+          <p className="text-3xl sm:text-4xl font-bold text-blue-400 mb-8">
             get company news.
           </p>
 
@@ -89,12 +89,12 @@ export default function NewsletterSection() {
                 placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-6 py-4 bg-white/5 border border-purple-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/60 transition-all"
+                className="flex-1 px-6 py-4 bg-white/5 border border-blue-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/60 transition-all"
                 required
               />
               <motion.button
                 type="submit"
-                className="px-8 py-4 bg-purple-600 hover:bg-purple-500 rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-2"
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

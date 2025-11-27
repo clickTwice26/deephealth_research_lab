@@ -57,15 +57,15 @@ export default function Navbar() {
               whileTap={{ scale: 0.98 }}
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-purple-500 rounded-lg blur-sm opacity-40 group-hover:opacity-60 transition-opacity" />
-                <div className="relative bg-purple-600 rounded-lg p-2">
+                <div className="absolute inset-0 bg-blue-500 rounded-lg blur-sm opacity-40 group-hover:opacity-60 transition-opacity" />
+                <div className="relative bg-blue-600 rounded-lg p-2">
                   <FontAwesomeIcon icon={faMicrochip} className="text-white text-base sm:text-lg" />
                 </div>
               </div>
               <div>
                 <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-white">
                   DeepHealth
-                  <span className="text-purple-400"> Research Lab</span>
+                  <span className="text-cyan-400"> Research Lab</span>
                 </h1>
               </div>
             </motion.a>
@@ -85,7 +85,7 @@ export default function Navbar() {
                 >
                   {item.name}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"
                     initial={{ scaleX: 0 }}
                     whileHover={{ scaleX: 1 }}
                     transition={{ duration: 0.2 }}

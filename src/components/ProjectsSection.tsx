@@ -9,19 +9,16 @@ const projects = [
     title: 'Xolver: Multi-Agent Reasoning',
     description: 'A multi-agent, training-free reasoning framework that enhances LLMs by integrating holistic experiences such as tool usage, collaboration, and iterative refinement, enabling them to perform expert-level reasoning.',
     tags: ['Multi-Agent', 'LLM', 'Reasoning'],
-    color: 'border-purple-500/30 hover:border-purple-500/60',
   },
   {
     title: 'HoloInteract',
     description: 'An advanced Human-Computer Interaction project that uses augmented reality (AR) to create immersive, user-friendly interfaces, enhancing experiences in education and training.',
     tags: ['AR', 'HCI', 'Education'],
-    color: 'border-cyan-500/30 hover:border-cyan-500/60',
   },
   {
     title: 'VisionX',
     description: 'A computer vision system that detects and classifies objects in real-time, optimized for healthcare and autonomous navigation, leveraging Explainable AI to interpret visual data.',
     tags: ['Computer Vision', 'Healthcare', 'XAI'],
-    color: 'border-pink-500/30 hover:border-pink-500/60',
   },
 ];
 
@@ -32,7 +29,7 @@ export default function ProjectsSection() {
       <div className="absolute inset-0 bg-black" />
 
       {/* Decorative Elements */}
-      <div className="absolute top-20 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,7 +50,7 @@ export default function ProjectsSection() {
             </p>
           </div>
           <motion.button
-            className="mt-6 md:mt-0 px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold text-white transition-all flex items-center gap-2"
+            className="mt-6 md:mt-0 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-white transition-all flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -67,7 +64,7 @@ export default function ProjectsSection() {
           {projects.map((project, index) => (
             <motion.div
               key={project.title}
-              className={`glass-strong rounded-2xl p-8 border ${project.color} transition-all group`}
+              className="glass-strong rounded-2xl p-8 border border-blue-500/30 hover:border-blue-500/60 transition-all group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -76,13 +73,13 @@ export default function ProjectsSection() {
             >
               {/* Project Icon */}
               <div className="mb-6">
-                <div className="w-16 h-16 rounded-xl bg-purple-600/20 flex items-center justify-center">
-                  <FontAwesomeIcon icon={faFolderOpen} className="text-3xl text-purple-400" />
+                <div className="w-16 h-16 rounded-xl bg-blue-600/20 flex items-center justify-center">
+                  <FontAwesomeIcon icon={faFolderOpen} className="text-3xl text-blue-400" />
                 </div>
               </div>
 
               {/* Title */}
-              <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
+              <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors">
                 {project.title}
               </h3>
 
@@ -96,7 +93,7 @@ export default function ProjectsSection() {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 text-xs font-medium bg-purple-600/20 text-purple-300 rounded-full"
+                    className="px-3 py-1 text-xs font-medium bg-blue-600/20 text-blue-300 rounded-full"
                   >
                     {tag}
                   </span>
@@ -104,7 +101,7 @@ export default function ProjectsSection() {
               </div>
 
               {/* See Project Button */}
-              <button className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2">
+              <button className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2">
                 <span>See Project</span>
                 <FontAwesomeIcon icon={faExternalLinkAlt} className="text-sm" />
               </button>

@@ -68,9 +68,9 @@ export default function Hero() {
       </motion.div>
 
       {/* Gradient Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-pink-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan-500/15 rounded-full blur-[100px] animate-pulse delay-500" />
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-[100px] animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-teal-500/15 rounded-full blur-[100px] animate-pulse delay-500" />
 
       {/* Content */}
       <motion.div
@@ -82,15 +82,15 @@ export default function Hero() {
       >
         <motion.div variants={itemVariants} className="mb-6">
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-purple-500/30 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-blue-500/30 mb-8"
             whileHover={{ scale: 1.05 }}
             animate={floatingAnimation}
           >
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-sm font-medium text-purple-400">
+            <Sparkles className="w-4 h-4 text-cyan-400" />
+            <span className="text-sm font-medium text-cyan-400">
               Pioneering AI Healthcare Innovation
             </span>
-            <Zap className="w-4 h-4 text-purple-400" />
+            <Zap className="w-4 h-4 text-cyan-400" />
           </motion.div>
         </motion.div>
 
@@ -101,18 +101,18 @@ export default function Hero() {
           <span className="block text-white">
             Welcome to
           </span>
-          <span className="block mt-2 text-purple-400">
+          <span className="block mt-2 text-blue-400">
             DeepHealth Research Lab
           </span>
         </motion.h1>
 
         <motion.div variants={itemVariants} className="mb-6 max-w-3xl mx-auto">
           <p className="text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed">
-            At <span className="font-semibold text-purple-400">DeepHealth Research Lab</span>, 
+            At <span className="font-semibold text-blue-400">DeepHealth Research Lab</span>, 
             we pioneer cutting-edge AI research in healthcare, developing innovative solutions 
             for medical diagnosis, patient care, and health monitoring that are both{' '}
             <span className="font-semibold text-cyan-400">accurate</span> and{' '}
-            <span className="font-semibold text-cyan-400">reliable</span>.
+            <span className="font-semibold text-teal-400">reliable</span>.
           </p>
         </motion.div>
 
@@ -121,9 +121,9 @@ export default function Hero() {
           className="text-sm sm:text-base text-gray-400 mb-8 max-w-2xl mx-auto"
         >
           Our research focuses on leveraging AI to transform healthcare through{' '}
-          <span className="text-purple-400 font-medium">intelligent diagnostics</span>,{' '}
+          <span className="text-blue-400 font-medium">intelligent diagnostics</span>,{' '}
           <span className="text-cyan-400 font-medium">personalized treatment</span>, and{' '}
-          <span className="text-pink-400 font-medium">preventive care solutions</span>.
+          <span className="text-teal-400 font-medium">preventive care solutions</span>.
         </motion.p>
 
         <motion.div
@@ -131,8 +131,8 @@ export default function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-3"
         >
           <motion.button
-            className="group relative px-6 py-3 bg-purple-600 rounded-full font-semibold text-white text-sm shadow-lg shadow-purple-500/50 overflow-hidden"
-            whileHover={{ scale: 1.03, backgroundColor: '#a855f7' }}
+            className="group relative px-6 py-3 bg-blue-600 rounded-full font-semibold text-white text-sm shadow-lg shadow-blue-500/50 overflow-hidden"
+            whileHover={{ scale: 1.03, backgroundColor: '#3b82f6' }}
             whileTap={{ scale: 0.97 }}
           >
             <span className="relative z-10 flex items-center gap-2">
@@ -142,7 +142,7 @@ export default function Hero() {
           </motion.button>
 
           <motion.button
-            className="group px-6 py-3 glass-strong rounded-full font-semibold text-white text-sm border border-purple-500/50 hover:border-purple-500 transition-all"
+            className="group px-6 py-3 glass-strong rounded-full font-semibold text-white text-sm border border-blue-500/50 hover:border-blue-500 transition-all"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -160,12 +160,12 @@ export default function Hero() {
         >
           {[
             { label: 'Research Papers', value: '50+', icon: faFileAlt, color: 'text-blue-400' },
-            { label: 'AI Models', value: '25+', icon: faRobot, color: 'text-purple-400' },
-            { label: 'Global Partners', value: '100+', icon: faGlobe, color: 'text-cyan-400' },
+            { label: 'AI Models', value: '25+', icon: faRobot, color: 'text-cyan-400' },
+            { label: 'Global Partners', value: '100+', icon: faGlobe, color: 'text-teal-400' },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="glass-strong rounded-xl p-4 sm:p-5 border border-purple-500/20 hover:border-purple-500/40 transition-all group"
+              className="glass-strong rounded-xl p-4 sm:p-5 border border-blue-500/20 hover:border-blue-500/40 transition-all group"
               whileHover={{ y: -3, scale: 1.01 }}
               animate={{
                 y: [0, -10, 0],
@@ -179,7 +179,7 @@ export default function Hero() {
               <div className="mb-2">
                 <FontAwesomeIcon icon={stat.icon} className={`text-3xl ${stat.color}`} />
               </div>
-              <div className="text-2xl font-bold text-purple-400 mb-1">
+              <div className="text-2xl font-bold text-blue-400 mb-1">
                 {stat.value}
               </div>
               <div className="text-sm text-gray-400">{stat.label}</div>
@@ -199,9 +199,9 @@ export default function Hero() {
           repeat: Infinity,
         }}
       >
-        <div className="w-6 h-10 border-2 border-purple-500/50 rounded-full p-1">
+        <div className="w-6 h-10 border-2 border-blue-500/50 rounded-full p-1">
           <motion.div
-            className="w-1 h-2 bg-purple-500 rounded-full mx-auto"
+            className="w-1 h-2 bg-blue-500 rounded-full mx-auto"
             animate={{
               y: [0, 16, 0],
             }}

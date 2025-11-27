@@ -50,7 +50,7 @@ export default function ResearchAreasSection() {
       <div className="absolute inset-0 bg-gray-900" />
 
       {/* Decorative circles */}
-      <div className="absolute top-40 -left-20 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+      <div className="absolute top-40 -left-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-40 -right-20 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +65,7 @@ export default function ResearchAreasSection() {
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
             Core Research Areas
           </h2>
-          <h3 className="text-2xl text-purple-400 mb-6">at DeepHealth Lab</h3>
+          <h3 className="text-2xl text-cyan-400 mb-6">at DeepHealth Lab</h3>
         </motion.div>
 
         {/* Card Swap Container */}
@@ -90,7 +90,7 @@ export default function ResearchAreasSection() {
 
                   {/* Icon */}
                   <div className="mb-6 relative z-10">
-                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-purple-600/20 border border-purple-500/30 ${area.color}`}>
+                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
                       <FontAwesomeIcon icon={area.icon} className="text-4xl" />
                     </div>
                   </div>
@@ -105,7 +105,7 @@ export default function ResearchAreasSection() {
                     </p>
 
                     {/* Learn More Link */}
-                    <button className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors group/btn self-start">
+                    <button className="flex items-center gap-2 text-blue-400 hover:text-cyan-400 transition-colors group/btn self-start">
                       <span className="font-semibold">Learn More</span>
                       <FontAwesomeIcon 
                         icon={faArrowRight} 

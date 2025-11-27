@@ -37,7 +37,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="relative bg-black border-t border-purple-500/20">
+    <footer className="relative bg-black border-t border-blue-500/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 mb-12">
           {/* Logo and Description */}
@@ -47,13 +47,13 @@ export default function Footer() {
               whileHover={{ scale: 1.02 }}
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-purple-500 rounded-lg blur-md opacity-50" />
-                <div className="relative bg-purple-600 rounded-lg p-2.5">
+                <div className="absolute inset-0 bg-blue-500 rounded-lg blur-md opacity-50" />
+                <div className="relative bg-blue-600 rounded-lg p-2.5">
                   <FontAwesomeIcon icon={faMicrochip} className="text-white text-xl" />
                 </div>
               </div>
               <h3 className="text-xl font-bold text-white">
-                DeepHealth<span className="text-purple-400"> Research Lab</span>
+                DeepHealth<span className="text-cyan-400"> Research Lab</span>
               </h3>
             </motion.div>
             <p className="text-gray-400 mb-6 leading-relaxed">
@@ -67,7 +67,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/30 hover:border-purple-500/60 flex items-center justify-center text-purple-400 transition-all"
+                  className="w-10 h-10 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 hover:border-blue-500/60 flex items-center justify-center text-blue-400 transition-all"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -147,7 +147,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="pt-8 border-t border-purple-500/20">
+        <div className="pt-8 border-t border-blue-500/20">
           <p className="text-center text-gray-400 text-sm">
             Copyright © 2025 DeepHealth Lab AI LLC. All Rights Reserved.
           </p>
