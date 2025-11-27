@@ -24,7 +24,7 @@ const projects = [
 
 export default function ProjectsSection() {
   return (
-    <section id="projects" className="relative py-20 overflow-hidden">
+    <section id="projects" className="relative py-16 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-black" />
 
@@ -35,17 +35,17 @@ export default function ProjectsSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="flex flex-col md:flex-row md:items-center md:justify-between mb-12"
+          className="flex flex-col md:flex-row md:items-center md:justify-between mb-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
           <div>
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
               Ongoing Projects
             </h2>
-            <p className="text-lg text-gray-400 max-w-2xl">
+            <p className="text-sm text-gray-400 max-w-2xl">
               Explore the innovative projects currently underway at DeepHealth Lab.
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function ProjectsSection() {
           {projects.map((project, index) => (
             <motion.div
               key={project.title}
-              className="glass-strong rounded-2xl p-8 border border-blue-500/30 hover:border-blue-500/60 transition-all group"
+              className="glass-strong rounded-xl p-6 border border-blue-500/30 hover:border-blue-500/60 transition-all group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -72,24 +72,24 @@ export default function ProjectsSection() {
               whileHover={{ y: -8 }}
             >
               {/* Project Icon */}
-              <div className="mb-6">
-                <div className="w-16 h-16 rounded-xl bg-blue-600/20 flex items-center justify-center">
-                  <FontAwesomeIcon icon={faFolderOpen} className="text-3xl text-blue-400" />
+              <div className="mb-4">
+                <div className="w-12 h-12 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                  <FontAwesomeIcon icon={faFolderOpen} className="text-xl text-blue-400" />
                 </div>
               </div>
 
               {/* Title */}
-              <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors">
+              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
                 {project.title}
               </h3>
 
               {/* Description */}
-              <p className="text-gray-300 leading-relaxed mb-6">
+              <p className="text-gray-300 text-xs leading-relaxed mb-4">
                 {project.description}
               </p>
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {project.tags.map((tag) => (
                   <span
                     key={tag}

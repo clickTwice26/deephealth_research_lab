@@ -25,7 +25,7 @@ const publications = [
 
 export default function PublicationsSection() {
   return (
-    <section id="publications" className="relative py-20 overflow-hidden">
+    <section id="publications" className="relative py-16 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gray-950" />
 
@@ -36,17 +36,17 @@ export default function PublicationsSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="flex flex-col md:flex-row md:items-center md:justify-between mb-12"
+          className="flex flex-col md:flex-row md:items-center md:justify-between mb-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
           <div>
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
               Recent Publications
             </h2>
-            <p className="text-lg text-gray-400 max-w-2xl">
+            <p className="text-sm text-gray-400 max-w-2xl">
               Explore the current research contributions and innovations from DeepHealth Lab
             </p>
           </div>
@@ -65,7 +65,7 @@ export default function PublicationsSection() {
           {publications.map((pub, index) => (
             <motion.div
               key={index}
-              className="glass-strong rounded-2xl p-8 border border-blue-500/30 hover:border-blue-500/60 transition-all group"
+              className="glass-strong rounded-xl p-6 border border-blue-500/30 hover:border-blue-500/60 transition-all group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -74,15 +74,15 @@ export default function PublicationsSection() {
               <div className="flex flex-col lg:flex-row gap-6">
                 {/* Icon Section */}
                 <div className="flex-shrink-0">
-                  <div className="w-24 h-32 rounded-lg bg-blue-600/20 flex items-center justify-center border border-blue-500/30">
-                    <FontAwesomeIcon icon={faFileAlt} className="text-4xl text-blue-400" />
+                  <div className="w-16 h-24 rounded-lg bg-blue-600/20 flex items-center justify-center border border-blue-500/30">
+                    <FontAwesomeIcon icon={faFileAlt} className="text-2xl text-blue-400" />
                   </div>
                 </div>
 
                 {/* Content Section */}
                 <div className="flex-1">
                   {/* Badges */}
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-3">
                     {pub.badges.map((badge) => (
                       <span
                         key={badge}
@@ -94,12 +94,12 @@ export default function PublicationsSection() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
                     {pub.title}
                   </h3>
 
                   {/* Authors */}
-                  <p className="text-gray-400 mb-4 leading-relaxed">
+                  <p className="text-gray-400 text-sm mb-3 leading-relaxed">
                     by {pub.authors}
                   </p>
 

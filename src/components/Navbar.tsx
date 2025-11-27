@@ -8,15 +8,12 @@ import { faMicrochip } from '@fortawesome/free-solid-svg-icons';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { name: 'Home', href: '#home' },
-  { name: 'About Us', href: '#about' },
-  { name: 'News', href: '#news' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Publications', href: '#publications' },
-  { name: 'Team', href: '#team' },
-  { name: 'Contact', href: '#contact' },
-  { name: 'Blog', href: '#blog' },
-  { name: 'Open Positions', href: '#positions' },
+  { name: 'Home', href: '/#home' },
+  { name: 'News', href: '/#news' },
+  { name: 'Research', href: '/#research' },
+  { name: 'Projects', href: '/#projects' },
+  { name: 'Publications', href: '/#publications' },
+  { name: 'Contract', href: '/contract' },
 ];
 
 export default function Navbar() {
@@ -47,60 +44,54 @@ export default function Navbar() {
         )}
       >
         {/* Main Navigation */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            {/* Logo */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-18">
+            {/* Logo - Left Side */}
             <motion.a
-              href="#home"
-              className="flex items-center gap-2 sm:gap-3 group"
+              href="/"
+              className="flex items-center gap-3 group flex-shrink-0"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-blue-500 rounded-lg blur-sm opacity-40 group-hover:opacity-60 transition-opacity" />
-                <div className="relative bg-blue-600 rounded-lg p-2">
-                  <FontAwesomeIcon icon={faMicrochip} className="text-white text-base sm:text-lg" />
+                <div className="absolute inset-0 bg-blue-500 rounded-xl blur-md opacity-50 group-hover:opacity-70 transition-opacity" />
+                <div className="relative bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-2.5 border border-blue-400/20">
+                  <FontAwesomeIcon icon={faMicrochip} className="text-white text-xl" />
                 </div>
               </div>
               <div>
-                <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-white">
-                  DeepHealth
-                  <span className="text-cyan-400"> Research Lab</span>
+                <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                  DeepHealth <span className="text-cyan-400">Research Lab</span>
                 </h1>
               </div>
             </motion.a>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-0.5">
+            {/* Desktop Navigation - Right Side */}
+            <div className="hidden lg:flex items-center gap-1 ml-auto">
               {navItems.map((item, index) => (
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="relative px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors group"
+                  className="relative px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors group rounded-lg"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   {item.name}
-                  <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ duration: 0.2 }}
-                  />
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-blue-500 group-hover:w-3/4 transition-all duration-300" />
                 </motion.a>
               ))}
             </div>
 
             {/* Mobile Menu Button */}
             <motion.button
-              className="lg:hidden p-2 rounded-lg glass text-white"
+              className="lg:hidden p-2.5 rounded-lg glass-strong text-white border border-blue-500/20 ml-auto"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               whileTap={{ scale: 0.9 }}
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </motion.button>
           </div>
         </div>

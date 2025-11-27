@@ -45,7 +45,7 @@ const researchAreas = [
 
 export default function ResearchAreasSection() {
   return (
-    <section id="research" className="relative py-20 overflow-hidden">
+    <section id="research" className="relative py-16 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gray-900" />
 
@@ -56,25 +56,25 @@ export default function ResearchAreasSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
             Core Research Areas
           </h2>
-          <h3 className="text-2xl text-cyan-400 mb-6">at DeepHealth Lab</h3>
+          <h3 className="text-lg text-cyan-400 mb-4">at DeepHealth Lab</h3>
         </motion.div>
 
         {/* Card Swap Container */}
-        <div className="flex justify-center items-center" style={{ minHeight: '600px' }}>
+        <div className="flex justify-center items-center" style={{ minHeight: '500px' }}>
           <CardSwap
-            width={520}
-            height={420}
-            cardDistance={40}
-            verticalDistance={50}
+            width={450}
+            height={360}
+            cardDistance={35}
+            verticalDistance={45}
             delay={4000}
             pauseOnHover={true}
             easing="elastic"
@@ -82,25 +82,25 @@ export default function ResearchAreasSection() {
           >
             {researchAreas.map((area) => (
               <Card key={area.number}>
-                <div className="relative w-full h-full p-10 flex flex-col bg-gradient-to-br from-gray-900 to-gray-950">
+                <div className="relative w-full h-full p-6 flex flex-col bg-gradient-to-br from-gray-900 to-gray-950">
                   {/* Number Badge */}
                   <div className="absolute top-6 right-8 text-7xl font-bold text-white/5">
                     {area.number}
                   </div>
 
                   {/* Icon */}
-                  <div className="mb-6 relative z-10">
-                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
-                      <FontAwesomeIcon icon={area.icon} className="text-4xl" />
+                  <div className="mb-4 relative z-10">
+                    <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
+                      <FontAwesomeIcon icon={area.icon} className="text-2xl" />
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="relative z-10 flex-1 flex flex-col">
-                    <h3 className="text-3xl font-bold text-white mb-4">
+                    <h3 className="text-xl font-bold text-white mb-2">
                       {area.title}
                     </h3>
-                    <p className="text-gray-300 text-base leading-relaxed mb-8 flex-1">
+                    <p className="text-gray-300 text-xs leading-relaxed mb-4 flex-1">
                       {area.description}
                     </p>
 

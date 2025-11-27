@@ -15,7 +15,7 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="relative py-20 overflow-hidden">
+    <section className="relative py-16 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gray-900" />
 
@@ -74,10 +74,10 @@ export default function NewsletterSection() {
           transition={{ duration: 0.6 }}
         >
           {/* Heading */}
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
             Subscribe to newsletter &
           </h2>
-          <p className="text-3xl sm:text-4xl font-bold text-blue-400 mb-8">
+          <p className="text-xl sm:text-2xl font-bold text-blue-400 mb-5">
             get company news.
           </p>
 

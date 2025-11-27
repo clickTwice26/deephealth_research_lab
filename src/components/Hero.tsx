@@ -50,7 +50,7 @@ export default function Hero() {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
-    <section id="home" className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center overflow-hidden py-12 sm:py-16">
+    <section id="home" className="relative min-h-[75vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden py-8 sm:py-12">
       {/* Background */}
       <div className="absolute inset-0 bg-black" />
       
@@ -96,7 +96,7 @@ export default function Hero() {
 
         <motion.h1
           variants={itemVariants}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight"
         >
           <span className="block text-white">
             Welcome to
@@ -106,8 +106,8 @@ export default function Hero() {
           </span>
         </motion.h1>
 
-        <motion.div variants={itemVariants} className="mb-6 max-w-3xl mx-auto">
-          <p className="text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed">
+        <motion.div variants={itemVariants} className="mb-5 max-w-3xl mx-auto">
+          <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed">
             At <span className="font-semibold text-blue-400">DeepHealth Research Lab</span>, 
             we pioneer cutting-edge AI research in healthcare, developing innovative solutions 
             for medical diagnosis, patient care, and health monitoring that are both{' '}
@@ -118,7 +118,7 @@ export default function Hero() {
 
         <motion.p
           variants={itemVariants}
-          className="text-sm sm:text-base text-gray-400 mb-8 max-w-2xl mx-auto"
+          className="text-xs sm:text-sm text-gray-400 mb-6 max-w-2xl mx-auto"
         >
           Our research focuses on leveraging AI to transform healthcare through{' '}
           <span className="text-blue-400 font-medium">intelligent diagnostics</span>,{' '}
@@ -128,10 +128,10 @@ export default function Hero() {
 
         <motion.div
           variants={itemVariants}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3"
+          className="flex flex-col sm:flex-row items-center justify-center gap-2"
         >
           <motion.button
-            className="group relative px-6 py-3 bg-blue-600 rounded-full font-semibold text-white text-sm shadow-lg shadow-blue-500/50 overflow-hidden"
+            className="group relative px-5 py-2.5 bg-blue-600 rounded-full font-semibold text-white text-xs shadow-lg shadow-blue-500/50 overflow-hidden"
             whileHover={{ scale: 1.03, backgroundColor: '#3b82f6' }}
             whileTap={{ scale: 0.97 }}
           >
@@ -142,7 +142,7 @@ export default function Hero() {
           </motion.button>
 
           <motion.button
-            className="group px-6 py-3 glass-strong rounded-full font-semibold text-white text-sm border border-blue-500/50 hover:border-blue-500 transition-all"
+            className="group px-5 py-2.5 glass-strong rounded-full font-semibold text-white text-xs border border-blue-500/50 hover:border-blue-500 transition-all"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -156,7 +156,7 @@ export default function Hero() {
         {/* Floating Stats */}
         <motion.div
           variants={itemVariants}
-          className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto"
+          className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto"
         >
           {[
             { label: 'Research Papers', value: '50+', icon: faFileAlt, color: 'text-blue-400' },
@@ -165,7 +165,7 @@ export default function Hero() {
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="glass-strong rounded-xl p-4 sm:p-5 border border-blue-500/20 hover:border-blue-500/40 transition-all group"
+              className="glass-strong rounded-lg p-3 sm:p-4 border border-blue-500/20 hover:border-blue-500/40 transition-all group"
               whileHover={{ y: -3, scale: 1.01 }}
               animate={{
                 y: [0, -10, 0],
@@ -176,13 +176,13 @@ export default function Hero() {
                 delay: index * 0.2,
               }}
             >
-              <div className="mb-2">
-                <FontAwesomeIcon icon={stat.icon} className={`text-3xl ${stat.color}`} />
+              <div className="mb-1.5">
+                <FontAwesomeIcon icon={stat.icon} className={`text-xl ${stat.color}`} />
               </div>
-              <div className="text-2xl font-bold text-blue-400 mb-1">
+              <div className="text-lg font-bold text-blue-400 mb-0.5">
                 {stat.value}
               </div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
+              <div className="text-xs text-gray-400">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>

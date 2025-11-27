@@ -6,10 +6,12 @@ import ProjectsSection from '@/components/ProjectsSection'
 import PublicationsSection from '@/components/PublicationsSection'
 import NewsletterSection from '@/components/NewsletterSection'
 import Footer from '@/components/Footer'
+import DemoToast from '@/components/DemoToast'
 
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <DemoToast />
       <Navbar />
       <Hero />
       <NewsSection />
