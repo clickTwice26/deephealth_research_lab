@@ -13,14 +13,13 @@ const navItems = [
   { name: 'Research', href: '/#research' },
   { name: 'Projects', href: '/#projects' },
   { name: 'Publications', href: '/#publications' },
-  { name: 'Contract', href: '/contract' },
 ];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
-  
+
   const navOpacity = useTransform(scrollY, [0, 100], [0.7, 1]);
   const navBlur = useTransform(scrollY, [0, 100], [10, 20]);
 
@@ -35,7 +34,7 @@ export default function Navbar() {
   return (
     <>
       <motion.nav
-        style={{ 
+        style={{
           backdropFilter: useTransform(navBlur, (value) => `blur(${value}px)`),
         }}
         className={cn(
