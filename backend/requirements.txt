@@ -5,3 +5,10 @@ motor
 python-dotenv
 pydantic-settings
 dnspython
+passlib[argon2]
+python-jose[cryptography]
+python-multipart
+httpx
+google-auth
+requests
+email-validator
