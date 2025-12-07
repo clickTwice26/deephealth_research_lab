@@ -1,5 +1,7 @@
 fastapi
 uvicorn
-sqlalchemy
 pydantic
-pymongo[srv]
+motor
+python-dotenv
+pydantic-settings
+dnspython

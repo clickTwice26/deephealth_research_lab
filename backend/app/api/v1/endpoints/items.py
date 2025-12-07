@@ -1,33 +1,25 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import List
 
 from app.crud import crud_item
-from app.schemas import item as schemas
-from app.db.session import SessionLocal
+from app.models.item import ItemCreate, Item
+from app.db.mongodb import get_database
 
 router = APIRouter()
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@router.post("/", response_model=Item)
+async def create_item(item: ItemCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
+    return await crud_item.create_item(db=db, item=item)
 
-@router.post("/", response_model=schemas.Item)
-def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    return crud_item.create_item(db=db, item=item)
-
-@router.get("/", response_model=List[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud_item.get_items(db, skip=skip, limit=limit)
+@router.get("/", response_model=List[Item])
+async def read_items(skip: int = 0, limit: int = 100, db: AsyncIOMotorDatabase = Depends(get_database)):
+    items = await crud_item.get_items(db, skip=skip, limit=limit)
     return items
 
-@router.get("/{item_id}", response_model=schemas.Item)
-def read_item(item_id: int, db: Session = Depends(get_db)):
-    db_item = crud_item.get_item(db, item_id=item_id)
-    if db_item is None:
+@router.get("/{item_id}", response_model=Item)
+async def read_item(item_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+    item = await crud_item.get_item(db, item_id=item_id)
+    if item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    return db_item
+    return item

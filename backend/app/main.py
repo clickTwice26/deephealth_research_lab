@@ -1,15 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 from app.api.v1.api import api_router
 from app.core.config import settings
-from app.db import base
-from app.db.session import engine
+from app.db.mongodb import connect_to_mongo, close_mongo_connection
 
-# Create tables
-base.Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Connect to MongoDB
+    await connect_to_mongo()
+    yield
+    # Shutdown: Close connection
+    await close_mongo_connection()
 
-app = FastAPI(title=settings.PROJECT_NAME)
+app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
 # CORS
 app.add_middleware(

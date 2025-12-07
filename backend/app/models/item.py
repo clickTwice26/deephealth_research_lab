@@ -1,9 +1,23 @@
-from sqlalchemy import Column, Integer, String
-from app.db.base import Base
+from pydantic import BaseModel, Field, BeforeValidator
+from typing import Optional, List
+from typing_extensions import Annotated
 
-class Item(Base):
-    __tablename__ = "items"
+# Helper to map MongoDB _id to id
+PyObjectId = Annotated[str, BeforeValidator(str)]
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
+class ItemBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+
+class ItemCreate(ItemBase):
+    pass
+
+class ItemUpdate(ItemBase):
+    pass
+
+class Item(ItemBase):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
