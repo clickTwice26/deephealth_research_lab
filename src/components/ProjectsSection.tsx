@@ -26,7 +26,7 @@ export default function ProjectsSection() {
   return (
     <section id="projects" className="relative py-16 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-black" />
+      <div className="absolute inset-0 bg-white" />
 
       {/* Decorative Elements */}
       <div className="absolute top-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
@@ -42,10 +42,10 @@ export default function ProjectsSection() {
           transition={{ duration: 0.6 }}
         >
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
               Ongoing Projects
             </h2>
-            <p className="text-sm text-gray-400 max-w-2xl">
+            <p className="text-sm text-gray-600 max-w-2xl">
               Explore the innovative projects currently underway at DeepHealth Lab.
             </p>
           </div>
@@ -79,12 +79,10 @@ export default function ProjectsSection() {
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+              <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                 {project.title}
               </h3>
-
-              {/* Description */}
-              <p className="text-gray-300 text-xs leading-relaxed mb-4">
+              <p className="text-gray-600 text-xs leading-relaxed mb-4">
                 {project.description}
               </p>
 
@@ -93,7 +91,7 @@ export default function ProjectsSection() {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 text-xs font-medium bg-blue-600/20 text-blue-300 rounded-full"
+                    className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full"
                   >
                     {tag}
                   </span>

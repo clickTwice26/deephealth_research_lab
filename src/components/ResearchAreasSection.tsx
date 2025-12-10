@@ -47,7 +47,7 @@ export default function ResearchAreasSection() {
   return (
     <section id="research" className="relative py-16 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gray-900" />
+      <div className="absolute inset-0 bg-gray-50" />
 
       {/* Decorative circles */}
       <div className="absolute top-40 -left-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
@@ -62,10 +62,10 @@ export default function ResearchAreasSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
             Core Research Areas
           </h2>
-          <h3 className="text-lg text-cyan-400 mb-4">at DeepHealth Lab</h3>
+          <h3 className="text-lg text-cyan-600 mb-4">at DeepHealth Lab</h3>
         </motion.div>
 
         {/* Card Swap Container */}
@@ -83,37 +83,37 @@ export default function ResearchAreasSection() {
             >
               {researchAreas.map((area) => (
                 <Card key={area.number}>
-                  <div className="relative w-full h-full p-5 sm:p-6 md:p-8 flex flex-col bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-blue-500/20">
-                  {/* Number Badge */}
-                  <div className="absolute top-4 sm:top-6 right-4 sm:right-8 text-5xl sm:text-7xl font-bold text-white/5">
-                    {area.number}
-                  </div>
-
-                  {/* Icon */}
-                  <div className="mb-3 sm:mb-4 relative z-10">
-                    <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
-                      <FontAwesomeIcon icon={area.icon} className="text-xl sm:text-2xl" />
+                  <div className="relative w-full h-full p-5 sm:p-6 md:p-8 flex flex-col bg-white rounded-xl border border-gray-200 shadow-md">
+                    {/* Number Badge */}
+                    <div className="absolute top-4 sm:top-6 right-4 sm:right-8 text-5xl sm:text-7xl font-bold text-black/5">
+                      {area.number}
                     </div>
-                  </div>
 
-                  {/* Content */}
-                  <div className="relative z-10 flex-1 flex flex-col">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 sm:mb-3">
-                      {area.title}
-                    </h3>
-                    <p className="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-5 flex-1">
-                      {area.description}
-                    </p>
+                    {/* Icon */}
+                    <div className="mb-3 sm:mb-4 relative z-10">
+                      <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
+                        <FontAwesomeIcon icon={area.icon} className="text-xl sm:text-2xl" />
+                      </div>
+                    </div>
 
-                    {/* Learn More Link */}
-                    <button className="flex items-center gap-2 text-blue-400 hover:text-cyan-400 transition-colors group/btn self-start">
-                      <span className="font-semibold text-xs sm:text-sm">Learn More</span>
-                      <FontAwesomeIcon 
-                        icon={faArrowRight} 
-                        className="text-xs sm:text-sm group-hover/btn:translate-x-1 transition-transform" 
-                      />
-                    </button>
-                  </div>
+                    {/* Content */}
+                    <div className="relative z-10 flex-1 flex flex-col">
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+                        {area.title}
+                      </h3>
+                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-5 flex-1">
+                        {area.description}
+                      </p>
+
+                      {/* Learn More Link */}
+                      <button className="flex items-center gap-2 text-blue-600 hover:text-cyan-600 transition-colors group/btn self-start">
+                        <span className="font-semibold text-xs sm:text-sm">Learn More</span>
+                        <FontAwesomeIcon
+                          icon={faArrowRight}
+                          className="text-xs sm:text-sm group-hover/btn:translate-x-1 transition-transform"
+                        />
+                      </button>
+                    </div>
                   </div>
                 </Card>
               ))}

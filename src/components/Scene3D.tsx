@@ -59,9 +59,7 @@ function Particles({ count = 1000 }) {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={particlesPosition.length / 3}
-          array={particlesPosition}
-          itemSize={3}
+          args={[particlesPosition, 3]}
         />
       </bufferGeometry>
       <pointsMaterial
@@ -125,13 +123,13 @@ export default function Scene3D() {
       <directionalLight position={[10, 10, 5]} intensity={1} />
       <pointLight position={[-10, -10, -5]} color="#ec4899" intensity={0.5} />
       <pointLight position={[10, 10, 5]} color="#8b5cf6" intensity={0.5} />
-      
+
       <AnimatedSphere />
       <Particles count={1500} />
       <FloatingRings />
-      
-      <OrbitControls 
-        enableZoom={false} 
+
+      <OrbitControls
+        enableZoom={false}
         enablePan={false}
         autoRotate
         autoRotateSpeed={0.5}

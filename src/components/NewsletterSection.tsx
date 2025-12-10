@@ -17,12 +17,12 @@ export default function NewsletterSection() {
   return (
     <section className="relative py-16 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gray-900" />
+      <div className="absolute inset-0 bg-gray-50" />
 
       {/* Decorative Elements */}
       <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
       <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl" />
-      
+
       {/* Floating Icons */}
       <motion.div
         className="absolute top-20 left-20 text-blue-500/20"
@@ -37,7 +37,7 @@ export default function NewsletterSection() {
       >
         <div className="w-16 h-16 rounded-full border-4 border-current" />
       </motion.div>
-      
+
       <motion.div
         className="absolute bottom-20 right-20 text-cyan-500/20"
         animate={{
@@ -74,10 +74,10 @@ export default function NewsletterSection() {
           transition={{ duration: 0.6 }}
         >
           {/* Heading */}
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Subscribe to newsletter &
           </h2>
-          <p className="text-xl sm:text-2xl font-bold text-blue-400 mb-5">
+          <p className="text-xl sm:text-2xl font-bold text-blue-600 mb-5">
             get company news.
           </p>
 
@@ -89,7 +89,7 @@ export default function NewsletterSection() {
                 placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-6 py-4 bg-white/5 border border-blue-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/60 transition-all"
+                className="flex-1 px-6 py-4 bg-white border border-blue-500/30 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500/60 transition-all"
                 required
               />
               <motion.button

@@ -59,7 +59,7 @@ export default function Navbar() {
                 </div>
               </div>
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
                   DeepHealth <span className="text-cyan-400">Research Lab</span>
                 </h1>
               </div>
@@ -71,7 +71,7 @@ export default function Navbar() {
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="relative px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors group rounded-lg"
+                  className="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors group rounded-lg"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
@@ -86,7 +86,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Button */}
             <motion.button
-              className="lg:hidden p-2.5 rounded-lg glass-strong text-white border border-blue-500/20 ml-auto"
+              className="lg:hidden p-2.5 rounded-lg glass-strong text-gray-900 border border-blue-500/20 ml-auto"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               whileTap={{ scale: 0.9 }}
             >
@@ -103,14 +103,14 @@ export default function Navbar() {
             opacity: isMobileMenuOpen ? 1 : 0,
           }}
           transition={{ duration: 0.3 }}
-          className="lg:hidden overflow-hidden border-t border-white/10"
+          className="lg:hidden overflow-hidden border-t border-gray-200"
         >
           <div className="px-4 py-4 space-y-2">
             {navItems.map((item, index) => (
               <motion.a
                 key={item.name}
                 href={item.href}
-                className="block px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all"
+                className="block px-4 py-3 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50 transition-all"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}

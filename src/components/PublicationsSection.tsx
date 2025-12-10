@@ -27,7 +27,7 @@ export default function PublicationsSection() {
   return (
     <section id="publications" className="relative py-16 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gray-950" />
+      <div className="absolute inset-0 bg-white" />
 
       {/* Decorative Elements */}
       <div className="absolute top-40 left-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
@@ -43,10 +43,10 @@ export default function PublicationsSection() {
           transition={{ duration: 0.6 }}
         >
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
               Recent Publications
             </h2>
-            <p className="text-sm text-gray-400 max-w-2xl">
+            <p className="text-sm text-gray-600 max-w-2xl">
               Explore the current research contributions and innovations from DeepHealth Lab
             </p>
           </div>
@@ -86,7 +86,7 @@ export default function PublicationsSection() {
                     {pub.badges.map((badge) => (
                       <span
                         key={badge}
-                        className="px-3 py-1 text-xs font-semibold bg-cyan-600/20 text-cyan-300 rounded-full border border-cyan-500/30"
+                        className="px-3 py-1 text-xs font-semibold bg-cyan-100 text-cyan-700 rounded-full border border-cyan-200"
                       >
                         {badge}
                       </span>
@@ -94,17 +94,17 @@ export default function PublicationsSection() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                     {pub.title}
                   </h3>
 
                   {/* Authors */}
-                  <p className="text-gray-400 text-sm mb-3 leading-relaxed">
+                  <p className="text-gray-600 text-sm mb-3 leading-relaxed">
                     by {pub.authors}
                   </p>
 
                   {/* Journal and Date */}
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400 mb-4">
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-4">
                     <span>{pub.journal}</span>
                     <span>|</span>
                     <span>{pub.date}</span>

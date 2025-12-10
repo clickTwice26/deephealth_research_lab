@@ -28,11 +28,8 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.8,
-      ease: [0.6, -0.05, 0.01, 0.99],
-    },
-  },
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
+  }
 };
 
 const floatingAnimation = {
@@ -40,7 +37,7 @@ const floatingAnimation = {
   transition: {
     duration: 4,
     repeat: Infinity,
-    ease: "easeInOut",
+    ease: "easeInOut" as const,
   },
 };
 
@@ -52,13 +49,13 @@ export default function Hero() {
   return (
     <section id="home" className="relative min-h-[75vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden py-8 sm:py-12">
       {/* Background */}
-      <div className="absolute inset-0 bg-black" />
-      
+      <div className="absolute inset-0 bg-white" />
+
       {/* Animated Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
-      
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
+
       {/* 3D Scene */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 opacity-60"
         style={{ y }}
       >
@@ -98,7 +95,7 @@ export default function Hero() {
           variants={itemVariants}
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight"
         >
-          <span className="block text-white">
+          <span className="block text-gray-900">
             Welcome to
           </span>
           <span className="block mt-2 text-blue-400">
@@ -107,9 +104,9 @@ export default function Hero() {
         </motion.h1>
 
         <motion.div variants={itemVariants} className="mb-5 max-w-3xl mx-auto">
-          <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed">
-            At <span className="font-semibold text-blue-400">DeepHealth Research Lab</span>, 
-            we pioneer cutting-edge AI research in healthcare, developing innovative solutions 
+          <p className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
+            At <span className="font-semibold text-blue-400">DeepHealth Research Lab</span>,
+            we pioneer cutting-edge AI research in healthcare, developing innovative solutions
             for medical diagnosis, patient care, and health monitoring that are both{' '}
             <span className="font-semibold text-cyan-400">accurate</span> and{' '}
             <span className="font-semibold text-teal-400">reliable</span>.
@@ -118,7 +115,7 @@ export default function Hero() {
 
         <motion.p
           variants={itemVariants}
-          className="text-xs sm:text-sm text-gray-400 mb-6 max-w-2xl mx-auto"
+          className="text-xs sm:text-sm text-gray-500 mb-6 max-w-2xl mx-auto"
         >
           Our research focuses on leveraging AI to transform healthcare through{' '}
           <span className="text-blue-400 font-medium">intelligent diagnostics</span>,{' '}
@@ -131,7 +128,7 @@ export default function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-2"
         >
           <motion.button
-            className="group relative px-5 py-2.5 bg-blue-600 rounded-full font-semibold text-white text-xs shadow-lg shadow-blue-500/50 overflow-hidden"
+            className="group relative px-5 py-2.5 bg-blue-600 rounded-full font-semibold text-white text-xs shadow-lg shadow-blue-500/30 overflow-hidden"
             whileHover={{ scale: 1.03, backgroundColor: '#3b82f6' }}
             whileTap={{ scale: 0.97 }}
           >
@@ -142,7 +139,7 @@ export default function Hero() {
           </motion.button>
 
           <motion.button
-            className="group px-5 py-2.5 glass-strong rounded-full font-semibold text-white text-xs border border-blue-500/50 hover:border-blue-500 transition-all"
+            className="group px-5 py-2.5 glass-strong rounded-full font-semibold text-gray-900 text-xs border border-blue-500/30 hover:border-blue-500 transition-all"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -182,7 +179,7 @@ export default function Hero() {
               <div className="text-lg font-bold text-blue-400 mb-0.5">
                 {stat.value}
               </div>
-              <div className="text-xs text-gray-400">{stat.label}</div>
+              <div className="text-xs text-gray-500">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>

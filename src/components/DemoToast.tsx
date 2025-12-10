@@ -35,10 +35,10 @@ export default function DemoToast() {
           transition={{ type: 'spring', stiffness: 100, damping: 20 }}
           className="fixed top-20 right-4 sm:right-6 z-[100] max-w-sm"
         >
-          <div className="relative overflow-hidden rounded-xl border border-cyan-500/40 bg-gradient-to-br from-gray-900 via-gray-900/95 to-blue-900/30 backdrop-blur-xl shadow-2xl">
+          <div className="relative overflow-hidden rounded-xl border border-cyan-500/40 bg-white/90 backdrop-blur-xl shadow-2xl">
             {/* Animated background effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 animate-pulse" />
-            
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-cyan-500/5 to-blue-500/5 animate-pulse" />
+
             {/* Glowing border effect */}
             <div className="absolute inset-0 rounded-xl opacity-50">
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
@@ -58,13 +58,13 @@ export default function DemoToast() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">Demo Website Notice</h3>
-                    <p className="text-xs text-cyan-400 font-medium">Preview Mode</p>
+                    <h3 className="text-base font-bold text-gray-900">Demo Website Notice</h3>
+                    <p className="text-xs text-cyan-600 font-medium">Preview Mode</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsVisible(false)}
-                  className="flex-shrink-0 p-1.5 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+                  className="flex-shrink-0 p-1.5 rounded-lg hover:bg-black/5 transition-colors text-gray-400 hover:text-gray-900"
                 >
                   <FontAwesomeIcon icon={faTimes} className="text-sm" />
                 </button>
@@ -72,19 +72,19 @@ export default function DemoToast() {
 
               {/* Content */}
               <div className="space-y-2">
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  This is a <span className="font-semibold text-cyan-400">demonstration version</span> of the website.
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  This is a <span className="font-semibold text-cyan-600">demonstration version</span> of the website.
                 </p>
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-500 leading-relaxed">
                   The final product will be customized with your actual content, data, and branding requirements.
                 </p>
                 <p className="text-xs text-gray-500 leading-relaxed mt-2">
                   Design inspired by{' '}
-                  <a 
-                    href="https://elitelab.ai/" 
-                    target="_blank" 
+                  <a
+                    href="https://elitelab.ai/"
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 underline transition-colors"
+                    className="text-blue-600 hover:text-blue-500 underline transition-colors"
                   >
                     elitelab.ai
                   </a>
@@ -92,10 +92,10 @@ export default function DemoToast() {
               </div>
 
               {/* Footer badge */}
-              <div className="mt-4 pt-3 border-t border-gray-700/50">
+              <div className="mt-4 pt-3 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">Sample Content Only</span>
-                  <span className="px-2.5 py-1 rounded-full bg-cyan-600/20 border border-cyan-500/30 text-xs font-semibold text-cyan-400">
+                  <span className="px-2.5 py-1 rounded-full bg-cyan-100 border border-cyan-200 text-xs font-semibold text-cyan-700">
                     DEMO
                   </span>
                 </div>

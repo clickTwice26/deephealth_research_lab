@@ -7,10 +7,16 @@ import PublicationsSection from '@/components/PublicationsSection'
 import NewsletterSection from '@/components/NewsletterSection'
 import Footer from '@/components/Footer'
 import DemoToast from '@/components/DemoToast'
+import TargetCursor from '@/components/TargetCursor'
 
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <TargetCursor
+        targetSelector="a, button, input, .cursor-target"
+        hideDefaultCursor={true}
+        spinDuration={4}
+      />
       <DemoToast />
       <Navbar />
       <Hero />

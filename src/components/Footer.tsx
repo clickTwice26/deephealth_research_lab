@@ -37,7 +37,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="relative bg-black border-t border-blue-500/20">
+    <footer className="relative bg-white border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 mb-12">
           {/* Logo and Description */}
@@ -52,14 +52,14 @@ export default function Footer() {
                   <FontAwesomeIcon icon={faMicrochip} className="text-white text-xl" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white">
-                DeepHealth<span className="text-cyan-400"> Research Lab</span>
+              <h3 className="text-xl font-bold text-gray-900">
+                DeepHealth<span className="text-cyan-600"> Research Lab</span>
               </h3>
             </motion.div>
-            <p className="text-gray-400 mb-6 leading-relaxed">
+            <p className="text-gray-600 mb-6 leading-relaxed">
               DeepHealth Lab - Explainable LLM and Interpretable Technology Ensemble Lab
             </p>
-            
+
             {/* Social Links */}
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -79,13 +79,13 @@ export default function Footer() {
 
           {/* Lab Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Lab</h4>
+            <h4 className="text-gray-900 font-semibold mb-4">Lab</h4>
             <ul className="space-y-3">
               {footerLinks.lab.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-400 hover:text-purple-400 transition-colors"
+                    className="text-gray-600 hover:text-blue-600 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -96,13 +96,13 @@ export default function Footer() {
 
           {/* Team Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Team</h4>
+            <h4 className="text-gray-900 font-semibold mb-4">Team</h4>
             <ul className="space-y-3">
               {footerLinks.team.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-400 hover:text-purple-400 transition-colors"
+                    className="text-gray-600 hover:text-blue-600 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -113,13 +113,13 @@ export default function Footer() {
 
           {/* Resources Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Resources</h4>
+            <h4 className="text-gray-900 font-semibold mb-4">Resources</h4>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-400 hover:text-purple-400 transition-colors"
+                    className="text-gray-600 hover:text-blue-600 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -130,13 +130,13 @@ export default function Footer() {
 
           {/* Others Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Others</h4>
+            <h4 className="text-gray-900 font-semibold mb-4">Others</h4>
             <ul className="space-y-3">
               {footerLinks.others.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-400 hover:text-purple-400 transition-colors"
+                    className="text-gray-600 hover:text-blue-600 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -147,8 +147,8 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="pt-8 border-t border-blue-500/20">
-          <p className="text-center text-gray-400 text-sm">
+        <div className="pt-8 border-t border-gray-200">
+          <p className="text-center text-gray-500 text-sm">
             Copyright © 2025 DeepHealth Lab AI LLC. All Rights Reserved.
           </p>
         </div>
