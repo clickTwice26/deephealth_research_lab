@@ -15,17 +15,17 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="relative py-16 overflow-hidden">
+    <section className="relative py-16 overflow-hidden bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Background */}
-      <div className="absolute inset-0 bg-gray-50" />
+      <div className="absolute inset-0 bg-gray-50 dark:bg-gray-950 transition-colors duration-300" />
 
       {/* Decorative Elements */}
-      <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
-      <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl" />
 
       {/* Floating Icons */}
       <motion.div
-        className="absolute top-20 left-20 text-blue-500/20"
+        className="absolute top-20 left-20 text-blue-500/20 hidden md:block"
         animate={{
           y: [0, -20, 0],
           rotate: [0, 10, 0],
@@ -39,7 +39,7 @@ export default function NewsletterSection() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-20 right-20 text-cyan-500/20"
+        className="absolute bottom-20 right-20 text-cyan-500/20 hidden md:block"
         animate={{
           y: [0, 20, 0],
           rotate: [0, -10, 0],
@@ -53,7 +53,7 @@ export default function NewsletterSection() {
       </motion.div>
 
       <motion.div
-        className="absolute top-40 right-1/3 text-teal-500/20"
+        className="absolute top-40 right-1/3 text-teal-500/20 hidden md:block"
         animate={{
           x: [0, 20, 0],
           scale: [1, 1.2, 1],
@@ -74,10 +74,10 @@ export default function NewsletterSection() {
           transition={{ duration: 0.6 }}
         >
           {/* Heading */}
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Subscribe to newsletter &
           </h2>
-          <p className="text-xl sm:text-2xl font-bold text-blue-600 mb-5">
+          <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-5">
             get company news.
           </p>
 
@@ -89,12 +89,12 @@ export default function NewsletterSection() {
                 placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-6 py-4 bg-white border border-blue-500/30 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500/60 transition-all"
+                className="flex-1 px-6 py-4 bg-white dark:bg-gray-900 border border-blue-500/30 dark:border-blue-500/20 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/60 dark:focus:border-blue-500/50 transition-all"
                 required
               />
               <motion.button
                 type="submit"
-                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-2"
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

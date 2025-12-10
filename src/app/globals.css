@@ -3,21 +3,48 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
+  --foreground-rgb: 17, 24, 39;
   --background-rgb: 255, 255, 255;
+}
+
+[data-theme='dark'],
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 3, 7, 18;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
   overflow-x: hidden;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+@layer base {
+
+  *,
+  ::before,
+  ::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-garamond);
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .glass {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
@@ -25,12 +52,24 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }
-  
+
+  .dark .glass {
+    background: rgba(17, 24, 39, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
   .glass-strong {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .glass-strong {
+    background: rgba(17, 24, 39, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   }
 }

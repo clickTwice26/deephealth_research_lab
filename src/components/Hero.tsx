@@ -14,7 +14,7 @@ export default function Hero() {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
-    <section ref={containerRef} id="home" className="relative min-h-[calc(100vh-4rem)] flex items-start overflow-hidden bg-white pt-12 lg:pt-24 pb-20">
+    <section ref={containerRef} id="home" className="relative min-h-[calc(100vh-4rem)] flex items-start overflow-hidden bg-white dark:bg-gray-950 pt-28 lg:pt-24 pb-20 transition-colors duration-300">
       {/* Background Grid */}
       <div className="absolute inset-0 z-0">
         <GridPattern
@@ -22,7 +22,7 @@ export default function Hero() {
           height={40}
           x={-1}
           y={-1}
-          className="stroke-gray-200 [mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)]"
+          className="stroke-gray-200 dark:stroke-gray-800/50 [mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] dark:[mask-image:linear-gradient(to_bottom_right,black,transparent,transparent)]"
         />
       </div>
 
@@ -37,7 +37,7 @@ export default function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
@@ -45,29 +45,29 @@ export default function Hero() {
               Next-Gen Medical AI
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] tracking-tight mb-6">
               Accelerating <br className="hidden lg:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">Healthcare Discovery</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400">Healthcare Discovery</span>
             </h1>
 
-            <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
               We build advanced machine learning models to decode complex biological data, enabling earlier diagnosis and personalized treatment pathways.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
               <Link href="/login">
-                <button className="px-8 py-4 bg-gray-900 text-white rounded-xl font-semibold shadow-lg shadow-gray-900/20 hover:bg-gray-800 hover:scale-105 transition-all flex items-center gap-2">
+                <button className="px-8 py-4 bg-gray-900 dark:bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-gray-900/20 hover:bg-gray-800 dark:hover:bg-blue-700 hover:scale-105 transition-all flex items-center gap-2">
                   <span>Start Researching</span>
                   <FontAwesomeIcon icon={faArrowRight} />
                 </button>
               </Link>
-              <button className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center gap-2">
+              <button className="px-8 py-4 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-800 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 transition-all flex items-center gap-2">
                 <FontAwesomeIcon icon={faPlayCircle} className="text-blue-500" />
                 <span>View Demo</span>
               </button>
             </div>
 
-            <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-gray-400 text-sm font-medium">
+            <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-gray-400 dark:text-gray-500 text-sm font-medium">
               <span>Trusted by</span>
               <div className="flex gap-6 items-center opacity-60 grayscale hover:grayscale-0 transition-all">
                 <span>STANFORD MEDICINE</span>

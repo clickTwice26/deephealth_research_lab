@@ -37,7 +37,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="relative bg-white border-t border-gray-200">
+    <footer className="relative bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 mb-12">
           {/* Logo and Description */}
@@ -52,11 +52,11 @@ export default function Footer() {
                   <FontAwesomeIcon icon={faMicrochip} className="text-white text-xl" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900">
-                DeepHealth<span className="text-cyan-600"> Research Lab</span>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                DeepHealth<span className="text-cyan-600 dark:text-cyan-400"> Research Lab</span>
               </h3>
             </motion.div>
-            <p className="text-gray-600 mb-6 leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
               DeepHealth Lab - Explainable LLM and Interpretable Technology Ensemble Lab
             </p>
 
@@ -67,7 +67,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 hover:border-blue-500/60 flex items-center justify-center text-blue-400 transition-all"
+                  className="w-10 h-10 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 hover:border-blue-500/60 flex items-center justify-center text-blue-400 dark:text-blue-300 transition-all"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -79,13 +79,13 @@ export default function Footer() {
 
           {/* Lab Links */}
           <div>
-            <h4 className="text-gray-900 font-semibold mb-4">Lab</h4>
+            <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Lab</h4>
             <ul className="space-y-3">
               {footerLinks.lab.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -96,13 +96,13 @@ export default function Footer() {
 
           {/* Team Links */}
           <div>
-            <h4 className="text-gray-900 font-semibold mb-4">Team</h4>
+            <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Team</h4>
             <ul className="space-y-3">
               {footerLinks.team.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -113,13 +113,13 @@ export default function Footer() {
 
           {/* Resources Links */}
           <div>
-            <h4 className="text-gray-900 font-semibold mb-4">Resources</h4>
+            <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Resources</h4>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -130,13 +130,13 @@ export default function Footer() {
 
           {/* Others Links */}
           <div>
-            <h4 className="text-gray-900 font-semibold mb-4">Others</h4>
+            <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Others</h4>
             <ul className="space-y-3">
               {footerLinks.others.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     {link.name}
                   </a>
@@ -147,8 +147,8 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="pt-8 border-t border-gray-200">
-          <p className="text-center text-gray-500 text-sm">
+        <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
+          <p className="text-center text-gray-500 dark:text-gray-500 text-sm">
             Copyright © 2025 DeepHealth Lab AI LLC. All Rights Reserved.
           </p>
         </div>

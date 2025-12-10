@@ -19,10 +19,10 @@ export default function DashboardPreview() {
                 initial={{ rotateX: 10, rotateY: -10, opacity: 0, y: 50 }}
                 animate={{ rotateX: 0, rotateY: 0, opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "backOut" }}
-                className="relative bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
+                className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden transition-colors duration-300"
             >
                 {/* Top Bar */}
-                <div className="h-12 border-b border-gray-100 flex items-center justify-between px-4 bg-gray-50/50">
+                <div className="h-12 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between px-4 bg-gray-50/50 dark:bg-gray-800/50">
                     <div className="flex items-center gap-2">
                         <div className="flex gap-1.5">
                             <div className="w-3 h-3 rounded-full bg-red-400" />
@@ -30,11 +30,11 @@ export default function DashboardPreview() {
                             <div className="w-3 h-3 rounded-full bg-green-400" />
                         </div>
                     </div>
-                    <div className="flex items-center gap-4 text-gray-400 text-sm">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-white rounded-md border border-gray-200 shadow-sm">
+                    <div className="flex items-center gap-4 text-gray-400 dark:text-gray-500 text-sm">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-white dark:bg-gray-950 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
                             <FontAwesomeIcon icon={faSearch} className="text-xs" />
                             <span className="text-xs">Search patient data...</span>
-                            <span className="text-xs border border-gray-200 rounded px-1 ml-4">⌘K</span>
+                            <span className="text-xs border border-gray-200 dark:border-gray-700 rounded px-1 ml-4">⌘K</span>
                         </div>
                         <FontAwesomeIcon icon={faBell} />
                         <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500" />
@@ -43,24 +43,24 @@ export default function DashboardPreview() {
 
                 <div className="flex h-[400px]">
                     {/* Sidebar */}
-                    <div className="w-16 border-r border-gray-100 flex flex-col items-center py-4 gap-6 text-gray-400 bg-gray-50/30">
-                        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                    <div className="w-16 border-r border-gray-100 dark:border-gray-800 flex flex-col items-center py-4 gap-6 text-gray-400 dark:text-gray-500 bg-gray-50/30 dark:bg-gray-800/30">
+                        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg">
                             <FontAwesomeIcon icon={faChartLine} />
                         </div>
-                        <FontAwesomeIcon icon={faUserMd} className="hover:text-gray-600 transition-colors cursor-pointer" />
-                        <FontAwesomeIcon icon={faDna} className="hover:text-gray-600 transition-colors cursor-pointer" />
-                        <FontAwesomeIcon icon={faMicroscope} className="hover:text-gray-600 transition-colors cursor-pointer" />
+                        <FontAwesomeIcon icon={faUserMd} className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer" />
+                        <FontAwesomeIcon icon={faDna} className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer" />
+                        <FontAwesomeIcon icon={faMicroscope} className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer" />
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 p-6 bg-gray-50/30">
+                    <div className="flex-1 p-6 bg-gray-50/30 dark:bg-gray-900/50">
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900">Patient Analytics</h3>
-                                <p className="text-xs text-gray-500">Real-time inference • Model: DH-Transformer-v4</p>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Patient Analytics</h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Real-time inference • Model: DH-Transformer-v4</p>
                             </div>
                             <div className="flex gap-2">
-                                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                                     Live
                                 </span>
@@ -73,17 +73,17 @@ export default function DashboardPreview() {
                                 { label: 'Confidence', value: 'High', color: 'cyan' },
                                 { label: 'Anomalies', value: '2', color: 'amber' },
                             ].map((stat) => (
-                                <div key={stat.label} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                                    <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
-                                    <p className={`text-xl font-bold text-${stat.color}-600`}>{stat.value}</p>
+                                <div key={stat.label} className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{stat.label}</p>
+                                    <p className={`text-xl font-bold text-${stat.color}-600 dark:text-${stat.color}-400`}>{stat.value}</p>
                                 </div>
                             ))}
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 h-40">
-                            <div className="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-4 relative overflow-hidden">
+                            <div className="col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 relative overflow-hidden transition-colors">
                                 <div className="flex justify-between items-center mb-4">
-                                    <p className="text-xs font-semibold text-gray-700">Vital Trends</p>
+                                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Vital Trends</p>
                                     <FontAwesomeIcon icon={faEllipsisH} className="text-gray-400 text-xs" />
                                 </div>
                                 {/* Simulated Chart */}
@@ -98,24 +98,24 @@ export default function DashboardPreview() {
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-                                <p className="text-xs font-semibold text-gray-700 mb-3">Model Status</p>
+                            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 transition-colors">
+                                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3">Model Status</p>
                                 <div className="space-y-3">
                                     <div className="text-xs">
-                                        <div className="flex justify-between text-gray-600 mb-1">
+                                        <div className="flex justify-between text-gray-600 dark:text-gray-400 mb-1">
                                             <span>Processing</span>
                                             <span>85%</span>
                                         </div>
-                                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                             <div className="h-full w-[85%] bg-blue-500 rounded-full" />
                                         </div>
                                     </div>
                                     <div className="text-xs">
-                                        <div className="flex justify-between text-gray-600 mb-1">
+                                        <div className="flex justify-between text-gray-600 dark:text-gray-400 mb-1">
                                             <span>Latency</span>
-                                            <span className="text-green-600">12ms</span>
+                                            <span className="text-green-600 dark:text-green-400">12ms</span>
                                         </div>
-                                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                             <div className="h-full w-[30%] bg-green-500 rounded-full" />
                                         </div>
                                     </div>

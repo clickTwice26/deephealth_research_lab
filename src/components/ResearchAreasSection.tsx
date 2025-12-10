@@ -2,8 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBrain, faRobot, faEye, faUserMd, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import CardSwap, { Card } from './CardSwap';
+import { faBrain, faRobot, faEye, faUserMd, faArrowRight, faNetworkWired, faLanguage } from '@fortawesome/free-solid-svg-icons';
 
 const researchAreas = [
   {
@@ -11,115 +10,140 @@ const researchAreas = [
     title: 'Generative AI',
     icon: faRobot,
     description: 'DeepHealth Lab develops models that generate new data, like text or images, expanding the creative potential of AI.',
-    color: 'text-purple-400',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    borderColor: 'border-purple-100'
   },
   {
     number: '02',
     title: 'Explainable AI (XAI)',
     icon: faBrain,
     description: 'We create AI systems that are transparent, offering clear insights into their decisions to build trust and accountability.',
-    color: 'text-cyan-400',
+    color: 'text-cyan-600',
+    bgColor: 'bg-cyan-50',
+    borderColor: 'border-cyan-100'
   },
   {
     number: '03',
     title: 'Natural Language Processing',
-    icon: faUserMd,
-    description: 'Our work in NLP advances the ability of machines to understand and generate human language, improving communication with technology.',
-    color: 'text-blue-400',
+    icon: faLanguage,
+    description: 'Our work in NLP advances the ability of machines to understand and generate human language.',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-100'
   },
   {
     number: '04',
     title: 'Computer Vision',
     icon: faEye,
-    description: 'DeepHealth Lab focuses on algorithms that enable machines to interpret visual data, driving innovation in fields like autonomous systems and healthcare.',
-    color: 'text-pink-400',
+    description: 'Focusing on algorithms that enable machines to interpret visual data for autonomous systems and healthcare.',
+    color: 'text-pink-600',
+    bgColor: 'bg-pink-50',
+    borderColor: 'border-pink-100'
   },
   {
     number: '05',
-    title: 'Human-AI Interaction (HAI)',
+    title: 'Human-AI Interaction',
     icon: faUserMd,
     description: 'We design user-friendly interfaces and experiences, enhancing the way people interact with technology.',
-    color: 'text-purple-400',
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-50',
+    borderColor: 'border-indigo-100'
+  },
+  {
+    number: '06',
+    title: 'Federated Learning',
+    icon: faNetworkWired,
+    description: 'Decentralized machine learning techniques that preserve privacy while training powerful global models.',
+    color: 'text-teal-600',
+    bgColor: 'bg-teal-50',
+    borderColor: 'border-teal-100'
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5
+    }
+  }
+};
+
 export default function ResearchAreasSection() {
   return (
-    <section id="research" className="relative py-16 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gray-50" />
-
-      {/* Decorative circles */}
-      <div className="absolute top-40 -left-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-40 -right-20 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+    <section id="research" className="relative py-24 bg-white dark:bg-gray-950 overflow-hidden transition-colors duration-300">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50/50 dark:bg-blue-900/20 rounded-full blur-[100px] opacity-50 md:opacity-100" />
+      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-cyan-50/50 dark:bg-cyan-900/20 rounded-full blur-[100px] opacity-50 md:opacity-100" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
         <motion.div
-          className="text-center mb-10"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-            Core Research Areas
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium mb-4">
+            Core Focus
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
+            Research Areas
           </h2>
-          <h3 className="text-lg text-cyan-600 mb-4">at DeepHealth Lab</h3>
+          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+            Exploring the frontiers of artificial intelligence to solve the world's most pressing challenges.
+          </p>
         </motion.div>
 
-        {/* Card Swap Container */}
-        <div className="flex justify-center items-center w-full px-4">
-          <div className="w-full max-w-2xl">
-            <CardSwap
-              width={0}
-              height={0}
-              cardDistance={20}
-              verticalDistance={30}
-              delay={4000}
-              pauseOnHover={true}
-              easing="elastic"
-              skewAmount={2}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {researchAreas.map((area) => (
+            <motion.div
+              key={area.number}
+              variants={itemVariants}
+              className="group relative bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              {researchAreas.map((area) => (
-                <Card key={area.number}>
-                  <div className="relative w-full h-full p-5 sm:p-6 md:p-8 flex flex-col bg-white rounded-xl border border-gray-200 shadow-md">
-                    {/* Number Badge */}
-                    <div className="absolute top-4 sm:top-6 right-4 sm:right-8 text-5xl sm:text-7xl font-bold text-black/5">
-                      {area.number}
-                    </div>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${area.bgColor} dark:bg-opacity-10 ${area.color} dark:text-opacity-90`}>
+                <FontAwesomeIcon icon={area.icon} className="text-xl" />
+              </div>
 
-                    {/* Icon */}
-                    <div className="mb-3 sm:mb-4 relative z-10">
-                      <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-600/20 border border-blue-500/30 ${area.color}`}>
-                        <FontAwesomeIcon icon={area.icon} className="text-xl sm:text-2xl" />
-                      </div>
-                    </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {area.title}
+              </h3>
 
-                    {/* Content */}
-                    <div className="relative z-10 flex-1 flex flex-col">
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
-                        {area.title}
-                      </h3>
-                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-5 flex-1">
-                        {area.description}
-                      </p>
+              <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
+                {area.description}
+              </p>
 
-                      {/* Learn More Link */}
-                      <button className="flex items-center gap-2 text-blue-600 hover:text-cyan-600 transition-colors group/btn self-start">
-                        <span className="font-semibold text-xs sm:text-sm">Learn More</span>
-                        <FontAwesomeIcon
-                          icon={faArrowRight}
-                          className="text-xs sm:text-sm group-hover/btn:translate-x-1 transition-transform"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </CardSwap>
-          </div>
-        </div>
+              <div className="flex items-center justify-between mt-auto">
+                <span className="text-4xl font-bold text-gray-200 dark:text-gray-800 select-none group-hover:text-gray-300 dark:group-hover:text-gray-700 transition-colors">
+                  {area.number}
+                </span>
+                <button className="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-400 dark:text-gray-500 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

@@ -1,22 +1,24 @@
-import type { Metadata } from 'next'
-import { Montserrat } from 'next/font/google'
-import './globals.css'
+import { Space_Grotesk } from 'next/font/google';
+import { Providers } from './providers';
+import './globals.css';
 
-const montserrat = Montserrat({ subsets: ['latin'] })
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
 
-export const metadata: Metadata = {
-  title: 'DeepHealth Research Lab - AI Healthcare Research',
-  description: 'Advanced AI research laboratory focused on healthcare innovation and medical technology',
-}
+export const metadata = {
+  title: 'DeepHealth Research Lab',
+  description: 'Pioneering AI Healthcare Research',
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={montserrat.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${spaceGrotesk.variable} font-sans`}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
-  )
+  );
 }
