@@ -19,7 +19,7 @@ export default function PixelBlast({
     const containerRef = useRef<HTMLDivElement>(null);
     const mouseRef = useRef({ x: -1000, y: -1000 });
     const pixelsRef = useRef<any[]>([]);
-    const animationRef = useRef<number>();
+    const animationRef = useRef<number | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
