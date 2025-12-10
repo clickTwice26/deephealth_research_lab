@@ -7,6 +7,8 @@ import { faFileAlt, faRobot, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 
+import PixelBlast from './PixelBlast';
+
 const Scene3D = dynamic(() => import('./Scene3D'), {
   ssr: false,
   loading: () => <div className="w-full h-full bg-transparent" />
@@ -47,27 +49,18 @@ export default function Hero() {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
-    <section id="home" className="relative min-h-[75vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden py-8 sm:py-12">
-      {/* Background */}
-      <div className="absolute inset-0 bg-white" />
+    <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      {/* Background Effect */}
+      <div className="absolute inset-0 z-0">
+        <PixelBlast
+          pixelSize={40}
+          gap={4}
+          colors={['#e0f2fe', '#dbeafe', '#eff6ff', '#f0f9ff']} // Very light blues for white theme
+        />
+      </div>
 
-      {/* Animated Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
-
-      {/* 3D Scene */}
-      <motion.div
-        className="absolute inset-0 opacity-60"
-        style={{ y }}
-      >
-        <Suspense fallback={<div />}>
-          <Scene3D />
-        </Suspense>
-      </motion.div>
-
-      {/* Gradient Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-teal-500/15 rounded-full blur-[100px] animate-pulse delay-500" />
+      {/* Overlay Gradient for Text Readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/50 to-white z-0 pointer-events-none" />
 
       {/* Content */}
       <motion.div
@@ -153,17 +146,17 @@ export default function Hero() {
         {/* Floating Stats */}
         <motion.div
           variants={itemVariants}
-          className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto"
+          className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto"
         >
           {[
-            { label: 'Research Papers', value: '50+', icon: faFileAlt, color: 'text-blue-400' },
-            { label: 'AI Models', value: '25+', icon: faRobot, color: 'text-cyan-400' },
-            { label: 'Global Partners', value: '100+', icon: faGlobe, color: 'text-teal-400' },
+            { label: 'Research Papers', value: '50+', icon: faFileAlt, color: 'text-blue-600' },
+            { label: 'AI Models', value: '25+', icon: faRobot, color: 'text-cyan-600' },
+            { label: 'Global Partners', value: '100+', icon: faGlobe, color: 'text-teal-600' },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="glass-strong rounded-lg p-3 sm:p-4 border border-blue-500/20 hover:border-blue-500/40 transition-all group"
-              whileHover={{ y: -3, scale: 1.01 }}
+              className="bg-white/50 backdrop-blur-md rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group"
+              whileHover={{ y: -5 }}
               animate={{
                 y: [0, -10, 0],
               }}
@@ -173,13 +166,13 @@ export default function Hero() {
                 delay: index * 0.2,
               }}
             >
-              <div className="mb-1.5">
-                <FontAwesomeIcon icon={stat.icon} className={`text-xl ${stat.color}`} />
+              <div className="mb-3">
+                <FontAwesomeIcon icon={stat.icon} className={`text-2xl ${stat.color}`} />
               </div>
-              <div className="text-lg font-bold text-blue-400 mb-0.5">
+              <div className="text-2xl font-bold text-gray-900 mb-1">
                 {stat.value}
               </div>
-              <div className="text-xs text-gray-500">{stat.label}</div>
+              <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
