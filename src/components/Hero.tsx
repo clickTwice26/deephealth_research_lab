@@ -8,6 +8,8 @@ import Link from 'next/link';
 import GridPattern from './GridPattern';
 import DashboardPreview from './DashboardPreview';
 
+import Shuffle from './Shuffle';
+
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
@@ -47,7 +49,21 @@ export default function Hero() {
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] tracking-tight mb-6">
               Accelerating <br className="hidden lg:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400">Healthcare Discovery</span>
+              <Shuffle
+                text="Healthcare Discovery"
+                shuffleDirection="right"
+                duration={0.35}
+                animationMode="evenodd"
+                shuffleTimes={3}
+                ease="power3.out"
+                stagger={0.03}
+                threshold={0.1}
+                triggerOnce={true}
+                triggerOnHover={true}
+                respectReducedMotion={true}
+                tag="span"
+                className="inline-block text-blue-600 dark:text-blue-400"
+              />
             </h1>
 
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
