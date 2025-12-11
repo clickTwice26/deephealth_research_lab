@@ -280,7 +280,7 @@ export default function DashboardPreview() {
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row h-auto md:h-[400px]">
+                <div className="flex flex-col md:flex-row h-[500px] md:h-[400px]">
                     {/* Sidebar */}
                     <div className="w-full md:w-16 h-14 md:h-auto border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-800 flex flex-row md:flex-col justify-around md:justify-center items-center py-0 md:py-4 gap-0 md:gap-6 text-gray-400 dark:text-gray-500 bg-gray-50/30 dark:bg-gray-800/30 shrink-0 pointer-events-none">
                         <div

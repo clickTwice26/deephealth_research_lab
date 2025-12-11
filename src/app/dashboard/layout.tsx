@@ -109,6 +109,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         {user.role === 'admin' && (
                             <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
                                 <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Admin</p>
+                                <SidebarLink icon={faChartLine} label="Overview" href="/dashboard/admin" />
                                 <SidebarLink icon={faBullhorn} label="News / Content" href="/dashboard/news" />
                                 <SidebarLink icon={faBook} label="Publications" href="/dashboard/publications" />
                                 <SidebarLink icon={faBriefcase} label="Jobs / Careers" href="/dashboard/jobs" />
@@ -158,11 +159,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </header>
 
                 {/* Desktop Header for Notifications & Search (New) */}
-                <div className="hidden lg:flex items-center justify-between p-4 px-8 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-30">
-                    <div className="flex-1 max-w-2xl">
+                <div className="hidden lg:grid grid-cols-3 items-center p-4 px-8 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-30">
+                    <div className="text-sm font-semibold text-gray-400">
+                        {/* Left Spacer / Breadcrumbs could go here */}
+                    </div>
+                    <div className="flex justify-center w-full max-w-2xl mx-auto">
                         <GlobalSearch />
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-end gap-4">
                         <div className="w-px h-6 bg-gray-200 dark:bg-gray-800 mx-2" />
                         <NotificationsDropdown />
                     </div>
