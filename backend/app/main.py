@@ -25,6 +25,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.middleware.audit import AuditMiddleware
+app.add_middleware(AuditMiddleware)
+
 # Include Router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 

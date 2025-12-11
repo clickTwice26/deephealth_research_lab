@@ -7,7 +7,10 @@ import { useRouter } from 'next/navigation';
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
+    isImpersonating: boolean;
     login: (token: string) => Promise<void>;
+    impersonate: (token: string) => Promise<void>;
+    stopImpersonating: () => void;
     logout: () => void;
     fetchUser: () => Promise<void>;
 }
@@ -17,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isImpersonating, setIsImpersonating] = useState(false);
     const router = useRouter();
 
     const fetchUser = async () => {
@@ -28,7 +32,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(userData);
         } catch (error) {
             console.error('Failed to fetch user', error);
-            logout();
+            // If fetching user fails while impersonating, revert
+            const adminToken = localStorage.getItem('admin_token');
+            if (adminToken) {
+                stopImpersonating();
+            } else {
+                logout();
+            }
         } finally {
             setIsLoading(false);
         }
@@ -36,6 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+        const adminToken = localStorage.getItem('admin_token');
+        setIsImpersonating(!!adminToken);
+
         if (token) {
             fetchUser();
         } else {
@@ -46,17 +59,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = async (token: string) => {
         localStorage.setItem('token', token);
         await fetchUser();
-        router.push('/dashboard'); // or redirect to intended page
+        router.push('/dashboard');
+    };
+
+    const impersonate = async (token: string) => {
+        const currentToken = localStorage.getItem('token');
+        if (currentToken) {
+            localStorage.setItem('admin_token', currentToken);
+        }
+        localStorage.setItem('token', token);
+        setIsImpersonating(true);
+        await fetchUser();
+        router.push('/dashboard');
+    };
+
+    const stopImpersonating = () => {
+        const adminToken = localStorage.getItem('admin_token');
+        if (adminToken) {
+            localStorage.setItem('token', adminToken);
+            localStorage.removeItem('admin_token');
+            setIsImpersonating(false);
+            fetchUser(); // Reload admin user
+            router.refresh();
+        }
     };
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('admin_token');
+        setIsImpersonating(false);
         setUser(null);
         router.push('/login');
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, logout, fetchUser }}>
+        <AuthContext.Provider value={{ user, isLoading, login, logout, fetchUser, isImpersonating, impersonate, stopImpersonating }}>
             {children}
         </AuthContext.Provider>
     );

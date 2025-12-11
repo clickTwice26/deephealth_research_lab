@@ -66,3 +66,28 @@ async def update_user_role(db: AsyncIOMotorDatabase, user_id: str, role: str) ->
     if result:
         return UserInDB(**result)
     return None
+
+async def update_user_status(db: AsyncIOMotorDatabase, user_id: str, is_active: bool) -> Optional[UserInDB]:
+    try:
+        oid = ObjectId(user_id)
+    except:
+        return None
+        
+    result = await db["users"].find_one_and_update(
+        {"_id": oid},
+        {"$set": {"is_active": is_active}},
+        return_document=True
+    )
+    
+    if result:
+        return UserInDB(**result)
+    return None
+
+async def delete_user(db: AsyncIOMotorDatabase, user_id: str) -> bool:
+    try:
+        oid = ObjectId(user_id)
+    except:
+        return False
+        
+    result = await db["users"].delete_one({"_id": oid})
+    return result.deleted_count > 0

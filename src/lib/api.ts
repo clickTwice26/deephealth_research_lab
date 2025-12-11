@@ -64,8 +64,13 @@ export const api = {
     search: (query: string) => request<SearchResult[]>(`/search/?q=${encodeURIComponent(query)}`),
 
     // User Management
+    // User Management
     getUsers: () => request<User[]>('/users/'),
     updateUserRole: (userId: string, role: string) => request<User>(`/users/${userId}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
+    updateUserStatus: (userId: string, status: boolean) => request<User>(`/users/${userId}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
+    deleteUser: (userId: string) => request<any>(`/users/${userId}`, { method: 'DELETE' }),
+    impersonateUser: (userId: string) => request<{ access_token: string }>(`/users/${userId}/impersonate`, { method: 'POST' }),
+    sendUserEmail: (userId: string, subject: string, message: string) => request<any>(`/users/${userId}/email`, { method: 'POST', body: JSON.stringify({ subject, message }) }),
 
     // News
     getNews: (page = 1, size = 10, search = '') => request<NewsPagination>(`/news/?page=${page}&size=${size}&search=${search}`),
