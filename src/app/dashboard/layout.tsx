@@ -107,7 +107,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <nav className="space-y-2">
                             <SidebarLink icon={faChartLine} label="Dashboard" href="/dashboard" />
                             <SidebarLink icon={faFlask} label="Experiments" href="/dashboard/experiments" />
-                            <SidebarLink icon={faUser} label="Profile" href="/dashboard/profile" />
 
                             {/* Researcher & Admin Community */}
                             {((user.access_weight || 0) >= 50 || user.role === 'admin' || user.role === 'researcher') && (

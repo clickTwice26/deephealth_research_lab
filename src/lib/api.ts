@@ -239,6 +239,8 @@ export interface Job {
     application_link?: string;
     is_active: boolean;
     created_at: string;
+    posted_date: string;
+    deadline?: string;
 }
 
 export interface User {

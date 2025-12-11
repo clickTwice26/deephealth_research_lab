@@ -26,6 +26,8 @@ export default function PublicationsPage() {
     const [search, setSearch] = useState('');
     const [debouncedSearch] = useDebounce(search, 500);
 
+    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+
     // Other State
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -97,7 +99,7 @@ export default function PublicationsPage() {
         setDoi(item.doi);
         setUrl(item.url || '');
         setTags(item.tags.join(', '));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setIsFormModalOpen(true);
     };
 
     const cancelEdit = () => {
@@ -109,6 +111,7 @@ export default function PublicationsPage() {
         setDoi('');
         setUrl('');
         setTags('');
+        setIsFormModalOpen(false);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -129,10 +132,12 @@ export default function PublicationsPage() {
             if (editingId) {
                 await api.updatePublication(editingId, payload);
                 showModal('Success', 'Publication updated successfully!', 'success');
+                setIsFormModalOpen(false);
                 cancelEdit();
                 fetchPublications();
             } else {
                 await api.createPublication(payload);
+                setIsFormModalOpen(false);
                 cancelEdit();
                 showModal('Success', 'Publication added successfully!', 'success');
                 fetchPublications();
@@ -160,7 +165,7 @@ export default function PublicationsPage() {
     };
 
     return (
-        <div className="space-y-6 max-w-7xl mx-auto">
+        <div className="space-y-6 max-w-full mx-auto">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
@@ -173,289 +178,297 @@ export default function PublicationsPage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+            {/* Form Modal */}
+            <Modal
+                isOpen={isFormModalOpen}
+                onClose={() => {
+                    setIsFormModalOpen(false);
+                    cancelEdit();
+                }}
+                title={editingId ? 'Edit Publication' : 'Add New Publication'}
+                type="default"
+            >
+                <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto p-1">
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Title</label>
+                        <textarea
+                            required
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            rows={3}
+                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow resize-none"
+                            placeholder="Paper Title..."
+                        />
+                    </div>
 
-                {/* 1. Form Column */}
-                <div className="xl:col-span-1 order-2 xl:order-1">
-                    <motion.div
-                        layout
-                        className={`rounded-xl shadow-sm border p-6 sticky top-8 transition-colors ${editingId
-                                ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 ring-2 ring-blue-500/20'
-                                : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800'
-                            }`}
-                    >
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className={`text-lg font-bold flex items-center gap-2 ${editingId ? "text-blue-600 dark:text-blue-400" : "text-gray-900 dark:text-white"}`}>
-                                <FontAwesomeIcon icon={editingId ? faPen : faPlus} />
-                                {editingId ? 'Edit Publication' : 'Add New Publication'}
-                            </h2>
-                            {editingId && (
-                                <button onClick={cancelEdit} className="text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 hover:underline">
-                                    Cancel
-                                </button>
-                            )}
-                        </div>
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Authors</label>
+                        <input
+                            type="text"
+                            required
+                            value={authors}
+                            onChange={(e) => setAuthors(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
+                            placeholder="Author 1, Author 2, ..."
+                        />
+                    </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Title</label>
-                                <textarea
-                                    required
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    rows={3}
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow resize-none"
-                                    placeholder="Paper Title..."
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Authors</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={authors}
-                                    onChange={(e) => setAuthors(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-                                    placeholder="Author 1, Author 2, ..."
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Date</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={date}
-                                        onChange={(e) => setDate(e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Venue / Journal</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={journal}
-                                        onChange={(e) => setJournal(e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-                                        placeholder="e.g. NeurIPS"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">DOI</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={doi}
-                                    onChange={(e) => setDoi(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-                                    placeholder="10.1109/..."
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Link URL (Optional)</label>
-                                <input
-                                    type="url"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-                                    placeholder="https://..."
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tags (Comma Separated)</label>
-                                <input
-                                    type="text"
-                                    value={tags}
-                                    onChange={(e) => setTags(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-                                    placeholder="Journal, IEEE, AI"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className={`w-full py-3 text-white rounded-lg font-bold transition-all transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg ${editingId
-                                        ? "bg-blue-600 hover:bg-blue-700 shadow-blue-500/20"
-                                        : "bg-gray-900 hover:bg-black dark:bg-white dark:text-black dark:hover:bg-gray-200 shadow-gray-500/20"
-                                    }`}
-                            >
-                                {isSubmitting ? (
-                                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                                ) : (
-                                    <>
-                                        <FontAwesomeIcon icon={editingId ? faSave : faPlus} />
-                                        {editingId ? 'Save Changes' : 'Add Publication'}
-                                    </>
-                                )}
-                            </button>
-                        </form>
-                    </motion.div>
-                </div>
-
-                {/* 2. List Column */}
-                <div className="xl:col-span-2 order-1 xl:order-2 space-y-6">
-
-                    {/* Controls Bar */}
-                    <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
-                        <div className="relative w-full sm:w-auto flex-1 max-w-md">
-                            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Date</label>
                             <input
-                                type="text"
-                                placeholder="Search publications..."
-                                value={search}
-                                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-colors"
+                                type="date"
+                                required
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                             />
                         </div>
-                        <div className="flex items-center gap-3 w-full sm:w-auto justify-end text-sm text-gray-500">
-                            <span>Show:</span>
-                            <select
-                                value={size}
-                                onChange={(e) => { setSize(Number(e.target.value)); setPage(1); }}
-                                className="bg-gray-50 dark:bg-gray-800 border-none rounded-lg px-2 py-1 focus:ring-0 font-semibold cursor-pointer"
-                            >
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={20}>20</option>
-                            </select>
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Venue / Journal</label>
+                            <input
+                                type="text"
+                                required
+                                value={journal}
+                                onChange={(e) => setJournal(e.target.value)}
+                                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
+                                placeholder="e.g. NeurIPS"
+                            />
                         </div>
                     </div>
 
-                    {/* Content List */}
-                    <div className="space-y-4 min-h-[400px]">
-                        {isLoading ? (
-                            <div className="space-y-4">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="animate-pulse bg-white dark:bg-gray-900 rounded-xl p-6 h-40 border border-gray-100 dark:border-gray-800" />
-                                ))}
-                            </div>
-                        ) : publications.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 text-gray-500">
-                                <FontAwesomeIcon icon={faBook} className="text-4xl mb-4 opacity-20" />
-                                <p>No publications found.</p>
-                            </div>
-                        ) : (
-                            <AnimatePresence mode="popLayout">
-                                {publications.map((is_featured) => (
-                                    <motion.div
-                                        key={is_featured._id}
-                                        layout
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.98 }}
-                                        className={`bg-white dark:bg-gray-900 rounded-xl p-6 border shadow-sm hover:shadow-md transition-all group ${editingId === is_featured._id
-                                                ? 'border-blue-500 ring-1 ring-blue-500'
-                                                : 'border-gray-200 dark:border-gray-800'
-                                            }`}
-                                    >
-                                        <div className="flex flex-col gap-2">
-                                            {/* Header */}
-                                            <div className="flex items-start justify-between gap-4">
-                                                <div className="space-y-1">
-                                                    <div className="flex flex-wrap gap-2 mb-1">
-                                                        {is_featured.tags.map(tag => (
-                                                            <span key={tag} className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md">
-                                                                {tag}
-                                                            </span>
-                                                        ))}
-                                                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-md">
-                                                            {is_featured.journal}
-                                                        </span>
-                                                    </div>
-                                                    <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight">
-                                                        {is_featured.title}
-                                                    </h3>
-                                                </div>
-                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                                                    <button
-                                                        onClick={() => handleEdit(is_featured)}
-                                                        className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"
-                                                        title="Edit"
-                                                    >
-                                                        <FontAwesomeIcon icon={faPen} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(is_featured._id)}
-                                                        className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
-                                                        title="Delete"
-                                                    >
-                                                        <FontAwesomeIcon icon={faTrash} />
-                                                    </button>
-                                                </div>
-                                            </div>
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">DOI</label>
+                        <input
+                            type="text"
+                            required
+                            value={doi}
+                            onChange={(e) => setDoi(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
+                            placeholder="10.1109/..."
+                        />
+                    </div>
 
-                                            {/* Authors */}
-                                            <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                                <FontAwesomeIcon icon={faUser} className="mt-1 text-xs opacity-50" />
-                                                <p className="line-clamp-2">{is_featured.authors}</p>
-                                            </div>
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Link URL (Optional)</label>
+                        <input
+                            type="url"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
+                            placeholder="https://..."
+                        />
+                    </div>
 
-                                            {/* Footer */}
-                                            <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 border-t border-gray-100 dark:border-gray-800 pt-3">
-                                                <span>{new Date(is_featured.date).toLocaleDateString()}</span>
-                                                <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
-                                                <span className="font-mono">{is_featured.doi}</span>
-                                                {is_featured.url && (
-                                                    <>
-                                                        <span className="ml-auto flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
-                                                            <a href={is_featured.url} target="_blank" rel="noopener noreferrer">View Link</a>
-                                                            <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tags (Comma Separated)</label>
+                        <input
+                            type="text"
+                            value={tags}
+                            onChange={(e) => setTags(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
+                            placeholder="Journal, IEEE, AI"
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsFormModalOpen(false);
+                                cancelEdit();
+                            }}
+                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg font-medium transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className={`px-6 py-2 text-white rounded-lg font-bold transition-all transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg ${editingId
+                                ? "bg-blue-600 hover:bg-blue-700 shadow-blue-500/20"
+                                : "bg-gray-900 hover:bg-black dark:bg-white dark:text-black dark:hover:bg-gray-200 shadow-gray-500/20"
+                                }`}
+                        >
+                            {isSubmitting ? (
+                                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    <FontAwesomeIcon icon={editingId ? faSave : faPlus} />
+                                    {editingId ? 'Save Changes' : 'Add Publication'}
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+
+
+            {/* List Section */}
+            <div className="space-y-6">
+
+                {/* Controls Bar */}
+                <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+                    <div className="relative w-full sm:w-auto flex-1 max-w-md">
+                        <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search publications..."
+                            value={search}
+                            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-colors"
+                        />
+                    </div>
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end text-sm text-gray-500">
+                        <span>Show:</span>
+                        <select
+                            value={size}
+                            onChange={(e) => { setSize(Number(e.target.value)); setPage(1); }}
+                            className="bg-gray-50 dark:bg-gray-800 border-none rounded-lg px-2 py-1 focus:ring-0 font-semibold cursor-pointer"
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                        </select>
+                        <button
+                            onClick={() => {
+                                cancelEdit();
+                                setIsFormModalOpen(true);
+                            }}
+                            className="ml-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
+                        >
+                            <FontAwesomeIcon icon={faPlus} />
+                            <span className="hidden sm:inline">Add Publication</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Content List */}
+                <div className="space-y-4 min-h-[400px]">
+                    {isLoading ? (
+                        <div className="space-y-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="animate-pulse bg-white dark:bg-gray-900 rounded-xl p-6 h-40 border border-gray-100 dark:border-gray-800" />
+                            ))}
+                        </div>
+                    ) : publications.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 text-gray-500">
+                            <FontAwesomeIcon icon={faBook} className="text-4xl mb-4 opacity-20" />
+                            <p>No publications found.</p>
+                        </div>
+                    ) : (
+                        <AnimatePresence mode="popLayout">
+                            {publications.map((is_featured) => (
+                                <motion.div
+                                    key={is_featured._id}
+                                    layout
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    className={`bg-white dark:bg-gray-900 rounded-xl p-6 border shadow-sm hover:shadow-md transition-all group ${editingId === is_featured._id
+                                        ? 'border-blue-500 ring-1 ring-blue-500'
+                                        : 'border-gray-200 dark:border-gray-800'
+                                        }`}
+                                >
+                                    <div className="flex flex-col gap-2">
+                                        {/* Header */}
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="space-y-1">
+                                                <div className="flex flex-wrap gap-2 mb-1">
+                                                    {is_featured.tags.map(tag => (
+                                                        <span key={tag} className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md">
+                                                            {tag}
                                                         </span>
-                                                    </>
-                                                )}
+                                                    ))}
+                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-md">
+                                                        {is_featured.journal}
+                                                    </span>
+                                                </div>
+                                                <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight">
+                                                    {is_featured.title}
+                                                </h3>
+                                            </div>
+                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                                <button
+                                                    onClick={() => handleEdit(is_featured)}
+                                                    className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"
+                                                    title="Edit"
+                                                >
+                                                    <FontAwesomeIcon icon={faPen} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(is_featured._id)}
+                                                    className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
+                                                    title="Delete"
+                                                >
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
                                             </div>
                                         </div>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        )}
-                    </div>
 
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-6">
-                            <p className="text-sm text-gray-500">
-                                Showing <span className="font-bold text-gray-900 dark:text-white">{(page - 1) * size + 1}</span> to <span className="font-bold text-gray-900 dark:text-white">{Math.min(page * size, total)}</span> of <span className="font-bold text-gray-900 dark:text-white">{total}</span>
-                            </p>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                                    disabled={page === 1}
-                                    className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                >
-                                    <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
-                                </button>
-                                {[...Array(totalPages)].map((_, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => setPage(i + 1)}
-                                        className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${page === i + 1
-                                                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                                                : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
-                                            }`}
-                                    >
-                                        {i + 1}
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={page === totalPages}
-                                    className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                >
-                                    <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
-                                </button>
-                            </div>
-                        </div>
+                                        {/* Authors */}
+                                        <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                            <FontAwesomeIcon icon={faUser} className="mt-1 text-xs opacity-50" />
+                                            <p className="line-clamp-2">{is_featured.authors}</p>
+                                        </div>
+
+                                        {/* Footer */}
+                                        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 border-t border-gray-100 dark:border-gray-800 pt-3">
+                                            <span>{new Date(is_featured.date).toLocaleDateString()}</span>
+                                            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
+                                            <span className="font-mono">{is_featured.doi}</span>
+                                            {is_featured.url && (
+                                                <>
+                                                    <span className="ml-auto flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline">
+                                                        <a href={is_featured.url} target="_blank" rel="noopener noreferrer">View Link</a>
+                                                        <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     )}
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-6">
+                        <p className="text-sm text-gray-500">
+                            Showing <span className="font-bold text-gray-900 dark:text-white">{(page - 1) * size + 1}</span> to <span className="font-bold text-gray-900 dark:text-white">{Math.min(page * size, total)}</span> of <span className="font-bold text-gray-900 dark:text-white">{total}</span>
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            >
+                                <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
+                            </button>
+                            {[...Array(totalPages)].map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setPage(i + 1)}
+                                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${page === i + 1
+                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                                        : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
+                                        }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            >
+                                <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <Modal
