@@ -60,6 +60,7 @@ export const api = {
     getNotifications: () => request<Notification[]>('/notifications/'),
     markNotificationRead: (id: string) => request<Notification>(`/notifications/${id}/read`, { method: 'PUT' }),
     markAllNotificationsRead: () => request<boolean>('/notifications/read-all', { method: 'PUT' }),
+    sendAdminNotification: (data: AdminNotificationSend) => request<{ success: boolean; message: string; count: number }>('/notifications/admin/send', { method: 'POST', body: JSON.stringify(data) }),
 
     search: (query: string) => request<SearchResult[]>(`/search/?q=${encodeURIComponent(query)}`),
 
@@ -268,4 +269,17 @@ export interface Notification {
     type: 'info' | 'success' | 'warning' | 'error';
     is_read: boolean;
     created_at: string;
+    action_label?: string;
+    action_url?: string;
+}
+
+export interface AdminNotificationSend {
+    title: string;
+    message: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+    target_type: 'all' | 'role' | 'group' | 'user';
+    target_id?: string;
+    action_label?: string;
+    action_url?: string;
+    channels: ('in-app' | 'email')[];
 }

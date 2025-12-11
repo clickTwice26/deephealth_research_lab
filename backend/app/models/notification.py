@@ -15,6 +15,8 @@ class NotificationBase(BaseModel):
     message: str
     type: NotificationType = NotificationType.INFO
     is_read: bool = False
+    action_label: Optional[str] = None
+    action_url: Optional[str] = None
 
 class NotificationCreate(NotificationBase):
     user_id: str

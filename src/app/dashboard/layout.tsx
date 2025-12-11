@@ -18,8 +18,12 @@ import {
     faBook,
     faBriefcase,
     faUsers,
-    faUserFriends
+    faUserFriends,
+    faMoon,
+    faSun,
+    faPaperPlane
 } from '@fortawesome/free-solid-svg-icons';
+import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationsDropdown from '@/components/NotificationsDropdown';
 import GlobalSearch from '@/components/GlobalSearch';
@@ -31,6 +35,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const router = useRouter();
     const pathname = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         if (!isLoading && !user) {
@@ -65,7 +75,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
         <ToastProvider>
             <ImpersonationOverlay />
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors duration-300">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors duration-300 text-[13px]">
                 {/* Mobile Sidebar Overlay */}
                 <AnimatePresence>
                     {isSidebarOpen && (
@@ -98,7 +108,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <SidebarLink icon={faChartLine} label="Dashboard" href="/dashboard" />
                             <SidebarLink icon={faFlask} label="Experiments" href="/dashboard/experiments" />
                             <SidebarLink icon={faUser} label="Profile" href="/dashboard/profile" />
-                            <SidebarLink icon={faCog} label="Settings" href="/dashboard/settings" />
 
                             {/* Researcher & Admin Community */}
                             {((user.access_weight || 0) >= 50 || user.role === 'admin' || user.role === 'researcher') && (
@@ -114,6 +123,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
                                     <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Admin</p>
                                     <SidebarLink icon={faChartLine} label="Overview" href="/dashboard/admin" />
+                                    <SidebarLink icon={faPaperPlane} label="Notifications" href="/dashboard/admin/notifications" />
                                     <SidebarLink icon={faBullhorn} label="News / Content" href="/dashboard/news" />
                                     <SidebarLink icon={faBook} label="Publications" href="/dashboard/publications" />
                                     <SidebarLink icon={faBriefcase} label="Jobs / Careers" href="/dashboard/jobs" />
@@ -123,21 +133,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </nav>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 w-full p-6 border-t border-gray-200 dark:border-gray-800">
-                        <div className="flex items-center space-x-3 mb-6">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold">
+                    <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                        <Link href="/dashboard/profile" className="flex items-center space-x-3 mb-4 hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors group">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-blue-100 dark:group-hover:ring-blue-900 transition-all">
                                 {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
                             </div>
-                            <div className="overflow-hidden">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.full_name}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                            <div className="overflow-hidden flex-1">
+                                <p className="text-xs font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{user.full_name}</p>
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                             </div>
-                        </div>
+                            <FontAwesomeIcon icon={faCog} className="text-gray-400 group-hover:text-blue-500 transition-colors w-3 h-3" />
+                        </Link>
                         <button
                             onClick={logout}
-                            className="w-full flex items-center justify-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
+                            className="w-full flex items-center justify-center space-x-2 px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors text-xs font-medium"
                         >
-                            <FontAwesomeIcon icon={faSignOutAlt} />
+                            <FontAwesomeIcon icon={faSignOutAlt} className="w-3 h-3" />
                             <span>Sign Out</span>
                         </button>
                     </div>
@@ -158,6 +169,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </span>
                         <div className="w-8" /> {/* Spacer for balance */}
                         <div className="flex items-center gap-2">
+                            {mounted && (
+                                <button
+                                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} className="w-5 h-5" />
+                                </button>
+                            )}
                             <NotificationsDropdown />
                         </div>
                     </header>
@@ -171,6 +190,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <GlobalSearch />
                         </div>
                         <div className="flex items-center justify-end gap-4">
+                            {mounted && (
+                                <button
+                                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} className="w-5 h-5" />
+                                </button>
+                            )}
                             <div className="w-px h-6 bg-gray-200 dark:bg-gray-800 mx-2" />
                             <NotificationsDropdown />
                         </div>
