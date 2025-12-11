@@ -25,7 +25,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={containerRef} id="home" className="relative min-h-[calc(100vh-4rem)] flex items-start overflow-hidden bg-white dark:bg-gray-950 pt-28 lg:pt-24 pb-20 transition-colors duration-300">
+    <section ref={containerRef} id="home" className="relative min-h-[calc(100vh-4rem)] flex items-start overflow-hidden bg-white dark:bg-gray-950 pt-28 lg:pt-24 pb-20 transition-colors duration-300 scroll-mt-24">
       {/* Background Grid */}
       <div className="absolute inset-0 z-0">
         <GridPattern

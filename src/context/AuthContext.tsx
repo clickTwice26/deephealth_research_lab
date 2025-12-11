@@ -1,16 +1,8 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { api } from '@/lib/api';
+import { api, User } from '@/lib/api';
 import { useRouter } from 'next/navigation';
-
-interface User {
-    id: string; // or _id
-    email: string;
-    full_name?: string;
-    role: 'admin' | 'researcher' | 'member' | 'user';
-    is_active: boolean;
-}
 
 interface AuthContextType {
     user: User | null;
@@ -30,6 +22,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const fetchUser = async () => {
         try {
             const userData = await api.get<User>('/users/me');
+            if (!userData.id && userData._id) {
+                userData.id = userData._id;
+            }
             setUser(userData);
         } catch (error) {
             console.error('Failed to fetch user', error);

@@ -1,4 +1,6 @@
 from typing import Optional
+from datetime import datetime
+from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.security import get_password_hash, verify_password
 from app.models.user import UserCreate, UserInDB, UserRole, ROLE_WEIGHTS
@@ -48,3 +50,19 @@ async def get_multi_by_search(
     cursor = db["users"].find(mongo_query).limit(limit)
     users = await cursor.to_list(length=limit)
     return [UserInDB(**u) for u in users]
+
+async def update_user_role(db: AsyncIOMotorDatabase, user_id: str, role: str) -> Optional[UserInDB]:
+    try:
+        oid = ObjectId(user_id)
+    except:
+        return None
+        
+    result = await db["users"].find_one_and_update(
+        {"_id": oid},
+        {"$set": {"role": role}},
+        return_document=True
+    )
+    
+    if result:
+        return UserInDB(**result)
+    return None

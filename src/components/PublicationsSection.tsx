@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBook, faExternalLinkAlt, faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import { api, Publication } from '@/lib/api';
 
-const publications = [
+const MOCK_PUBLICATIONS = [
   {
     title: 'The Generative AI Landscape in Education: Mapping the Terrain of Opportunities, Challenges and Student Perception',
     authors: 'Ziehan Ahmed, Shakib Sadat Shanto, Mosi Khatun Mitu, Nafiz Fahad, Jakir Hossen, Md. Abdullah-Al-Jubair',
@@ -24,8 +26,36 @@ const publications = [
 ];
 
 export default function PublicationsSection() {
+  const [publications, setPublications] = useState<any[]>(MOCK_PUBLICATIONS);
+  const [isUsingMock, setIsUsingMock] = useState(true);
+
+  useEffect(() => {
+    const fetchPublications = async () => {
+      try {
+        const response = await api.getPublications(1, 5); // Fetch top 5
+        if (response && response.items && response.items.length > 0) {
+          const formatted = response.items.map(pub => ({
+            title: pub.title,
+            authors: pub.authors,
+            journal: pub.journal,
+            date: new Date(pub.date).toLocaleString('default', { month: 'long', year: 'numeric' }),
+            doi: pub.doi,
+            badges: pub.tags,
+            url: pub.url
+          }));
+          setPublications(formatted);
+          setIsUsingMock(false);
+        }
+      } catch (error) {
+        console.error('Failed to fetch publications:', error);
+      }
+    };
+
+    fetchPublications();
+  }, []);
+
   return (
-    <section id="publications" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
+    <section id="publications" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 scroll-mt-24">
       {/* Background */}
       <div className="absolute inset-0 bg-white dark:bg-gray-950 transition-colors duration-300" />
 
@@ -83,7 +113,7 @@ export default function PublicationsSection() {
                 <div className="flex-1">
                   {/* Badges */}
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {pub.badges.map((badge) => (
+                    {pub.badges.map((badge: string) => (
                       <span
                         key={badge}
                         className="px-3 py-1 text-xs font-semibold bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 rounded-full border border-cyan-200 dark:border-cyan-800"
@@ -113,10 +143,17 @@ export default function PublicationsSection() {
                   </div>
 
                   {/* Action Button */}
-                  <button className="px-6 py-2 bg-blue-600 hover:bg-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg font-semibold text-white transition-all flex items-center gap-2">
-                    <span>Full Article</span>
-                    <FontAwesomeIcon icon={faExternalLinkAlt} className="text-sm" />
-                  </button>
+                  {pub.url && (
+                    <a
+                      href={pub.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex px-6 py-2 bg-blue-600 hover:bg-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg font-semibold text-white transition-all items-center gap-2"
+                    >
+                      <span>Full Article</span>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} className="text-sm" />
+                    </a>
+                  )}
                 </div>
               </div>
             </motion.div>

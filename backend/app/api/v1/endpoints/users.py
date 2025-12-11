@@ -52,3 +52,22 @@ async def read_user_me(
     Get current user.
     """
     return current_user
+
+@router.put("/{user_id}/role", response_model=User)
+async def update_user_role(
+    user_id: str,
+    role: str = Body(..., embed=True),
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    current_user: User = Depends(deps.RoleChecker(required_weight=ROLE_WEIGHTS[UserRole.ADMIN])),
+) -> Any:
+    """
+    Update user role. Admin only.
+    """
+    if role not in [r.value for r in UserRole]:
+        raise HTTPException(status_code=400, detail="Invalid role")
+        
+    user = await crud_user.update_user_role(db, user_id=user_id, role=role)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    return user

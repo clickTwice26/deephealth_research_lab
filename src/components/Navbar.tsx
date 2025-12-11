@@ -4,7 +4,8 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrochip, faBars, faTimes, faFlask, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { faMicrochip, faBars, faTimes, faFlask, faSignInAlt, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -23,6 +24,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const pathname = usePathname(); // Added usePathname
+  const { user } = useAuth();
 
   const navOpacity = useTransform(scrollY, [0, 100], [0.7, 1]);
   const navBlur = useTransform(scrollY, [0, 100], [10, 20]);
@@ -101,16 +103,29 @@ export default function Navbar() {
 
                 <div className="ml-2 pl-2 border-l border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <ThemeToggle />
-                  <Link href="/login">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-blue-700 transition-colors shadow-lg shadow-gray-900/20"
-                    >
-                      <FontAwesomeIcon icon={faSignInAlt} className="text-blue-400 dark:text-white" />
-                      <span>Join Lab</span>
-                    </motion.button>
-                  </Link>
+                  {user ? (
+                    <Link href="/dashboard">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-blue-700 transition-colors shadow-lg shadow-gray-900/20"
+                      >
+                        <FontAwesomeIcon icon={faChartLine} className="text-blue-400 dark:text-white" />
+                        <span>Dashboard</span>
+                      </motion.button>
+                    </Link>
+                  ) : (
+                    <Link href="/login">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-blue-700 transition-colors shadow-lg shadow-gray-900/20"
+                      >
+                        <FontAwesomeIcon icon={faSignInAlt} className="text-blue-400 dark:text-white" />
+                        <span>Join Lab</span>
+                      </motion.button>
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
@@ -211,15 +226,27 @@ export default function Navbar() {
 
               {/* Sidebar Footer (Login Button) */}
               <div className="p-4 border-t border-gray-100 dark:border-gray-900 bg-gray-50/50 dark:bg-gray-900/50">
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all"
-                  >
-                    <FontAwesomeIcon icon={faSignInAlt} />
-                    <span>Join / Login</span>
-                  </motion.button>
-                </Link>
+                {user ? (
+                  <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all"
+                    >
+                      <FontAwesomeIcon icon={faChartLine} />
+                      <span>Dashboard</span>
+                    </motion.button>
+                  </Link>
+                ) : (
+                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all"
+                    >
+                      <FontAwesomeIcon icon={faSignInAlt} />
+                      <span>Join / Login</span>
+                    </motion.button>
+                  </Link>
+                )}
               </div>
 
             </motion.div>

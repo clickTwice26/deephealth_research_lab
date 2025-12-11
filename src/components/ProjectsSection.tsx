@@ -24,7 +24,7 @@ const projects = [
 
 export default function ProjectsSection() {
   return (
-    <section id="projects" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
+    <section id="projects" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 scroll-mt-24">
       {/* Background */}
       <div className="absolute inset-0 bg-white dark:bg-gray-950 transition-colors duration-300" />
 

@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { api, News } from '@/lib/api';
 
-const newsItems = [
+const MOCK_NEWS = [
   {
     date: '2025 October',
     title: 'Linguistic Bias with the Variance of Context Span',
@@ -20,26 +22,37 @@ const newsItems = [
     title: 'B-REASO: Multi-Level Multi-Faceted Bengali Evaluation Suite',
     description: 'Another Ranked Conference from DeepHealth Research Lab! Our paper "B-REASO: A Multi-Level Multi-Faceted Bengali Evaluation Suite for Foundation Models" has been accepted to EMNLP 2025 Findings!',
   },
-  {
-    date: '2025 July',
-    title: 'DeepHealth Lab is now officially registered',
-    description: 'DeepHealth Lab is now an officially registered Limited Liability Company (LLC) in the USA!',
-  },
-  {
-    date: '2025 July',
-    title: 'We are hiring!',
-    description: 'DeepHealth Lab is hiring! We have openings for a Research Assistant and a Research Intern—Application Closed.',
-  },
-  {
-    date: '2025 July',
-    title: 'Hybrid Self-Attentive Linearized Phrase Structured Transformer',
-    description: 'Our paper "A Hybrid Self-Attentive Linearized Phrase Structured Transformer Based RNN for Financial Sentence Analysis with Sentence-Level Explainability" has been officially accepted in Springer Nature - Scientific Reports.',
-  },
 ];
 
 export default function NewsSection() {
+  const [newsItems, setNewsItems] = useState<any[]>(MOCK_NEWS);
+  const [isUsingMock, setIsUsingMock] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await api.getNews(1, 100); // Get first 100 items for landing page
+        if (response && response.items && response.items.length > 0) {
+          // Formatting API data to match UI expected format
+          const formatted = response.items.map(item => ({
+            date: new Date(item.date).toLocaleString('default', { month: 'long', year: 'numeric' }),
+            title: item.title,
+            description: item.description,
+            cta_text: item.cta_text,
+            cta_link: item.cta_link
+          }));
+          setNewsItems(formatted);
+          setIsUsingMock(false);
+        }
+      } catch (error) {
+        console.error("Failed to load news, falling back to static content");
+      }
+    };
+    fetchNews();
+  }, []);
+
   return (
-    <section id="news" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
+    <section id="news" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 scroll-mt-24">
       {/* Background - Removed absolute div to let section bg handle it, or keep it if needed for layering */}
       {/* <div className="absolute inset-0 bg-white dark:bg-gray-950" />  <-- actually better to just put it on the section or update this div */}
       <div className="absolute inset-0 bg-white dark:bg-gray-950 transition-colors duration-300" />
@@ -98,9 +111,21 @@ export default function NewsSection() {
                         {item.title}
                       </h3>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
                       {item.description}
                     </p>
+
+                    {item.cta_text && item.cta_link && (
+                      <a
+                        href={item.cta_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors group/link"
+                      >
+                        {item.cta_text}
+                        <FontAwesomeIcon icon={faArrowRight} className="text-xs transition-transform group-hover/link:translate-x-1" />
+                      </a>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -111,3 +136,4 @@ export default function NewsSection() {
     </section>
   );
 }
+

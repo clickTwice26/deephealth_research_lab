@@ -84,7 +84,7 @@ const itemVariants = {
 
 export default function ResearchAreasSection() {
   return (
-    <section id="research" className="relative py-24 bg-white dark:bg-gray-950 overflow-hidden transition-colors duration-300">
+    <section id="research" className="relative py-24 bg-white dark:bg-gray-950 overflow-hidden transition-colors duration-300 scroll-mt-24">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50/50 dark:bg-blue-900/20 rounded-full blur-[100px] opacity-50 md:opacity-100" />
       <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-cyan-50/50 dark:bg-cyan-900/20 rounded-full blur-[100px] opacity-50 md:opacity-100" />

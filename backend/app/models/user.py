@@ -31,7 +31,10 @@ class UserUpdate(UserBase):
 
 class UserInDBBase(UserBase):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    access_weight: int = 1
+    
+    @property
+    def access_weight(self) -> int:
+        return ROLE_WEIGHTS.get(self.role, 0)
 
     class Config:
         populate_by_name = True

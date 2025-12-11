@@ -12,7 +12,13 @@ import {
     faFlask,
     faCog,
     faBars,
-    faTimes
+    faTimes,
+    faShieldAlt,
+    faBullhorn,
+    faBook,
+    faBriefcase,
+    faUsers,
+    faUserFriends
 } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationsDropdown from '@/components/NotificationsDropdown';
@@ -89,6 +95,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <SidebarLink icon={faFlask} label="Experiments" href="/dashboard/experiments" />
                         <SidebarLink icon={faUser} label="Profile" href="/dashboard/profile" />
                         <SidebarLink icon={faCog} label="Settings" href="/dashboard/settings" />
+
+                        {/* Researcher & Admin Community */}
+                        {((user.access_weight || 0) >= 50 || user.role === 'admin' || user.role === 'researcher') && (
+                            <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
+                                <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Community</p>
+                                <SidebarLink icon={faUsers} label="Researcher Feed" href="/dashboard/community" />
+                                <SidebarLink icon={faUserFriends} label="Research Groups" href="/dashboard/research-groups" />
+                            </div>
+                        )}
+
+                        {/* Admin Only Link */}
+                        {user.role === 'admin' && (
+                            <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
+                                <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Admin</p>
+                                <SidebarLink icon={faBullhorn} label="News / Content" href="/dashboard/news" />
+                                <SidebarLink icon={faBook} label="Publications" href="/dashboard/publications" />
+                                <SidebarLink icon={faBriefcase} label="Jobs / Careers" href="/dashboard/jobs" />
+                                <SidebarLink icon={faShieldAlt} label="User Management" href="/dashboard/users" />
+                            </div>
+                        )}
                     </nav>
                 </div>
 
