@@ -85,7 +85,7 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`relative px-4 py-2 text-sm font-medium transition-colors hover:text-blue-600 ${pathname === item.href ? 'text-gray-900 dark:text-white mb-0.5' : 'text-gray-600 dark:text-gray-300'
+                    className={`relative px-4 py-2 text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 ${pathname === item.href ? 'text-gray-900 dark:text-white mb-0.5' : 'text-gray-600 dark:text-gray-300'
                       }`}
                   >
                     {item.name}

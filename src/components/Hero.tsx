@@ -1,12 +1,13 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faPlayCircle } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import GridPattern from './GridPattern';
 import DashboardPreview from './DashboardPreview';
+import Scene3D from './Scene3D';
 
 import Shuffle from './Shuffle';
 
@@ -14,6 +15,14 @@ export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile(); // Initial check
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <section ref={containerRef} id="home" className="relative min-h-[calc(100vh-4rem)] flex items-start overflow-hidden bg-white dark:bg-gray-950 pt-28 lg:pt-24 pb-20 transition-colors duration-300">
@@ -26,6 +35,13 @@ export default function Hero() {
           y={-1}
           className="stroke-gray-200 dark:stroke-gray-800/50 [mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] dark:[mask-image:linear-gradient(to_bottom_right,black,transparent,transparent)]"
         />
+      </div>
+
+      {/* DNA Helix Background */}
+      <div className="absolute inset-0 z-0 opacity-5 md:opacity-40 dark:opacity-10 dark:md:opacity-60 pointer-events-none overflow-visible">
+        <div className="absolute right-[-20%] md:right-[-10%] top-[-10%] w-[140%] md:w-[50%] h-[120%] block">
+          <Scene3D isMobile={isMobile} />
+        </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
