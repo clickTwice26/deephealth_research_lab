@@ -25,14 +25,14 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="min-h-screen bg-white dark:bg-gray-950 flex flex-col transition-colors duration-300">
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col transition-colors duration-300">
             <Navbar />
 
             <div className="flex-grow flex items-center justify-center relative overflow-hidden px-4 py-20">
                 {/* Background Elements */}
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute top-[-20%] right-[-10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-[60px] md:blur-[100px] opacity-60" />
-                    <div className="absolute bottom-[-10%] left-[-10%] w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-cyan-50 dark:bg-cyan-900/10 rounded-full blur-[50px] md:blur-[80px] opacity-60" />
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-[100px] opacity-40 animate-pulse" style={{ animationDuration: '4s' }} />
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-400/20 rounded-full blur-[100px] opacity-40 animate-pulse" style={{ animationDuration: '5s' }} />
                 </div>
 
                 <motion.div
@@ -41,7 +41,7 @@ export default function LoginPage() {
                     transition={{ duration: 0.5 }}
                     className="relative z-10 w-full max-w-md"
                 >
-                    <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl overflow-hidden p-8 transition-colors duration-300">
+                    <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8 transition-colors duration-300">
                         <div className="text-center mb-8">
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h1>
                             <p className="text-gray-500 dark:text-gray-400">Sign in to access your research dashboard</p>
@@ -61,7 +61,7 @@ export default function LoginPage() {
                                 <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500">Or continue with</span>
+                                <span className="px-2 bg-transparent text-gray-400 dark:text-gray-500">Or continue with</span>
                             </div>
                         </div>
 
