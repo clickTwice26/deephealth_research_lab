@@ -39,7 +39,6 @@ export default function JobsPage() {
     const [type, setType] = useState('Full-time');
     const [description, setDescription] = useState('');
     const [requirements, setRequirements] = useState(''); // New line separated
-    const [applicationLink, setApplicationLink] = useState('');
     const [deadline, setDeadline] = useState('');
 
     // Modal State
@@ -97,7 +96,6 @@ export default function JobsPage() {
         setType(item.type);
         setDescription(item.description);
         setRequirements(item.requirements.join('\n'));
-        setApplicationLink(item.application_link || '');
         setDeadline(item.deadline ? new Date(item.deadline).toISOString().split('T')[0] : '');
         setIsFormModalOpen(true);
     };
@@ -110,7 +108,6 @@ export default function JobsPage() {
         setType('Full-time');
         setDescription('');
         setRequirements('');
-        setApplicationLink('');
         setDeadline('');
         setIsFormModalOpen(false);
     };
@@ -126,7 +123,6 @@ export default function JobsPage() {
                 type,
                 description,
                 requirements: requirements.split('\n').map(r => r.trim()).filter(Boolean),
-                application_link: applicationLink || undefined,
                 posted_date: new Date().toISOString(),
                 deadline: deadline ? new Date(deadline).toISOString() : undefined,
                 is_active: true
@@ -278,16 +274,7 @@ export default function JobsPage() {
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Application Link (Optional)</label>
-                        <input
-                            type="url"
-                            value={applicationLink}
-                            onChange={(e) => setApplicationLink(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
-                            placeholder="https://..."
-                        />
-                    </div>
+
 
                     <div className="flex justify-end gap-3 pt-4">
                         <button
@@ -432,23 +419,12 @@ export default function JobsPage() {
                                                     <FontAwesomeIcon icon={faTrash} /> Delete
                                                 </button>
                                             </div>
-                                            {item.application_link ? (
-                                                <a
-                                                    href={item.application_link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="ml-auto lg:ml-0 px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
-                                                >
-                                                    View Application
-                                                </a>
-                                            ) : (
-                                                <button
-                                                    disabled
-                                                    className="ml-auto lg:ml-0 px-4 py-2 text-sm font-bold text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg cursor-not-allowed bg-gray-50 dark:bg-gray-800"
-                                                >
-                                                    No Link
-                                                </button>
-                                            )}
+                                            <button
+                                                onClick={() => router.push(`/dashboard/jobs/${item._id}/applicants`)}
+                                                className="ml-auto lg:ml-0 px-4 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                            >
+                                                View Applicants
+                                            </button>
                                         </div>
                                     </div>
                                 </motion.div>

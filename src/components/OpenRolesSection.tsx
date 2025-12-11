@@ -127,23 +127,12 @@ export default function OpenRolesSection() {
 
                             {/* Actions */}
                             <div className="flex items-center gap-4 mt-auto pt-6 border-t border-gray-100 dark:border-gray-800">
-                                {job.application_link ? (
-                                    <a
-                                        href={job.application_link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="px-5 py-2.5 bg-white dark:bg-white text-gray-900 dark:text-black font-bold rounded-lg hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors text-sm"
-                                    >
-                                        Apply for this role
-                                    </a>
-                                ) : (
-                                    <a
-                                        href="mailto:careers@deephealth.lab"
-                                        className="px-5 py-2.5 bg-white dark:bg-white text-gray-900 dark:text-black font-bold rounded-lg hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors text-sm"
-                                    >
-                                        Apply via Email
-                                    </a>
-                                )}
+                                <a
+                                    href={`/jobs/${job._id}/apply`}
+                                    className="px-5 py-2.5 bg-white dark:bg-white text-gray-900 dark:text-black font-bold rounded-lg hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors text-sm"
+                                >
+                                    Apply Now
+                                </a>
 
                                 <a
                                     href="mailto:contact@deephealth.lab"
