@@ -5,18 +5,38 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { faEnvelope, faLock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { login } = useAuth();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement actual login logic
-        console.log('Login attempt:', { email, password });
+        setError('');
+        setIsLoading(true);
+
+        try {
+            // OAuth2PasswordRequestForm expects username and password
+            const formData = new URLSearchParams();
+            formData.append('username', email);
+            formData.append('password', password);
+
+            const data = await api.post<{ access_token: string }>('/auth/login/access-token', formData);
+            await login(data.access_token);
+        } catch (err: any) {
+            console.error('Login failed', err);
+            setError(err.message || 'Invalid email or password');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleGoogleLogin = () => {
@@ -66,6 +86,12 @@ export default function LoginPage() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {error && (
+                                <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-lg">
+                                    {error}
+                                </div>
+                            )}
+
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Email Address</label>
                                 <div className="relative group">
@@ -118,10 +144,17 @@ export default function LoginPage() {
 
                             <button
                                 type="submit"
-                                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2"
+                                disabled={isLoading}
+                                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                <span>Sign In</span>
-                                <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
+                                {isLoading ? (
+                                    <FontAwesomeIcon icon={faSpinner} spin />
+                                ) : (
+                                    <>
+                                        <span>Sign In</span>
+                                        <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
+                                    </>
+                                )}
                             </button>
                         </form>
 

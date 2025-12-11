@@ -27,4 +27,24 @@ async def authenticate(db: AsyncIOMotorDatabase, email: str, password: str) -> O
         return None
     if not verify_password(password, user.hashed_password):
         return None
+    if not verify_password(password, user.hashed_password):
+        return None
     return user
+
+async def get_multi_by_search(
+    db: AsyncIOMotorDatabase, 
+    query: str, 
+    limit: int = 10
+) -> list[UserInDB]:
+    # Case-insensitive regex search
+    regex_query = {"$regex": query, "$options": "i"}
+    mongo_query = {
+        "$or": [
+            {"full_name": regex_query},
+            {"email": regex_query}
+        ]
+    }
+    
+    cursor = db["users"].find(mongo_query).limit(limit)
+    users = await cursor.to_list(length=limit)
+    return [UserInDB(**u) for u in users]

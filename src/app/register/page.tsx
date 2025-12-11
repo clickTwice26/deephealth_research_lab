@@ -2,23 +2,50 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { faEnvelope, faLock, faUser, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faUser, faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { api } from '@/lib/api';
 
 export default function RegisterPage() {
+    const router = useRouter();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement registration logic
-        console.log('Register attempt:', { name, email, password });
+        setError('');
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            await api.post('/auth/signup', {
+                email,
+                password,
+                full_name: name,
+                role: 'user' // Default to user
+            });
+            // Redirect to login on success
+            router.push('/login');
+        } catch (err: any) {
+            console.error('Registration failed', err);
+            setError(err.message || 'Registration failed');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleGoogleRegister = () => {
@@ -68,6 +95,11 @@ export default function RegisterPage() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {error && (
+                                <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-lg">
+                                    {error}
+                                </div>
+                            )}
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Full Name</label>
                                 <div className="relative group">
@@ -140,10 +172,17 @@ export default function RegisterPage() {
                             <div className="pt-2">
                                 <button
                                     type="submit"
-                                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2"
+                                    disabled={isLoading}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
-                                    <span>Create Account</span>
-                                    <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
+                                    {isLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin />
+                                    ) : (
+                                        <>
+                                            <span>Create Account</span>
+                                            <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </form>
