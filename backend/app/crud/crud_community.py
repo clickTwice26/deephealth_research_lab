@@ -13,8 +13,9 @@ async def create_post(db: AsyncIOMotorDatabase, post: CommunityPostCreate, autho
     post_data["comments"] = []
     
     result = await db["community_posts"].insert_one(post_data)
-    created_post = await db["community_posts"].find_one({"_id": result.inserted_id})
-    return CommunityPost(**created_post)
+    # created_post = await db["community_posts"].find_one({"_id": result.inserted_id})
+    # return CommunityPost(**created_post)
+    return await get_post_with_author(db, str(result.inserted_id))
 
 async def get_posts_with_authors(
     db: AsyncIOMotorDatabase, 

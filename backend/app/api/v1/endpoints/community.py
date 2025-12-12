@@ -60,6 +60,7 @@ async def read_post(
     post = await crud_community.get_post_with_author(db, post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+    print(f"DEBUG COMMENTS for {post_id}: {post.get('comments')}")
     return post
 
 @router.post("/", response_model=CommunityPost)

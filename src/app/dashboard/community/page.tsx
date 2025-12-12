@@ -255,6 +255,12 @@ export default function CommunityPage() {
         try {
             const updatedPost = await api.commentPost(postId, content, parentId);
             setPosts(prev => prev.map(p => p._id === postId ? updatedPost : p));
+
+            // Also update selectedPost if it's the one we're editing
+            if (selectedPost && selectedPost._id === postId) {
+                setSelectedPost(updatedPost);
+            }
+
             setCommentInputs(prev => ({ ...prev, [inputKey]: '' }));
             if (parentId) setReplyingTo(null); // Close reply box
         } catch (error) {
@@ -367,13 +373,13 @@ export default function CommunityPage() {
     if (!canAccess) return null;
 
     return (
-        <div className="max-w-7xl mx-auto pb-20 px-4">
+        <div className="w-full pb-20 px-4 lg:px-8">
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left Column - Feed (8 cols) */}
                 <div className="lg:col-span-8 space-y-6">
                     {/* Header Area */}
-                    <div className="py-4">
+                    <div className="pb-4 pt-1">
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Community Feed</h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Collaborate with fellow researchers</p>
                     </div>
@@ -574,42 +580,6 @@ export default function CommunityPage() {
                 <div className="lg:col-span-4 space-y-6">
                     {/* Active Users Widget */}
                     <ActiveUsersWidget />
-
-                    {/* Community Guidelines */}
-                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sticky top-4">
-                        <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500" />
-                            Guidelines
-                        </h3>
-                        <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
-                            {[
-                                'Be respectful and professional.',
-                                'Share research-relevant content.',
-                                'No confidential patient data.',
-                                'Engage constructively with peers.'
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-start gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Trending Topics (Placeholder) */}
-                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6">
-                        <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <FontAwesomeIcon icon={faBolt} className="text-yellow-500" />
-                            Trending Topics
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['#Genomics', '#AI_Research', '#ClinicalTrials', '#DeepLearning', '#LabLife'].map(tag => (
-                                <span key={tag} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full text-xs font-medium cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
 
                     {/* Footer Info */}
                     <div className="text-xs text-gray-400 text-center">

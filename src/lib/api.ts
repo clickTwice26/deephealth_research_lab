@@ -4,6 +4,23 @@ interface FetchOptions extends RequestInit {
     headers?: Record<string, string>;
 }
 
+export interface LoginCredentials {
+    username: string;
+    password: string;
+}
+
+export interface AuthResponse {
+    access_token: string;
+    token_type: string;
+}
+
+export interface RegisterData {
+    email: string;
+    password: string;
+    full_name: string;
+    role?: string;
+}
+
 class ApiError extends Error {
     constructor(public status: number, public message: string, public data?: any) {
         super(message);
@@ -83,6 +100,12 @@ export const api = {
     updateNews: (id: string, news: any) => request<News>(`/news/${id}`, { method: 'PUT', body: JSON.stringify(news) }),
     deleteNews: (id: string) => request<boolean>(`/news/${id}`, { method: 'DELETE' }),
 
+    // Auth
+    login: (credentials: LoginCredentials) => request<AuthResponse>('/auth/login/access-token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(credentials as any).toString() }),
+    sendOTP: (email: string) => request<{ message: string }>('/auth/send-otp', { method: 'POST', body: JSON.stringify({ email }) }),
+    signup: (data: RegisterData & { otp: string }) => request<User>('/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
+    loginGoogle: (token: string) => request<AuthResponse>(`/auth/login/google?token=${token}`, { method: 'POST' }),
+
     // Publications
     getPublications: (page = 1, size = 10, search = '') => request<PublicationPagination>(`/publications/?page=${page}&size=${size}&search=${search}`),
     createPublication: (pub: any) => request<Publication>('/publications/', { method: 'POST', body: JSON.stringify(pub) }),
@@ -113,6 +136,8 @@ export const api = {
         getMessages: (groupId: string) => request<ChatMessage[]>(`/research-groups/${groupId}/messages`),
         updateMemberRole: (groupId: string, userId: string, role: string) => request<ResearchGroup>(`/research-groups/${groupId}/members/${userId}/role?role=${role}`, { method: 'PUT' }),
         removeMember: (groupId: string, userId: string) => request<ResearchGroup>(`/research-groups/${groupId}/members/${userId}`, { method: 'DELETE' }),
+        markRead: (groupId: string) => request<{ success: boolean }>(`/research-groups/${groupId}/read`, { method: 'POST' }),
+        getUnreadCount: () => request<{ count: number }>('/research-groups/my/unread-count'),
     },
 };
 

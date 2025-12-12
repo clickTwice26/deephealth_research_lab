@@ -28,6 +28,9 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class UserSignup(UserCreate):
+    otp: str
+
 class UserUpdate(UserBase):
     password: Optional[str] = None
 

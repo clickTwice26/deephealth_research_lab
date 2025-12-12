@@ -73,6 +73,8 @@ export default function GroupDetailPage() {
                 const payload = JSON.parse(event.data);
                 if (payload.type === 'message') {
                     setMessages(prev => [...prev, payload.data]);
+                    // Mark read when receiving message in active window
+                    api.researchGroups.markRead(groupId).catch(console.error);
                 } else if (payload.type === 'status') {
                     setOnlineUserIds(payload.online_users);
                 }
@@ -83,6 +85,13 @@ export default function GroupDetailPage() {
 
         return () => ws.close();
     }, [groupId, loading, group]);
+
+    // Mark read on initial load
+    useEffect(() => {
+        if (groupId) {
+            api.researchGroups.markRead(groupId).catch(console.error);
+        }
+    }, [groupId]);
 
     const sendMessage = (content: string) => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {

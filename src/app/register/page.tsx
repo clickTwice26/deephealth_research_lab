@@ -17,8 +17,32 @@ export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [otp, setOtp] = useState('');
+
+    // State machine: 'initial' -> 'otp_sent' -> 'submitting'
+    const [step, setStep] = useState<'initial' | 'otp_sent'>('initial');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const handleSendOTP = async () => {
+        if (!email) {
+            setError('Please enter a valid email address');
+            return;
+        }
+
+        setError('');
+        setIsLoading(true);
+
+        try {
+            await api.sendOTP(email);
+            setStep('otp_sent');
+        } catch (err: any) {
+            console.error('Failed to send OTP', err);
+            setError(err.message || 'Failed to send verification code. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,6 +53,16 @@ export default function RegisterPage() {
             return;
         }
 
+        if (step === 'initial') {
+            await handleSendOTP();
+            return;
+        }
+
+        if (!otp || otp.length !== 6) {
+            setError('Please enter the 6-digit verification code sent to your email');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -36,6 +70,7 @@ export default function RegisterPage() {
                 email,
                 password,
                 full_name: name,
+                otp,
                 role: 'user' // Default to user
             });
             // Redirect to login on success
@@ -100,6 +135,8 @@ export default function RegisterPage() {
                                     {error}
                                 </div>
                             )}
+
+                            {/* Initial Step Fields */}
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Full Name</label>
                                 <div className="relative group">
@@ -111,7 +148,8 @@ export default function RegisterPage() {
                                         required
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                        disabled={step === 'otp_sent'}
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:opacity-60"
                                         placeholder="John Doe"
                                     />
                                 </div>
@@ -128,7 +166,8 @@ export default function RegisterPage() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                        disabled={step === 'otp_sent'}
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:opacity-60"
                                         placeholder="researcher@institute.edu"
                                     />
                                 </div>
@@ -146,7 +185,8 @@ export default function RegisterPage() {
                                             required
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                            disabled={step === 'otp_sent'}
+                                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:opacity-60"
                                             placeholder="••••••••"
                                         />
                                     </div>
@@ -162,12 +202,35 @@ export default function RegisterPage() {
                                             required
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                            disabled={step === 'otp_sent'}
+                                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:opacity-60"
                                             placeholder="••••••••"
                                         />
                                     </div>
                                 </div>
                             </div>
+                            {/* OTP Step */}
+                            {step === 'otp_sent' && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="space-y-1"
+                                >
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Verification Code</label>
+                                    <p className="text-xs text-gray-500 mb-2">We sent a 6-digit code to {email}</p>
+                                    <div className="relative group">
+                                        <input
+                                            type="text"
+                                            required
+                                            maxLength={6}
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                                            className="block w-full px-3 py-3 border border-blue-300 dark:border-blue-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-center text-xl tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all"
+                                            placeholder="000000"
+                                        />
+                                    </div>
+                                </motion.div>
+                            )}
 
                             <div className="pt-2">
                                 <button
@@ -179,11 +242,20 @@ export default function RegisterPage() {
                                         <FontAwesomeIcon icon={faSpinner} spin />
                                     ) : (
                                         <>
-                                            <span>Create Account</span>
+                                            <span>{step === 'initial' ? 'Send Verification Code' : 'Verify & Create Account'}</span>
                                             <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
                                         </>
                                     )}
                                 </button>
+                                {step === 'otp_sent' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setStep('initial')}
+                                        className="w-full mt-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline"
+                                    >
+                                        Change Email
+                                    </button>
+                                )}
                             </div>
                         </form>
 

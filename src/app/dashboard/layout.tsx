@@ -30,6 +30,7 @@ import GlobalSearch from '@/components/GlobalSearch';
 import { ToastProvider } from '@/components/Toast';
 import ImpersonationOverlay from '@/components/ImpersonationOverlay';
 import { useHeartbeat } from '@/hooks/useHeartbeat';
+import { api, Notification } from '@/lib/api';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, isLoading, logout } = useAuth();
@@ -38,6 +39,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
+    const [unreadGroupMessages, setUnreadGroupMessages] = useState(0);
 
     // Enable heartbeat for online status tracking
     useHeartbeat();
@@ -52,6 +55,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
     }, [user, isLoading, router]);
 
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchData = async () => {
+            try {
+                // Notifications
+                const notes = await api.getNotifications();
+                const unreadNotes = notes.filter((n: Notification) => !n.is_read).length;
+                setUnreadNotifications(unreadNotes);
+
+                // Group Messages
+                const groupData = await api.researchGroups.getUnreadCount();
+                setUnreadGroupMessages(groupData.count);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        fetchData();
+        const interval = setInterval(fetchData, 30000); // Poll every 30s
+        return () => clearInterval(interval);
+    }, [user]);
+
     if (isLoading || !user) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
@@ -62,16 +88,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-    const SidebarLink = ({ icon, label, href }: { icon: any, label: string, href: string }) => {
+    const SidebarLink = ({ icon, label, href, badge }: { icon: any, label: string, href: string, badge?: number }) => {
         const isActive = pathname === href;
         return (
             <Link
                 href={href}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                 onClick={() => setIsSidebarOpen(false)}
             >
-                <FontAwesomeIcon icon={icon} className="w-5 h-5" />
-                <span className="font-medium">{label}</span>
+                <div className="flex items-center space-x-3">
+                    <FontAwesomeIcon icon={icon} className="w-5 h-5" />
+                    <span className="font-medium">{label}</span>
+                </div>
+                {badge !== undefined && badge > 0 && (
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200' : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'}`}>
+                        {badge > 99 ? '99+' : badge}
+                    </span>
+                )}
             </Link>
         );
     };
@@ -117,7 +150,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
                                     <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Community</p>
                                     <SidebarLink icon={faUsers} label="Researcher Feed" href="/dashboard/community" />
-                                    <SidebarLink icon={faUserFriends} label="Research Groups" href="/dashboard/research-groups" />
+                                    <SidebarLink icon={faUserFriends} label="Research Groups" href="/dashboard/research-groups" badge={unreadGroupMessages} />
                                 </div>
                             )}
 
@@ -126,7 +159,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
                                     <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Admin</p>
                                     <SidebarLink icon={faChartLine} label="Overview" href="/dashboard/admin" />
-                                    <SidebarLink icon={faPaperPlane} label="Notifications" href="/dashboard/admin/notifications" />
+                                    <SidebarLink icon={faPaperPlane} label="Notifications" href="/dashboard/admin/notifications" badge={unreadNotifications} />
                                     <SidebarLink icon={faBullhorn} label="News / Content" href="/dashboard/news" />
                                     <SidebarLink icon={faBook} label="Publications" href="/dashboard/publications" />
                                     <SidebarLink icon={faBriefcase} label="Jobs / Careers" href="/dashboard/jobs" />

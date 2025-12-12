@@ -29,6 +29,8 @@ class CommunityPost(CommunityPostBase):
     # Virtual fields for aggregation results
     comments_count: int = 0
     author_details: Optional[dict] = None 
+    author_name: Optional[str] = None
+    author_email: Optional[str] = None 
 
     class Config:
         populate_by_name = True

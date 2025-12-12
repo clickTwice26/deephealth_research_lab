@@ -12,6 +12,7 @@ class GroupMember(BaseModel):
     user_id: str
     role: GroupRole = GroupRole.MEMBER
     joined_at: datetime = Field(default_factory=datetime.utcnow)
+    last_read_at: datetime = Field(default_factory=datetime.utcnow)
 
 class GroupMemberDetail(GroupMember):
     name: str

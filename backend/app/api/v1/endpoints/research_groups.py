@@ -354,6 +354,60 @@ async def get_messages(
     messages = await cursor.to_list(length=limit)
     return [ChatMessage(**m) for m in messages][::-1]
 
+@router.post("/{group_id}/read")
+async def mark_messages_read(
+    group_id: str,
+    current_user: User = Depends(deps.get_current_active_user),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    try:
+        oid = ObjectId(group_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid ID")
+        
+    group = await db["research_groups"].find_one({"_id": oid})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+        
+    # Update member's last_read_at
+    result = await db["research_groups"].update_one(
+        {"_id": oid, "members.user_id": str(current_user.id)},
+        {"$set": {"members.$.last_read_at": datetime.utcnow()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=403, detail="Not a member or group not found")
+        
+    return {"success": True}
+
+@router.get("/my/unread-count")
+async def get_total_unread_count(
+    current_user: User = Depends(deps.get_current_active_user),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    # Find all groups user is part of
+    user_id = str(current_user.id)
+    groups = await db["research_groups"].find({"members.user_id": user_id}).to_list(None)
+    
+    total_unread = 0
+    
+    for group in groups:
+        # Find user's last read time
+        member = next((m for m in group["members"] if m["user_id"] == user_id), None)
+        if not member: 
+            continue
+            
+        last_read = member.get("last_read_at") or member.get("joined_at") or datetime.min
+        
+        # Count messages after this time
+        count = await db["chat_messages"].count_documents({
+            "group_id": str(group["_id"]),
+            "timestamp": {"$gt": last_read}
+        })
+        total_unread += count
+        
+    return {"count": total_unread}
+
 @router.websocket("/{group_id}/ws")
 async def websocket_endpoint(
     websocket: WebSocket,
