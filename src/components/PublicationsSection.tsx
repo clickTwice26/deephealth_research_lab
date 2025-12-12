@@ -63,7 +63,7 @@ export default function PublicationsSection() {
       <div className="absolute top-40 left-10 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-40 right-10 w-96 h-96 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-16 2xl:px-24">
         {/* Section Header */}
         <motion.div
           className="flex flex-col md:flex-row md:items-center md:justify-between mb-10"
@@ -90,8 +90,8 @@ export default function PublicationsSection() {
           </motion.button>
         </motion.div>
 
-        {/* Publications List */}
-        <div className="space-y-8">
+        {/* Publications List - Constrained width */}
+        <div className="space-y-8 max-w-6xl mx-auto">
           {publications.map((pub, index) => (
             <motion.div
               key={index}

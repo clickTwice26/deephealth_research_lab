@@ -89,7 +89,7 @@ export default function ResearchAreasSection() {
       <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50/50 dark:bg-blue-900/20 rounded-full blur-[100px] opacity-50 md:opacity-100" />
       <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-cyan-50/50 dark:bg-cyan-900/20 rounded-full blur-[100px] opacity-50 md:opacity-100" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-16 2xl:px-24">
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
@@ -109,7 +109,7 @@ export default function ResearchAreasSection() {
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 2xl:gap-10"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"

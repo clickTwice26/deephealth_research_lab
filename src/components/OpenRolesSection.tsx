@@ -30,7 +30,7 @@ export default function OpenRolesSection() {
 
     return (
         <section id="careers" className="relative py-20 bg-gray-50 dark:bg-black transition-colors duration-300">
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative z-10 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-16 2xl:px-24">
 
                 {/* Header */}
                 <div className="mb-12">
@@ -43,7 +43,7 @@ export default function OpenRolesSection() {
                 </div>
 
                 {/* Jobs Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 2xl:gap-8">
                     {jobs.map((job, index) => (
                         <motion.div
                             key={job._id}

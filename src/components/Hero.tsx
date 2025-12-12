@@ -39,13 +39,13 @@ export default function Hero() {
 
       {/* DNA Helix Background */}
       <div className="absolute inset-0 z-0 opacity-5 md:opacity-40 dark:opacity-10 dark:md:opacity-60 pointer-events-none overflow-visible">
-        <div className="absolute right-[-20%] md:right-[-10%] top-[-10%] w-[140%] md:w-[50%] h-[120%] block">
+        <div className="absolute right-[-20%] md:right-[-10%] 2xl:right-[0%] top-[-10%] w-[140%] md:w-[50%] 2xl:w-[45%] h-[120%] block">
           <Scene3D isMobile={isMobile} />
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-16 2xl:px-24 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 2xl:gap-32">
 
           {/* Left Content */}
           <motion.div

@@ -61,7 +61,7 @@ export default function NewsSection() {
       <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-72 h-72 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-16 2xl:px-24">
         {/* Section Header */}
         <motion.div
           className="text-center mb-12"
@@ -101,7 +101,7 @@ export default function NewsSection() {
                   </div>
 
                   {/* Content Card */}
-                  <div className="flex-1 glass-strong rounded-xl p-6 border border-blue-500/20 dark:border-blue-500/10 hover:border-blue-500/40 dark:hover:border-blue-500/30 transition-all group">
+                  <div className="flex-1 max-w-5xl glass-strong rounded-xl p-6 border border-blue-500/20 dark:border-blue-500/10 hover:border-blue-500/40 dark:hover:border-blue-500/30 transition-all group">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
                       <span className="text-cyan-600 dark:text-cyan-400 font-semibold text-sm">
                         {item.date}

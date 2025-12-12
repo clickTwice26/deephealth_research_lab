@@ -376,6 +376,10 @@ async def mark_messages_read(
     )
     
     if result.matched_count == 0:
+        # If not matched, it could be because user is not a member.
+        # If user is admin (and group exists), just ignore and return success.
+        if current_user.role == UserRole.ADMIN:
+             return {"success": True}
         raise HTTPException(status_code=403, detail="Not a member or group not found")
         
     return {"success": True}
