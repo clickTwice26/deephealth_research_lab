@@ -75,7 +75,7 @@ export default function AdminNotificationsPage() {
     if (authLoading || !user) return <div className="p-8">Loading...</div>;
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
                 <FontAwesomeIcon icon={faPaperPlane} className="text-blue-500" />
                 Send Notifications
