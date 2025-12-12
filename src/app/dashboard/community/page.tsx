@@ -7,6 +7,7 @@ import { api, CommunityPost, Comment } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faComment, faPaperPlane, faUserCircle, faGlobeAmericas, faFire, faClock, faUser, faInfoCircle, faHashtag, faBolt } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
+import ActiveUsersWidget from '@/components/ActiveUsersWidget';
 
 // Recursive Comment Tree Builder
 interface CommentNode extends Comment {
@@ -571,6 +572,9 @@ export default function CommunityPage() {
 
                 {/* Right Column - Sidebar (4 cols) */}
                 <div className="lg:col-span-4 space-y-6">
+                    {/* Active Users Widget */}
+                    <ActiveUsersWidget />
+
                     {/* Community Guidelines */}
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sticky top-4">
                         <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">

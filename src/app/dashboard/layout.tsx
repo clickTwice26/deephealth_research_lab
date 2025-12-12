@@ -29,6 +29,7 @@ import NotificationsDropdown from '@/components/NotificationsDropdown';
 import GlobalSearch from '@/components/GlobalSearch';
 import { ToastProvider } from '@/components/Toast';
 import ImpersonationOverlay from '@/components/ImpersonationOverlay';
+import { useHeartbeat } from '@/hooks/useHeartbeat';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, isLoading, logout } = useAuth();
@@ -37,6 +38,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+
+    // Enable heartbeat for online status tracking
+    useHeartbeat();
 
     useEffect(() => {
         setMounted(true);

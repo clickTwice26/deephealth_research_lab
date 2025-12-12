@@ -73,6 +73,10 @@ export const api = {
     impersonateUser: (userId: string) => request<{ access_token: string }>(`/users/${userId}/impersonate`, { method: 'POST' }),
     sendUserEmail: (userId: string, subject: string, message: string) => request<any>(`/users/${userId}/email`, { method: 'POST', body: JSON.stringify({ subject, message }) }),
 
+    // Live Users
+    sendHeartbeat: () => request<any>('/users/heartbeat', { method: 'POST' }),
+    getLiveUsers: () => request<{ id: string; name: string; email: string; role: string; last_active: string; status: 'online' | 'offline' }[]>('/users/live'),
+
     // News
     getNews: (page = 1, size = 10, search = '') => request<NewsPagination>(`/news/?page=${page}&size=${size}&search=${search}`),
     createNews: (news: any) => request<News>('/news/', { method: 'POST', body: JSON.stringify(news) }),

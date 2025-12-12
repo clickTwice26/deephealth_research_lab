@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlask } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
+import ActiveUsersWidget from '@/components/ActiveUsersWidget';
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -23,7 +24,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 {[
                     { label: 'Active Projects', value: '12', color: 'from-blue-500 to-cyan-500' },
                     { label: 'Total Experiments', value: '148', color: 'from-purple-500 to-pink-500' },
@@ -42,6 +43,16 @@ export default function DashboardPage() {
                         </div>
                     </motion.div>
                 ))}
+
+                {/* Active Users Widget */}
+                <div className="hidden xl:block">
+                    <ActiveUsersWidget />
+                </div>
+            </div>
+
+            {/* Active Users Widget (Mobile/Tablet) */}
+            <div className="xl:hidden mb-8">
+                <ActiveUsersWidget />
             </div>
 
             {/* Placeholder Content Area */}

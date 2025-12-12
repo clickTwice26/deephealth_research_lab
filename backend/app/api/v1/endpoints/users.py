@@ -167,3 +167,48 @@ async def email_user(
         raise HTTPException(status_code=500, detail="Failed to send email")
         
     return {"status": "success", "message": "Email sent"}
+
+from datetime import datetime, timedelta
+
+@router.post("/heartbeat", response_model=Any)
+async def heartbeat(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Update user's last_active_at timestamp.
+    """
+    from bson import ObjectId
+    await db["users"].update_one(
+        {"_id": ObjectId(current_user.id)},
+        {"$set": {"last_active_at": datetime.utcnow()}}
+    )
+    return {"status": "success"}
+
+@router.get("/live", response_model=List[Any])
+async def get_live_users(
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get list of currently active users (active in last 2 minutes).
+    """
+    # 2 minutes ago
+    threshold = datetime.utcnow() - timedelta(minutes=2)
+    
+    cursor = db["users"].find(
+        {"last_active_at": {"$gte": threshold}},
+        {"_id": 1, "email": 1, "full_name": 1, "role": 1, "last_active_at": 1}
+    )
+    
+    users = await cursor.to_list(length=100)
+    
+    # Format for frontend
+    return [{
+        "id": str(u["_id"]),
+        "name": u.get("full_name") or u["email"].split("@")[0],
+        "email": u["email"],
+        "role": u["role"],
+        "last_active": u["last_active_at"],
+        "status": "online"
+    } for u in users]

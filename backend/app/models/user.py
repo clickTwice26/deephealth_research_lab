@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
+from datetime import datetime
 from enum import Enum
 from app.models.item import PyObjectId
 
@@ -22,6 +23,7 @@ class UserBase(BaseModel):
     is_active: bool = True
     is_superuser: bool = False
     role: UserRole = UserRole.USER
+    last_active_at: Optional[datetime] = None
 
 class UserCreate(UserBase):
     password: str
