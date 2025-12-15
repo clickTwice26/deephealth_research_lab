@@ -12,3 +12,4 @@ httpx
 google-auth
 requests
 email-validator
+websockets
