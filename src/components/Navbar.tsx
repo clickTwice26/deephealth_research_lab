@@ -13,10 +13,12 @@ import ThemeToggle from './ThemeToggle';
 
 const navItems = [
   { name: 'Home', href: '/#home' },
+  { name: 'Team', href: '/team' },
   { name: 'News', href: '/#news' },
   { name: 'Research', href: '/#research' },
   { name: 'Projects', href: '/#projects' },
   { name: 'Publications', href: '/#publications' },
+  { name: 'Open Position', href: '/careers' },
 ];
 
 export default function Navbar() {

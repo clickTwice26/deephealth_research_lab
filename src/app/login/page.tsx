@@ -67,23 +67,7 @@ export default function LoginPage() {
                             <p className="text-gray-500 dark:text-gray-400">Sign in to access your research dashboard</p>
                         </div>
 
-                        {/* Google Login Button */}
-                        <button
-                            onClick={handleGoogleLogin}
-                            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750 text-gray-700 dark:text-gray-200 font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow group mb-6"
-                        >
-                            <FontAwesomeIcon icon={faGoogle} className="text-blue-500 text-lg group-hover:scale-110 transition-transform" />
-                            <span>Continue with Google</span>
-                        </button>
 
-                        <div className="relative mb-6">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-transparent text-gray-400 dark:text-gray-500">Or continue with</span>
-                            </div>
-                        </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {error && (
