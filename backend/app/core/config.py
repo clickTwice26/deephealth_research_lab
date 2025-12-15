@@ -4,7 +4,13 @@ from typing import Optional
 class Settings(BaseSettings):
     PROJECT_NAME: str = "DeepHealth Research Lab API"
     API_V1_STR: str = "/api/v1"
-    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://api.deephealthlab.com",
+        "https://api.deephealthlab.com",
+        "http://deephealthlab.com",
+        "https://deephealthlab.com",
+    ]
     MONGODB_URL: str
     SECRET_KEY: str = "changeme_secret_key"
     ALGORITHM: str = "HS256"
