@@ -152,10 +152,10 @@ export default function CareersPage() {
 
                                         <div className="flex items-center">
                                             <a
-                                                href={position.application_link || 'mailto:careers@deephealthlab.com?subject=Application for ' + position.title}
+                                                href={position.application_link || `/jobs/${position._id}/apply`}
                                                 target={position.application_link ? '_blank' : undefined}
                                                 rel={position.application_link ? "noopener noreferrer" : undefined}
-                                                className="px-5 py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm flex items-center gap-2 group-hover:bg-blue-600 dark:group-hover:bg-blue-500 dark:group-hover:text-white transition-colors"
+                                                className="px-5 py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-black font-medium text-sm flex items-center gap-2 group-hover:bg-blue-600 dark:group-hover:bg-blue-500 dark:group-hover:text-white transition-colors"
                                             >
                                                 Apply Now
                                                 <FontAwesomeIcon icon={faArrowRight} className="transform group-hover:translate-x-1 transition-transform" />

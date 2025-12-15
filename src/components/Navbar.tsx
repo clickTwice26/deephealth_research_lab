@@ -257,8 +257,7 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Spacer to prevent content from going under navbar */}
-      <div className="h-24 sm:h-28" />
+
     </>
   );
 }
