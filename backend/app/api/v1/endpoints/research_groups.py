@@ -14,6 +14,7 @@ from app.models.research_group import (
     GroupMember, GroupMemberDetail, GroupRole, Invitation, InvitationStatus, ChatMessage
 )
 from app.models.user import User, UserRole
+from app.utils.email import send_email
 
 router = APIRouter()
 
@@ -63,12 +64,20 @@ async def enrich_group_data(group: dict, db: AsyncIOMotorDatabase) -> dict:
     if not group or "members" not in group:
         return group
         
-    member_ids = [m["user_id"] for m in group["members"]]
+    # Deduplicate members by user_id
+    seen_users = set()
+    unique_members = []
+    for m in group["members"]:
+        if m["user_id"] not in seen_users:
+            seen_users.add(m["user_id"])
+            unique_members.append(m)
+            
+    member_ids = [m["user_id"] for m in unique_members]
     users = await db["users"].find({"_id": {"$in": [ObjectId(uid) for uid in member_ids]}}).to_list(None)
     user_map = {str(u["_id"]): u for u in users}
     
     enriched_members = []
-    for m in group["members"]:
+    for m in unique_members:
         user = user_map.get(m["user_id"])
         member_detail = m.copy()
         if user:
@@ -288,6 +297,14 @@ async def invite_member(
          if current_user.role != UserRole.ADMIN:
              raise HTTPException(status_code=403, detail="Only group admins can invite")
 
+    # Verify user exists and has researcher role
+    target_user = await db["users"].find_one({"email": email})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found with this email")
+        
+    if target_user.get("role") not in [UserRole.RESEARCHER, UserRole.ADMIN]:
+        raise HTTPException(status_code=403, detail="Only researchers can be invited to research groups")
+
     token = str(uuid.uuid4())
     invitation_data = {
         "group_id": group_id,
@@ -299,6 +316,28 @@ async def invite_member(
     }
     
     res = await db["invitations"].insert_one(invitation_data)
+    
+    # Send email notification
+    # TODO: Use a proper FRONTEND_URL setting
+    base_url = "http://localhost:3000" 
+    invite_link = f"{base_url}/dashboard/join-group?token={token}"
+    
+    email_subject = f"Invitation to join research group: {group.get('name', 'Research Group')}"
+    email_content = f"""
+    <html>
+        <body>
+            <h3>You have been invited to a research group!</h3>
+            <p><strong>{current_user.full_name or current_user.email}</strong> has invited you to join the group <strong>{group.get('name', 'Research Group')}</strong>.</p>
+            <p>Click the link below to accept the invitation:</p>
+            <p><a href="{invite_link}">{invite_link}</a></p>
+            <p>If you cannot click the link, please log in to your dashboard to accept the invitation.</p>
+        </body>
+    </html>
+    """
+    
+    # Fire and forget email (or await if critical)
+    send_email(email, email_subject, email_content)
+
     created_invite = await db["invitations"].find_one({"_id": res.inserted_id})
     return Invitation(**created_invite)
 
