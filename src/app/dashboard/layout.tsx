@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -50,11 +50,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setMounted(true);
     }, []);
 
+    const searchParams = useSearchParams();
+
     useEffect(() => {
         if (!isLoading && !user) {
-            router.push('/login');
+            const currentPath = pathname;
+            const currentParams = searchParams.toString();
+            const fullPath = currentParams ? `${currentPath}?${currentParams}` : currentPath;
+            router.push(`/login?redirect=${encodeURIComponent(fullPath)}`);
         }
-    }, [user, isLoading, router]);
+    }, [user, isLoading, router, pathname, searchParams]);
 
     useEffect(() => {
         if (!user) return;

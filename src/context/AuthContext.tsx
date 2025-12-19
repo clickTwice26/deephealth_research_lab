@@ -8,7 +8,7 @@ interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     isImpersonating: boolean;
-    login: (token: string) => Promise<void>;
+    login: (token: string, redirectUrl?: string) => Promise<void>;
     impersonate: (token: string) => Promise<void>;
     stopImpersonating: () => Promise<void>;
     logout: () => void;
@@ -56,10 +56,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    const login = async (token: string) => {
+    const login = async (token: string, redirectUrl?: string) => {
         localStorage.setItem('token', token);
         await fetchUser();
-        router.push('/dashboard');
+        router.push(redirectUrl || '/dashboard');
     };
 
     const impersonate = async (token: string) => {

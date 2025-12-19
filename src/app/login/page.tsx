@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -18,6 +19,9 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const { login } = useAuth();
 
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -30,7 +34,7 @@ export default function LoginPage() {
             formData.append('password', password);
 
             const data = await api.post<{ access_token: string }>('/auth/login/access-token', formData);
-            await login(data.access_token);
+            await login(data.access_token, redirect || undefined);
         } catch (err: any) {
             console.error('Login failed', err);
             setError(err.message || 'Invalid email or password');
