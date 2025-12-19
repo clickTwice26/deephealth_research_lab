@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNewspaper, faPlus, faTrash, faBullhorn, faCalendarAlt, faPen, faLink, faSave, faTimes, faSearch, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/ui/Modal';
+import ConfirmModal from '@/components/ConfirmModal';
 import { useDebounce } from 'use-debounce'; // Assuming this exists or using simple timeout
 
 export default function NewsPage() {
@@ -143,17 +144,31 @@ export default function NewsPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this news item?')) return;
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (id: string) => {
+        setDeleteId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        setIsDeleting(true);
         try {
-            await api.deleteNews(id);
-            setNews(news.filter(n => n._id !== id));
+            await api.deleteNews(deleteId);
+            setNews(news.filter(n => n._id !== deleteId));
+            setIsDeleteModalOpen(false);
+            setDeleteId(null);
             showModal('Deleted', 'News item has been removed.', 'success');
-            if (editingId === id) cancelEdit();
+            if (editingId === deleteId) cancelEdit();
             fetchNews();
         } catch (error) {
             console.error('Failed to delete news', error);
             showModal('Error', 'Failed to delete news.', 'error');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -362,7 +377,7 @@ export default function NewsPage() {
                                                         <FontAwesomeIcon icon={faPen} />
                                                     </button>
                                                     <button
-                                                        onClick={() => handleDelete(item._id)}
+                                                        onClick={() => handleDeleteClick(item._id)}
                                                         className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
                                                         title="Delete"
                                                     >
@@ -435,6 +450,17 @@ export default function NewsPage() {
                     </button>
                 </div>
             </Modal>
+
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                title="Delete News Item"
+                message="Are you sure you want to delete this news item? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
+                isLoading={isDeleting}
+            />
         </div>
     );
 }

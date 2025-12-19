@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faPlus, faTrash, faPen, faSave, faSearch, faChevronLeft, faChevronRight, faMapMarkerAlt, faClock, faLayerGroup, faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/ui/Modal';
+import ConfirmModal from '@/components/ConfirmModal';
 import { useDebounce } from 'use-debounce';
 
 export default function JobsPage() {
@@ -149,17 +150,31 @@ export default function JobsPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this job?')) return;
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (id: string) => {
+        setDeleteId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        setIsDeleting(true);
         try {
-            await api.deleteJob(id);
-            setJobs(jobs.filter(j => j._id !== id));
+            await api.deleteJob(deleteId);
+            setJobs(jobs.filter(j => j._id !== deleteId));
+            setIsDeleteModalOpen(false);
+            setDeleteId(null);
             showModal('Deleted', 'Job has been removed.', 'success');
-            if (editingId === id) cancelEdit();
+            if (editingId === deleteId) cancelEdit();
             fetchJobs();
         } catch (error) {
             console.error('Failed to delete job', error);
             showModal('Error', 'Failed to delete job.', 'error');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -413,7 +428,7 @@ export default function JobsPage() {
                                                     <FontAwesomeIcon icon={faPen} /> Edit
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(item._id)}
+                                                    onClick={() => handleDeleteClick(item._id)}
                                                     className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors flex items-center gap-2"
                                                 >
                                                     <FontAwesomeIcon icon={faTrash} /> Delete

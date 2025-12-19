@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBook, faPlus, faTrash, faPen, faSave, faTimes, faSearch, faChevronLeft, faChevronRight, faExternalLinkAlt, faTag, faUser } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/ui/Modal';
+import ConfirmModal from '@/components/ConfirmModal';
 import { useDebounce } from 'use-debounce';
 
 export default function PublicationsPage() {
@@ -150,17 +151,31 @@ export default function PublicationsPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this publication?')) return;
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (id: string) => {
+        setDeleteId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        setIsDeleting(true);
         try {
-            await api.deletePublication(id);
-            setPublications(publications.filter(p => p._id !== id));
+            await api.deletePublication(deleteId);
+            setPublications(publications.filter(p => p._id !== deleteId));
+            setIsDeleteModalOpen(false);
+            setDeleteId(null);
             showModal('Deleted', 'Publication has been removed.', 'success');
-            if (editingId === id) cancelEdit();
+            if (editingId === deleteId) cancelEdit();
             fetchPublications();
         } catch (error) {
             console.error('Failed to delete publication', error);
             showModal('Error', 'Failed to delete publication.', 'error');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -397,7 +412,7 @@ export default function PublicationsPage() {
                                                     <FontAwesomeIcon icon={faPen} />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(is_featured._id)}
+                                                    onClick={() => handleDeleteClick(is_featured._id)}
                                                     className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
                                                     title="Delete"
                                                 >

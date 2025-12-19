@@ -7,10 +7,12 @@ import { faPlus, faEdit, faTrash, faEye, faFileAlt, faCheckCircle, faTimesCircle
 import Link from 'next/link';
 import { api, BlogPost } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import ConfirmModal from '@/components/ConfirmModal';
 
 export default function BlogDashboardPage() {
-    const [posts, setPosts] = useState<BlogPost[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [deleteSlug, setDeleteSlug] = useState<string | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -28,19 +30,40 @@ export default function BlogDashboardPage() {
         }
     };
 
-    const handleDelete = async (slug: string) => {
-        if (!confirm('Are you sure you want to delete this post?')) return;
+    const handleDeleteClick = (slug: string) => {
+        setDeleteSlug(slug);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteSlug) return;
+        setIsDeleting(true);
         try {
-            await api.deleteBlogPost(slug);
-            setPosts(posts.filter(p => p.slug !== slug));
+            await api.deleteBlogPost(deleteSlug);
+            setPosts(posts.filter(p => p.slug !== deleteSlug));
+            setIsDeleteModalOpen(false);
+            setDeleteSlug(null);
         } catch (error) {
             console.error('Failed to delete post', error);
-            alert('Failed to delete post');
+            // Could use a toast here
+        } finally {
+            setIsDeleting(false);
         }
     };
 
     return (
         <div className="p-6">
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                title="Delete Post"
+                message="Are you sure you want to delete this post? This action cannot be undone."
+                confirmText="Delete"
+                isDestructive={true}
+                isLoading={isDeleting}
+            />
+
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Blog Posts</h1>
@@ -123,7 +146,7 @@ export default function BlogDashboardPage() {
                                             </button>
                                         </Link>
                                         <button
-                                            onClick={() => handleDelete(post.slug)}
+                                            onClick={() => handleDeleteClick(post.slug)}
                                             className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                         >
                                             <FontAwesomeIcon icon={faTrash} />

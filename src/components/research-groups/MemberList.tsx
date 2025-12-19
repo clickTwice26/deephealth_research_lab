@@ -3,6 +3,7 @@ import { api, ResearchGroup } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCrown, faUserPlus, faEllipsisV, faUserMinus, faUserShield } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '@/context/AuthContext';
+import ConfirmModal from '@/components/ConfirmModal';
 
 interface MemberListProps {
     group: ResearchGroup;
@@ -26,14 +27,28 @@ export default function MemberList({ group, onlineUserIds, onInvite, onUpdate }:
         }
     };
 
-    const handleRemove = async (userId: string) => {
-        if (!confirm('Are you sure you want to remove this member?')) return;
+    const [removeUserId, setRemoveUserId] = useState<string | null>(null);
+    const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+    const [isRemoving, setIsRemoving] = useState(false);
+
+    const handleRemoveClick = (userId: string) => {
+        setRemoveUserId(userId);
+        setIsRemoveModalOpen(true);
+        setOpenMenuId(null);
+    };
+
+    const confirmRemove = async () => {
+        if (!removeUserId) return;
+        setIsRemoving(true);
         try {
-            const updated = await api.researchGroups.removeMember(group._id, userId);
+            const updated = await api.researchGroups.removeMember(group._id, removeUserId);
             onUpdate(updated);
-            setOpenMenuId(null);
+            setIsRemoveModalOpen(false);
+            setRemoveUserId(null);
         } catch (e) {
             console.error(e);
+        } finally {
+            setIsRemoving(false);
         }
     };
 
@@ -106,8 +121,8 @@ export default function MemberList({ group, onlineUserIds, onInvite, onUpdate }:
                                                 </button>
                                             )}
                                             <button
-                                                onClick={() => handleRemove(member.user_id)}
                                                 className="w-full text-left px-4 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                                onClick={() => handleRemoveClick(member.user_id)}
                                             >
                                                 <FontAwesomeIcon icon={faUserMinus} />
                                                 Remove User
@@ -120,6 +135,17 @@ export default function MemberList({ group, onlineUserIds, onInvite, onUpdate }:
                     );
                 })}
             </div>
+
+            <ConfirmModal
+                isOpen={isRemoveModalOpen}
+                onClose={() => setIsRemoveModalOpen(false)}
+                onConfirm={confirmRemove}
+                title="Remove Member"
+                message="Are you sure you want to remove this member? They will lose access to the group."
+                confirmText="Remove"
+                isDestructive={true}
+                isLoading={isRemoving}
+            />
         </div>
     );
 }
