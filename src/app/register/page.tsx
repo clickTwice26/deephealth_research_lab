@@ -92,7 +92,7 @@ export default function RegisterPage() {
         <main className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col transition-colors duration-300">
             <Navbar />
 
-            <div className="flex-grow flex items-center justify-center relative overflow-hidden px-4 py-20">
+            <div className="flex-grow flex items-center justify-center relative overflow-hidden px-4 pt-32 pb-20">
                 {/* Background Elements */}
                 <div className="absolute inset-0 z-0">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-[100px] opacity-40 animate-pulse" style={{ animationDuration: '4s' }} />
