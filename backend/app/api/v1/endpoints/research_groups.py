@@ -110,10 +110,13 @@ async def read_groups(
     current_user: User = Depends(deps.get_current_active_user),
     db: AsyncIOMotorDatabase = Depends(get_database)
 ):
-    # Admin sees all, researchers/users see theirs
-    query = {}
-    if current_user.role != UserRole.ADMIN:
-        query = {"members.user_id": str(current_user.id)}
+    # Only show groups where user is a member or creator
+    query = {
+        "$or": [
+            {"members.user_id": str(current_user.id)},
+            {"created_by": str(current_user.id)}
+        ]
+    }
     
     cursor = db["research_groups"].find(query).skip(skip).limit(limit)
     groups = await cursor.to_list(length=limit)
@@ -140,9 +143,11 @@ async def read_group(
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
         
-    # Check access
+    # Check access (Member or Creator only)
     is_member = any(m["user_id"] == str(current_user.id) for m in group["members"])
-    if not is_member and current_user.role != UserRole.ADMIN:
+    is_creator = group.get("created_by") == str(current_user.id)
+    
+    if not is_member and not is_creator:
         raise HTTPException(status_code=403, detail="Not a member")
         
     return ResearchGroup(**await enrich_group_data(group, db))
@@ -350,6 +355,17 @@ async def get_messages(
     current_user: User = Depends(deps.get_current_active_user),
     db: AsyncIOMotorDatabase = Depends(get_database)
 ):
+    # Permission check for messages
+    group = await db["research_groups"].find_one({"_id": ObjectId(group_id)})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+        
+    is_member = any(m["user_id"] == str(current_user.id) for m in group["members"])
+    is_creator = group.get("created_by") == str(current_user.id)
+    
+    if not is_member and not is_creator:
+        raise HTTPException(status_code=403, detail="Not authorized to view messages")
+
     cursor = db["chat_messages"].find({"group_id": group_id}).sort("timestamp", -1).skip(skip).limit(limit)
     messages = await cursor.to_list(length=limit)
     return [ChatMessage(**m) for m in messages][::-1]

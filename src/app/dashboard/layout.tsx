@@ -21,7 +21,8 @@ import {
     faUserFriends,
     faMoon,
     faSun,
-    faPaperPlane
+    faPaperPlane,
+    faPenNib
 } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -151,6 +152,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Community</p>
                                     <SidebarLink icon={faUsers} label="Researcher Feed" href="/dashboard/community" />
                                     <SidebarLink icon={faUserFriends} label="Research Groups" href="/dashboard/research-groups" badge={unreadGroupMessages} />
+                                    <SidebarLink icon={faPenNib} label="My Blogs" href="/dashboard/blogs" />
                                 </div>
                             )}
 

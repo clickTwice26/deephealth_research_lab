@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import items, auth, users, notifications, search, news, publications, jobs, community, research_groups
+from app.api.v1.endpoints import items, auth, users, notifications, search, news, publications, jobs, community, research_groups, blog, upload
 
 api_router = APIRouter()
 api_router.include_router(items.router, prefix="/items", tags=["items"])
@@ -12,3 +12,5 @@ api_router.include_router(publications.router, prefix="/publications", tags=["pu
 api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 api_router.include_router(community.router, prefix="/community", tags=["community"])
 api_router.include_router(research_groups.router, prefix="/research-groups", tags=["research-groups"])
+api_router.include_router(blog.router, prefix="/blog", tags=["blog"])
+api_router.include_router(upload.router, prefix="/upload", tags=["upload"])

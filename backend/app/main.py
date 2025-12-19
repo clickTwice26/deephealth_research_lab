@@ -35,6 +35,11 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 def health_check():
     return {"status": "ok"}
 
+from fastapi.staticfiles import StaticFiles
+import os
+
+app.mount("/uploads", StaticFiles(directory=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads")), name="uploads")
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to DeepHealth Research Lab API"}

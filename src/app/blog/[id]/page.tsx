@@ -76,6 +76,7 @@ const posts = [
 
 export default function BlogPostPage() {
     const params = useParams();
+    const slug = params.id as string;
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, {
         stiffness: 100,
@@ -83,8 +84,52 @@ export default function BlogPostPage() {
         restDelta: 0.001
     });
 
-    // Simple mock fetching logic
-    const post = posts.find(p => p.id === params.id) || posts.find(p => p.id === "1") || posts[0];
+    const [post, setPost] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Fetch real post data
+        const fetchPost = async () => {
+            try {
+                // Try fetching from API first
+                const response = await fetch(`http://localhost:9191/api/v1/blog/${slug}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setPost({
+                        ...data,
+                        // Adapter for mismatched fields if any
+                        authorRole: "Researcher", // Default fallback if not in API
+                        authorImage: "https://ui-avatars.com/api/?name=" + (data.author_id || "User") + "&background=0D8ABC&color=fff&size=200",
+                        date: new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        readTime: Math.ceil(data.content.length / 500) + " min read", // Rough estimate
+                        image: data.cover_image || "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+                    });
+                } else {
+                    // Fallback to mock data if API fails (or for demo purposes if ID doesn't exist)
+                    const mockPost = posts.find(p => p.id === slug) || posts[0];
+                    setPost(mockPost);
+                }
+            } catch (error) {
+                console.error("Failed to fetch post", error);
+                const mockPost = posts.find(p => p.id === slug) || posts[0];
+                setPost(mockPost);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPost();
+    }, [slug]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
+
+    if (!post) return <div>Post not found</div>;
 
     return (
         <main className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col font-sans">
@@ -119,7 +164,7 @@ export default function BlogPostPage() {
                             transition={{ duration: 0.6 }}
                         >
                             <span className="px-3 py-1 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-full mb-4 inline-block">
-                                {post.tag}
+                                {post.category || post.tag}
                             </span>
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
                                 {post.title}
@@ -127,14 +172,12 @@ export default function BlogPostPage() {
 
                             <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm">
                                 <div className="flex items-center gap-3">
-                                    <img
-                                        src={post.authorImage}
-                                        alt={post.author}
-                                        className="w-10 h-10 rounded-full border-2 border-white/20"
-                                    />
+                                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                                        {post.author_id ? post.author_id.charAt(0).toUpperCase() : "A"}
+                                    </div>
                                     <div>
-                                        <p className="text-white font-semibold">{post.author}</p>
-                                        <p className="text-xs opacity-80">{post.authorRole}</p>
+                                        <p className="text-white font-semibold">{post.author_id || post.author}</p>
+                                        <p className="text-xs opacity-80">{post.authorRole || "Author"}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4 border-l border-gray-700 pl-6 h-10">
@@ -175,21 +218,21 @@ export default function BlogPostPage() {
                         prose-headings:font-bold prose-headings:tight prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 
                         prose-p:leading-relaxed prose-p:text-gray-600 dark:prose-p:text-gray-300
                         prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-900/10 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-                        prose-img:rounded-2xl prose-img:shadow-lg"
+                        prose-img:rounded-2xl prose-img:shadow-lg
+                        [&>ul]:list-disc [&>ul]:pl-6
+                        [&>ol]:list-decimal [&>ol]:pl-6"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                     />
 
                     {/* Author Bio Card */}
                     <div className="mt-16 p-8 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
-                        <img
-                            src={post.authorImage}
-                            alt={post.author}
-                            className="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-md"
-                        />
+                        <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold border-4 border-white dark:border-gray-800 shadow-md">
+                            {post.author_id ? post.author_id.charAt(0).toUpperCase() : "A"}
+                        </div>
                         <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">About {post.author}</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">About {post.author_id || post.author}</h3>
                             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 leading-relaxed">
-                                Principal Investigator at DeepHealth Research Lab. Dedicated to decoding the complexities of the human genome using advanced artificial intelligence. Previously researcher at Broad Institute.
+                                Principal Investigator at DeepHealth Research Lab. Dedicated to decoding the complexities of the human genome using advanced artificial intelligence.
                             </p>
                             <button className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors">
                                 View Full Profile
@@ -204,9 +247,6 @@ export default function BlogPostPage() {
                         <h4 className="font-bold text-gray-900 dark:text-white mb-4 uppercase text-xs tracking-wider">Table of Contents</h4>
                         <nav className="space-y-2 text-sm">
                             <a href="#" className="block text-blue-600 dark:text-blue-400 font-medium pl-2 border-l-2 border-blue-600">Introduction</a>
-                            <a href="#" className="block text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 pl-2 border-l-2 border-transparent transition-colors">Decoding the Code</a>
-                            <a href="#" className="block text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 pl-2 border-l-2 border-transparent transition-colors">Transformer Models</a>
-                            <a href="#" className="block text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 pl-2 border-l-2 border-transparent transition-colors">Ethical Considerations</a>
                         </nav>
                     </div>
 
