@@ -4,75 +4,12 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faClock, faUser, faArrowLeft, faShareAlt, faBookmark, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faClock, faUser, faArrowLeft, faShareAlt, faBookmark } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter, faLinkedin, faFacebook } from '@fortawesome/free-brands-svg-icons';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-
-// Mock Data (Expanded for Detail View)
-const posts = [
-    {
-        id: "1",
-        title: "The Future of Personalized Medicine: How AI is Decoding the Human Genome",
-        excerpt: "We are entering a new era where machine learning models can predict disease risks with unprecedented accuracy.",
-        content: `
-            <p class="lead">Getting personal with your DNA is no longer science fiction. It's the new standard of care, powered by artificial intelligence that can read the code of life faster than any human.</p>
-
-            <p>Imagine a world where your doctor doesn't just treat your symptoms, but predicts them before they even appear. This is the promise of personalized medicine, and it's being realized today through the convergence of genomics and deep learning.</p>
-
-            <h2>Decoding the Code of Life</h2>
-            <p>The human genome consists of over 3 billion base pairs. Analyzing this vast dataset manually is impossible. However, modern transformer models, similar to those used in natural language processing (like GPT-4), are proving to be exceptionally good at understanding biological sequences.</p>
-            
-            <blockquote>
-                "We are essentially teaching computers to read the language of biology, and they are finding patterns we never knew existed."
-                <footer>— Dr. Sarah Chen, Principal Investigator</footer>
-            </blockquote>
-
-            <p>Our latest research focuses on identifying non-coding variants—mutations in the "junk DNA" that actually regulate gene expression. By training models on thousands of genomes, we've achieved a 40% improvement in predicting the pathogenicity of these elusive variants.</p>
-
-            <h2>The Role of Transformer Models</h2>
-            <p>Just as LLMs predict the next word in a sentence, our genomic models predict the functional impact of a mutation. This allows us to:</p>
-            <ul>
-                <li><strong>Predict rare disease risk</strong> with higher accuracy.</li>
-                <li><strong>Tailor cancer therapies</strong> based on the tumor's specific genetic makeup.</li>
-                <li><strong>Discover new drug targets</strong> that were previously "undruggable".</li>
-            </ul>
-
-            <div class="callout">
-                <h3>Key Takeaway</h3>
-                <p>AI isn't replacing biologists; it's giving them a super-powered microscope to see the functional logic hidden within our DNA.</p>
-            </div>
-
-            <h2>Ethical Considerations</h2>
-            <p>With great power comes great responsibility. As we unlock these predictive capabilities, we must also address privacy concerns and ensure equitable access to these life-saving technologies. Use of genetic data must be strictly regulated to prevent discrimination.</p>
-
-            <p>We are committed to open science and transparent AI development to ensure these tools benefit humanity as a whole.</p>
-        `,
-        image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-        author: "Dr. Sarah Chen",
-        authorRole: "Principal Investigator",
-        authorImage: "https://ui-avatars.com/api/?name=Sarah+Chen&background=0D8ABC&color=fff&size=200",
-        date: "Oct 15, 2025",
-        readTime: "8 min read",
-        tag: "Genomics",
-        related: [2, 3, 5]
-    },
-    // Fallback for other IDs for demo purposes
-    {
-        id: "default",
-        title: "Understanding Transformer Models in Biological Sequence Analysis",
-        content: "<p>Content for other posts would go here. This is a placeholder for the demo.</p>",
-        image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        author: "James Wilson",
-        authorRole: "Head of AI Research",
-        authorImage: "https://ui-avatars.com/api/?name=James+Wilson&background=6366F1&color=fff&size=200",
-        date: "Oct 10, 2025",
-        readTime: "12 min read",
-        tag: "AI Research",
-        related: [1, 4, 6]
-    }
-];
+import { api, BlogPost } from '@/lib/api';
 
 export default function BlogPostPage() {
     const params = useParams();
@@ -84,42 +21,77 @@ export default function BlogPostPage() {
         restDelta: 0.001
     });
 
-    const [post, setPost] = useState<any>(null);
+    const [post, setPost] = useState<BlogPost | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [toc, setToc] = useState<{ id: string, text: string, level: number }[]>([]);
 
     useEffect(() => {
-        // Fetch real post data
         const fetchPost = async () => {
             try {
-                // Try fetching from API first
-                const response = await fetch(`http://localhost:9191/api/v1/blog/${slug}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setPost({
-                        ...data,
-                        // Adapter for mismatched fields if any
-                        authorRole: "Researcher", // Default fallback if not in API
-                        authorImage: "https://ui-avatars.com/api/?name=" + (data.author_id || "User") + "&background=0D8ABC&color=fff&size=200",
-                        date: new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-                        readTime: Math.ceil(data.content.length / 500) + " min read", // Rough estimate
-                        image: data.cover_image || "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-                    });
-                } else {
-                    // Fallback to mock data if API fails (or for demo purposes if ID doesn't exist)
-                    const mockPost = posts.find(p => p.id === slug) || posts[0];
-                    setPost(mockPost);
+                const data = await api.getBlogPost(slug);
+                if (data) {
+                    setPost(data);
+                    // Generate TOC
+                    generateToc(data.content);
                 }
             } catch (error) {
                 console.error("Failed to fetch post", error);
-                const mockPost = posts.find(p => p.id === slug) || posts[0];
-                setPost(mockPost);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchPost();
+        if (slug) fetchPost();
     }, [slug]);
+
+    const generateToc = (content: string) => {
+        if (!content) return;
+
+        // Simple regex to find h2 and h3
+        // Note: This assumes content is HTML. If it's markdown, we'd need a parser.
+        // Assuming the RichTextEditor saves HTML.
+
+        const headingRegex = /<h([2-3])[^>]*>(.*?)<\/h\1>/gi;
+        const matches = [...content.matchAll(headingRegex)];
+
+        const tocItems = matches.map((match, index) => {
+            const level = parseInt(match[1]);
+            const text = match[2].replace(/<[^>]*>/g, ''); // Strip inner tags if any
+            const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            return { id, text, level };
+        });
+
+        setToc(tocItems);
+    };
+
+    // Function to inject IDs into content for TOC linking
+    // This is a bit hacky but works for client-side rendered HTML string
+    const processContent = (content: string) => {
+        if (!content) return '';
+        let processed = content;
+        toc.forEach(item => {
+            // Replace the specific heading with one that has the ID
+            // We use a specific regex to match the exact text to avoid replacing wrong things
+            const regex = new RegExp(`(<h${item.level}[^>]*>)(${item.text})(<\/h${item.level}>)`, 'i');
+            processed = processed.replace(regex, `$1<span id="${item.id}" class="scroll-mt-32">$2</span>$3`);
+        });
+        return processed;
+    };
+
+    // Helpers
+    const getReadTime = (content: string) => {
+        if (!content) return "1 min read";
+        const words = content.trim().split(/\s+/).length;
+        const time = Math.ceil(words / 200);
+        return `${time} min read`;
+    };
+
+    const formatDate = (dateString: string) => {
+        if (!dateString) return "";
+        return new Date(dateString).toLocaleDateString("en-US", {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+    };
 
     if (isLoading) {
         return (
@@ -129,7 +101,12 @@ export default function BlogPostPage() {
         );
     }
 
-    if (!post) return <div>Post not found</div>;
+    if (!post) return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold mb-4">Post not found</h1>
+            <Link href="/blog" className="text-blue-600 hover:underline">Return to Blog</Link>
+        </div>
+    );
 
     return (
         <main className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col font-sans">
@@ -144,11 +121,15 @@ export default function BlogPostPage() {
             {/* Hero Section */}
             <section className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
                 <div className="absolute inset-0">
-                    <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover"
-                    />
+                    {post.cover_image ? (
+                        <img
+                            src={post.cover_image}
+                            alt={post.title}
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gray-900" />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent opacity-90" />
                 </div>
 
@@ -164,25 +145,29 @@ export default function BlogPostPage() {
                             transition={{ duration: 0.6 }}
                         >
                             <span className="px-3 py-1 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-full mb-4 inline-block">
-                                {post.category || post.tag}
+                                {post.category || "General"}
                             </span>
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
                                 {post.title}
                             </h1>
 
                             <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                                        {post.author_id ? post.author_id.charAt(0).toUpperCase() : "A"}
+                                <div className="flex items-center gap-3 group">
+                                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold overflow-hidden border-2 border-white/20">
+                                        {post.author_avatar ? (
+                                            <img src={post.author_avatar} alt={post.author_name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            post.author_name ? post.author_name.charAt(0).toUpperCase() : "A"
+                                        )}
                                     </div>
-                                    <div>
-                                        <p className="text-white font-semibold">{post.author_id || post.author}</p>
-                                        <p className="text-xs opacity-80">{post.authorRole || "Author"}</p>
-                                    </div>
+                                    <Link href={post.author_id ? `/profile/${post.author_id}` : '#'} className="hover:text-white transition-colors">
+                                        <p className="font-semibold text-white group-hover:underline">{post.author_name || "Unknown Author"}</p>
+                                        <p className="text-xs opacity-80">Author</p>
+                                    </Link>
                                 </div>
                                 <div className="flex items-center gap-4 border-l border-gray-700 pl-6 h-10">
-                                    <span className="flex items-center gap-2"><FontAwesomeIcon icon={faCalendarAlt} /> {post.date}</span>
-                                    <span className="flex items-center gap-2"><FontAwesomeIcon icon={faClock} /> {post.readTime}</span>
+                                    <span className="flex items-center gap-2"><FontAwesomeIcon icon={faCalendarAlt} /> {formatDate(post.created_at)}</span>
+                                    <span className="flex items-center gap-2"><FontAwesomeIcon icon={faClock} /> {getReadTime(post.content)}</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -202,13 +187,7 @@ export default function BlogPostPage() {
                     <button className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-800 transition-colors flex items-center justify-center">
                         <FontAwesomeIcon icon={faLinkedin} />
                     </button>
-                    <button className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-500 transition-colors flex items-center justify-center">
-                        <FontAwesomeIcon icon={faFacebook} />
-                    </button>
                     <div className="w-px h-20 bg-gray-200 dark:bg-gray-800 my-2" />
-                    <button className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 hover:text-yellow-500 transition-colors flex items-center justify-center" title="Bookmark">
-                        <FontAwesomeIcon icon={faBookmark} />
-                    </button>
                 </div>
 
                 {/* Main Article Content */}
@@ -221,34 +200,53 @@ export default function BlogPostPage() {
                         prose-img:rounded-2xl prose-img:shadow-lg
                         [&>ul]:list-disc [&>ul]:pl-6
                         [&>ol]:list-decimal [&>ol]:pl-6"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: processContent(post.content) }}
                     />
 
                     {/* Author Bio Card */}
                     <div className="mt-16 p-8 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
-                        <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold border-4 border-white dark:border-gray-800 shadow-md">
-                            {post.author_id ? post.author_id.charAt(0).toUpperCase() : "A"}
+                        <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold border-4 border-white dark:border-gray-800 shadow-md overflow-hidden">
+                            {post.author_avatar ? (
+                                <img src={post.author_avatar} alt={post.author_name} className="w-full h-full object-cover" />
+                            ) : (
+                                post.author_name ? post.author_name.charAt(0).toUpperCase() : "A"
+                            )}
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">About {post.author_id || post.author}</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">About {post.author_name || "Author"}</h3>
                             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 leading-relaxed">
-                                Principal Investigator at DeepHealth Research Lab. Dedicated to decoding the complexities of the human genome using advanced artificial intelligence.
+                                Author at DeepHealth Research Lab.
                             </p>
-                            <button className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors">
-                                View Full Profile
-                            </button>
+                            {post.author_id && (
+                                <Link href={`/profile/${post.author_id}`}>
+                                    <button className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors">
+                                        View Full Profile
+                                    </button>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </article>
 
                 {/* Right Sidebar (Table of Contents / Newsletter) */}
                 <aside className="hidden lg:block lg:col-span-3 space-y-8 sticky top-32 h-fit">
-                    <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                        <h4 className="font-bold text-gray-900 dark:text-white mb-4 uppercase text-xs tracking-wider">Table of Contents</h4>
-                        <nav className="space-y-2 text-sm">
-                            <a href="#" className="block text-blue-600 dark:text-blue-400 font-medium pl-2 border-l-2 border-blue-600">Introduction</a>
-                        </nav>
-                    </div>
+                    {toc.length > 0 && (
+                        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                            <h4 className="font-bold text-gray-900 dark:text-white mb-4 uppercase text-xs tracking-wider">Table of Contents</h4>
+                            <nav className="space-y-2 text-sm">
+                                {toc.map((item, idx) => (
+                                    <a
+                                        key={idx}
+                                        href={`#${item.id}`}
+                                        className={`block hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${idx === 0 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-600 dark:text-gray-400'
+                                            } ${item.level === 3 ? 'pl-4' : ''}`}
+                                    >
+                                        {item.text}
+                                    </a>
+                                ))}
+                            </nav>
+                        </div>
+                    )}
 
                     <div className="bg-blue-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-10">

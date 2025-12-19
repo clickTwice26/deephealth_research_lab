@@ -74,7 +74,7 @@ export const api = {
     delete: <T>(endpoint: string, options?: FetchOptions) => request<T>(endpoint, { ...options, method: 'DELETE' }),
 
     // Notifications
-    getNotifications: () => request<Notification[]>('/notifications/'),
+    getNotifications: (skip = 0, limit = 100) => request<Notification[]>(`/notifications/?skip=${skip}&limit=${limit}`),
     markNotificationRead: (id: string) => request<Notification>(`/notifications/${id}/read`, { method: 'PUT' }),
     markAllNotificationsRead: () => request<boolean>('/notifications/read-all', { method: 'PUT' }),
     sendAdminNotification: (data: AdminNotificationSend) => request<{ success: boolean; message: string; count: number }>('/notifications/admin/send', { method: 'POST', body: JSON.stringify(data) }),
@@ -156,6 +156,9 @@ export const api = {
     createBlogPost: (data: Partial<BlogPost>) => request<BlogPost>('/blog/', { method: 'POST', body: JSON.stringify(data) }),
     updateBlogPost: (slug: string, data: Partial<BlogPost>) => request<BlogPost>(`/blog/${slug}`, { method: 'PUT', body: JSON.stringify(data) }),
     deleteBlogPost: (slug: string) => request<{ status: string; message: string }>(`/blog/${slug}`, { method: 'DELETE' }),
+    // Users
+    getPublicProfile: (userId: string) => request<any>(`/users/${userId}/public`),
+
     uploadImage: (file: File) => {
         const formData = new FormData();
         formData.append('file', file);

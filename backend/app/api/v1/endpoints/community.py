@@ -83,7 +83,12 @@ async def like_post(
     """
     Toggle like on a post.
     """
-    post = await crud_community.toggle_like(db, post_id, str(current_user.id))
+    post = await crud_community.toggle_like(
+        db, 
+        post_id, 
+        str(current_user.id),
+        user_name=current_user.full_name or current_user.email
+    )
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post

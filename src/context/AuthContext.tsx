@@ -10,7 +10,7 @@ interface AuthContextType {
     isImpersonating: boolean;
     login: (token: string) => Promise<void>;
     impersonate: (token: string) => Promise<void>;
-    stopImpersonating: () => void;
+    stopImpersonating: () => Promise<void>;
     logout: () => void;
     fetchUser: () => Promise<void>;
 }
@@ -63,8 +63,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const impersonate = async (token: string) => {
+        setIsLoading(true);
+        // Prevent stale state access: Clear user immediately
+        setUser(null);
+
         const currentToken = localStorage.getItem('token');
-        if (currentToken) {
+        const existingAdminToken = localStorage.getItem('admin_token');
+
+        if (currentToken && !existingAdminToken) {
             localStorage.setItem('admin_token', currentToken);
         }
         localStorage.setItem('token', token);
@@ -73,13 +79,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         router.push('/dashboard');
     };
 
-    const stopImpersonating = () => {
+    const stopImpersonating = async () => {
         const adminToken = localStorage.getItem('admin_token');
         if (adminToken) {
+            setIsLoading(true);
+            // Prevent stale state: clear user immediately
+            setUser(null);
             localStorage.setItem('token', adminToken);
             localStorage.removeItem('admin_token');
             setIsImpersonating(false);
-            fetchUser(); // Reload admin user
+
+            try {
+                await fetchUser(); // Reload admin user
+            } catch (error) {
+                console.error("Failed to restore admin user", error);
+            }
+
             router.refresh();
         }
     };

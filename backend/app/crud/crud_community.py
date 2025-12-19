@@ -105,7 +105,10 @@ async def get_posts_with_authors(
         
     return posts, total
 
-async def toggle_like(db: AsyncIOMotorDatabase, post_id: str, user_id: str) -> Optional[dict]:
+from app.crud import crud_notification
+from app.models.notification import NotificationCreate, NotificationType
+
+async def toggle_like(db: AsyncIOMotorDatabase, post_id: str, user_id: str, user_name: str = "Someone") -> Optional[dict]:
     try:
         oid = ObjectId(post_id)
     except:
@@ -122,6 +125,18 @@ async def toggle_like(db: AsyncIOMotorDatabase, post_id: str, user_id: str) -> O
     # If liking, remove dislike
     if keyword == "$addToSet":
         await db["community_posts"].update_one({"_id": oid}, {"$pull": {"dislikes": user_id}})
+        
+        # Create Notification (if not liking own post)
+        if post["author_id"] != user_id:
+            notification = NotificationCreate(
+                user_id=post["author_id"],
+                title="New Like",
+                message=f"{user_name} liked your post.",
+                type=NotificationType.SUCCESS,
+                action_label="View Post",
+                action_url=f"/dashboard/community" # Could be deep link if implemented
+            )
+            await crud_notification.create_notification(db, notification)
 
     await db["community_posts"].update_one(
         {"_id": oid}, 
@@ -160,7 +175,12 @@ async def add_comment(db: AsyncIOMotorDatabase, post_id: str, content: str, user
         oid = ObjectId(post_id)
     except:
         return None
-        
+    
+    # Get post to notify author
+    post = await db["community_posts"].find_one({"_id": oid})
+    if not post:
+        return None
+
     comment = Comment(
         content=content,
         author_id=str(user.id),
@@ -175,7 +195,19 @@ async def add_comment(db: AsyncIOMotorDatabase, post_id: str, content: str, user
     
     if result.matched_count == 0:
         return None
-        
+    
+    # Create Notification for Post Author (if not own post)
+    if post["author_id"] != str(user.id):
+        notification = NotificationCreate(
+            user_id=post["author_id"],
+            title="New Comment",
+            message=f"{user.full_name or 'Someone'} commented on your post.",
+            type=NotificationType.INFO,
+            action_label="View Comment",
+            action_url=f"/dashboard/community"
+        )
+        await crud_notification.create_notification(db, notification)
+
     return await get_post_with_author(db, post_id)
 
 async def get_post_with_author(db: AsyncIOMotorDatabase, post_id: str) -> Optional[dict]:

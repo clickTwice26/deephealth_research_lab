@@ -235,7 +235,7 @@ export default function UsersPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-visible"
             >
-                <div className="overflow-x-auto min-h-[400px]">
+                <div className="overflow-x-auto md:overflow-visible min-h-[400px]">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
@@ -246,7 +246,7 @@ export default function UsersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-                            {filteredUsers.map((user) => (
+                            {filteredUsers.map((user, index) => (
                                 <tr key={user.id || (user as any)._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
@@ -287,7 +287,7 @@ export default function UsersPage() {
                                         </button>
 
                                         {actionDropdown === (user.id || (user as any)._id) && (
-                                            <div className="absolute right-8 top-8 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 z-50 overflow-hidden">
+                                            <div className={`absolute right-8 ${index > filteredUsers.length - 3 ? 'bottom-8' : 'top-8'} w-48 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 z-50 overflow-hidden`}>
                                                 <div className="py-1">
                                                     <button onClick={(e) => handleAction(e, 'edit', user)} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2">
                                                         <FontAwesomeIcon icon={faEdit} className="w-4" /> Change Role

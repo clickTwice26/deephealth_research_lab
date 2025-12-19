@@ -212,3 +212,31 @@ async def get_live_users(
         "last_active": u["last_active_at"],
         "status": "online"
     } for u in users]
+
+@router.get("/{user_id}/public", response_model=dict)
+async def get_public_profile(
+    user_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_database),
+) -> Any:
+    """
+    Get public profile of a user. Public access.
+    """
+    from bson import ObjectId
+    try:
+        oid = ObjectId(user_id)
+    except:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user = await db["users"].find_one({"_id": oid})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Return only public info
+    return {
+        "id": str(user["_id"]),
+        "full_name": user.get("full_name") or "Anonymous Researcher",
+        "avatar_url": user.get("avatar_url"),
+        "bio": user.get("bio", "No biography available."),
+        "research_interests": user.get("research_interests", []),
+        "role": user.get("role")
+    }

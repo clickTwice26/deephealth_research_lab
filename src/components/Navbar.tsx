@@ -4,12 +4,13 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrochip, faBars, faTimes, faFlask, faSignInAlt, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faMicrochip, faBars, faTimes, faFlask, faSignInAlt, faChartLine, faBell } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
+import { api } from '@/lib/api';
 
 const navItems = [
   { name: 'Home', href: '/#home' },
@@ -103,6 +104,10 @@ export default function Navbar() {
                     )}
                   </Link>
                 ))}
+
+
+                {/* Notifications */}
+                {user && <NotificationBell />}
 
                 <div className="ml-2 pl-2 border-l border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <ThemeToggle />
@@ -259,5 +264,135 @@ export default function Navbar() {
 
 
     </>
+  );
+}
+
+function NotificationBell() {
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter(); // Using existing hook if possible, or new one
+
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    try {
+      const data = await api.getNotifications(0, 5); // Get latest 5
+      setNotifications(data);
+      setUnreadCount(data.filter((n: any) => !n.is_read).length);
+    } catch (error) {
+      console.error("Failed to fetch notifications", error);
+    }
+  };
+
+  // Initial fetch + Polling
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleMarkRead = async (notification: any) => {
+    if (!notification.is_read) {
+      try {
+        await api.markNotificationRead(notification.id || notification._id);
+        setNotifications(prev => prev.map(n =>
+          (n.id === notification.id || n._id === notification._id) ? { ...n, is_read: true } : n
+        ));
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      } catch (error) {
+        console.error("Failed to mark read", error);
+      }
+    }
+
+    if (notification.action_url) {
+      setIsOpen(false);
+      window.location.href = notification.action_url; // Hard reload/navigate for now or router.push
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await api.markAllNotificationsRead();
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Failed to mark all read", error);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+      >
+        <FontAwesomeIcon icon={faBell} className="text-xl" />
+        {unreadCount > 0 && (
+          <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900">
+            {unreadCount}
+          </span>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-800 z-50 overflow-hidden"
+            >
+              <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
+                <h3 className="font-bold text-gray-900 dark:text-white">Notifications</h3>
+                {unreadCount > 0 && (
+                  <button onClick={handleMarkAllRead} className="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                    Mark all read
+                  </button>
+                )}
+              </div>
+
+              <div className="max-h-[400px] overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500">
+                    <p className="text-sm">No notifications yet</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id || notification._id}
+                        onClick={() => handleMarkRead(notification)}
+                        className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer flex gap-3 ${!notification.is_read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                      >
+                        <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${!notification.is_read ? 'bg-blue-500' : 'bg-transparent'}`} />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white mb-0.5">
+                            {notification.title}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                            {notification.message}
+                          </p>
+                          <p className="text-[10px] text-gray-400 mt-2">
+                            {new Date(notification.created_at).toLocaleDateString()} • {new Date(notification.created_at).toLocaleTimeString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-2 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 text-center">
+                <Link href="/dashboard/notifications" className="text-xs text-gray-500 hover:text-gray-900 dark:hover:text-white font-medium block w-full py-1">
+                  View All
+                </Link>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
