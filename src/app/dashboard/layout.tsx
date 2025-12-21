@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -50,16 +50,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setMounted(true);
     }, []);
 
-    const searchParams = useSearchParams();
+    // Redirect logic moved to AuthRedirect component
 
-    useEffect(() => {
-        if (!isLoading && !user) {
-            const currentPath = pathname;
-            const currentParams = searchParams.toString();
-            const fullPath = currentParams ? `${currentPath}?${currentParams}` : currentPath;
-            router.push(`/login?redirect=${encodeURIComponent(fullPath)}`);
-        }
-    }, [user, isLoading, router, pathname, searchParams]);
 
     useEffect(() => {
         if (!user) return;
@@ -118,6 +110,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
         <ToastProvider>
             <ImpersonationOverlay />
+            <Suspense fallback={null}>
+                <AuthRedirect />
+            </Suspense>
             <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors duration-300 text-[13px]">
                 {/* Mobile Sidebar Overlay */}
                 <AnimatePresence>
@@ -253,4 +248,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
         </ToastProvider>
     );
+
+}
+
+function AuthRedirect() {
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
+    const { user, isLoading } = useAuth();
+
+    useEffect(() => {
+        if (!isLoading && !user) {
+            const currentPath = pathname;
+            const currentParams = searchParams.toString();
+            const fullPath = currentParams ? `${currentPath}?${currentParams}` : currentPath;
+            router.push(`/login?redirect=${encodeURIComponent(fullPath)}`);
+        }
+    }, [user, isLoading, router, pathname, searchParams]);
+
+    return null;
 }

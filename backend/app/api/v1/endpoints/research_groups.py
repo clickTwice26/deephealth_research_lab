@@ -319,7 +319,7 @@ async def invite_member(
     
     # Send email notification
     # TODO: Use a proper FRONTEND_URL setting
-    base_url = "http://localhost:3000" 
+    base_url = settings.FRONTEND_URL 
     invite_link = f"{base_url}/dashboard/join-group?token={token}"
     
     email_subject = f"Invitation to join research group: {group.get('name', 'Research Group')}"

@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool = False
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
-
+    FRONTEND_URL: str
     model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()

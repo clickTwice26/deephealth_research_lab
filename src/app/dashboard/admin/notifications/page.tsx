@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { api, AdminNotificationSend } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
