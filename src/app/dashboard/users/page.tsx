@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { api, User } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faUserShield, faUserGraduate, faUserTag, faUser, faEdit, faCheck, faTimes, faShieldAlt, faPaperPlane, faInfoCircle, faIdBadge, faCalendarAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faUserShield, faUserGraduate, faUserTag, faUser, faEdit, faCheck, faTimes, faShieldAlt, faPaperPlane, faInfoCircle, faIdBadge, faCalendarAlt, faEnvelope, faHdd } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
 import Modal from '@/components/Modal';
 import { useToast } from '@/components/Toast';
@@ -146,6 +146,14 @@ export default function UsersPage() {
         }
     };
 
+    const formatSize = (bytes?: number) => {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
     // Dropdown Logic
     const [actionDropdown, setActionDropdown] = useState<string | null>(null);
 
@@ -241,6 +249,7 @@ export default function UsersPage() {
                             <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Storage</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
@@ -268,6 +277,11 @@ export default function UsersPage() {
                                             {getRoleIcon(user.role)}
                                             <span className="capitalize">{user.role}</span>
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                                            {formatSize(user.storage_used)} / 200 MB
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium ${user.is_active ? 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400' : 'text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400'}`}>
@@ -388,6 +402,14 @@ export default function UsersPage() {
                                     <span className="text-xs font-semibold uppercase tracking-wider">Contact</span>
                                 </div>
                                 <p className="text-sm text-gray-900 dark:text-white truncate" title={selectedUser.email}>{selectedUser.email}</p>
+                            </div>
+
+                            <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-1">
+                                    <FontAwesomeIcon icon={faHdd} className="w-4" />
+                                    <span className="text-xs font-semibold uppercase tracking-wider">Storage Used</span>
+                                </div>
+                                <p className="text-sm text-gray-900 dark:text-white font-mono">{formatSize(selectedUser.storage_used)} / 200 MB</p>
                             </div>
                         </div>
 

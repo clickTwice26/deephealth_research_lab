@@ -121,10 +121,18 @@ export const api = {
     // Community
     getCommunityPosts: (page = 1, size = 10, sort = 'latest', filter = 'all') => request<CommunityPostPagination>(`/community/?page=${page}&size=${size}&sort=${sort}&filter=${filter}`),
     getCommunityPost: (id: string) => request<CommunityPost>(`/community/${id}`),
-    createCommunityPost: (content: string) => request<CommunityPost>('/community/', { method: 'POST', body: JSON.stringify({ content }) }),
+    getCommunityPost: (id: string) => request<CommunityPost>(`/community/${id}`),
+    createCommunityPost: (content: string, files: File[] = []) => {
+        const formData = new FormData();
+        formData.append('content', content);
+        files.forEach(file => formData.append('files', file));
+
+        return request<CommunityPost>('/community/', {
+            method: 'POST',
+            body: formData
+        });
+    },
     likePost: (id: string) => request<CommunityPost>(`/community/${id}/like`, { method: 'POST' }),
-    dislikePost: (id: string) => request<CommunityPost>(`/community/${id}/dislike`, { method: 'POST' }),
-    commentPost: (id: string, content: string, parent_id?: string) => request<CommunityPost>(`/community/${id}/comment`, { method: 'POST', body: JSON.stringify({ content, parent_id }) }),
     // Research Groups
     researchGroups: {
         list: () => request<ResearchGroup[]>('/research-groups/'),
@@ -219,6 +227,7 @@ export interface Comment {
 export interface CommunityPost {
     _id: string;
     content: string;
+    images?: string[];
     author_id: string;
     author_name: string;
     author_email: string;
@@ -310,6 +319,7 @@ export interface User {
     is_active: boolean;
     access_weight?: number;
     id_?: string; // alias if needed
+    storage_used?: number;
 }
 
 export interface SearchResult {

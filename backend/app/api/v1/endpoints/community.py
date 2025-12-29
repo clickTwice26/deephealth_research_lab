@@ -1,5 +1,5 @@
-from typing import List, Any
-from fastapi import APIRouter, Depends, HTTPException, Body, Query
+from typing import List, Any, Dict
+from fastapi import APIRouter, Depends, HTTPException, Body, Query, UploadFile, File, Form
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.api import deps
 from app.api.deps import get_database, get_current_user
@@ -65,14 +65,46 @@ async def read_post(
 
 @router.post("/", response_model=CommunityPost)
 async def create_post(
-    post: CommunityPostCreate,
+    content: str = Form(...),
+    files: List[UploadFile] = File(None),
     db: AsyncIOMotorDatabase = Depends(get_database),
     current_user: User = Depends(deps.RoleChecker(required_weight=POST_ACCESS_WEIGHT)),
 ) -> Any:
     """
-    Create a new post. Researcher+.
+    Create a new post with optional images. Researcher+.
     """
-    return await crud_community.create_post(db, post, str(current_user.id))
+    image_urls = []
+    
+    # Upload images if present
+    if files:
+        import os
+        import uuid
+        from app.services.s3 import s3_service
+        
+        for file in files:
+            if not file.content_type.startswith('image/'):
+                continue
+                
+            file_extension = os.path.splitext(file.filename)[1]
+            filename = f"{uuid.uuid4()}{file_extension}"
+            object_name = f"community_uploads/{current_user.id}/{filename}"
+            
+            try:
+                await file.seek(0)
+                url = s3_service.upload_file(
+                    file.file, 
+                    object_name, 
+                    content_type=file.content_type
+                )
+                image_urls.append(url)
+            except Exception as e:
+                print(f"Failed to upload image {file.filename}: {e}")
+                # Continue with other files or fail? Failsafe: continue
+                
+    # Create Post Object
+    post_in = CommunityPostCreate(content=content, images=image_urls)
+    
+    return await crud_community.create_post(db, post_in, str(current_user.id))
 
 @router.post("/{post_id}/like")
 async def like_post(

@@ -25,6 +25,7 @@ class UserBase(BaseModel):
     is_superuser: bool = False
     role: UserRole = UserRole.USER
     last_active_at: Optional[datetime] = None
+    storage_used: Optional[int] = 0  # In bytes
 
 class UserCreate(UserBase):
     password: str

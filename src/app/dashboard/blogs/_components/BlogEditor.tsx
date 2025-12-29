@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, BlogPost } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faArrowLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faArrowLeft, faSpinner, faImage, faTimes, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import RichTextEditor from '@/components/RichTextEditor';
+import axios from 'axios';
 
 interface BlogEditorProps {
     slug?: string;
@@ -16,6 +17,8 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(!isNew);
     const [isSaving, setIsSaving] = useState(false);
+    const [uploadingCover, setUploadingCover] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState<Partial<BlogPost>>({
         title: '',
@@ -78,6 +81,34 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
             ...formData,
             tags: formData.tags?.filter(tag => tag !== tagToRemove)
         });
+    };
+
+    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingCover(true);
+        const uploadData = new FormData();
+        uploadData.append('file', file);
+
+        try {
+            const token = localStorage.getItem('token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+            const response = await axios.post(`${apiUrl}/upload/s3`, uploadData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            setFormData({ ...formData, cover_image: response.data.url });
+        } catch (error) {
+            console.error('Failed to upload cover image', error);
+            alert('Failed to upload image');
+        } finally {
+            setUploadingCover(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -177,17 +208,66 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
                                 placeholder="e.g. Research, News"
                             />
                         </div>
-                        <div>
+                        <div className="md:col-span-2 lg:col-span-1">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Cover Image URL
+                                Cover Image
                             </label>
+
                             <input
-                                type="url"
-                                value={formData.cover_image || ''}
-                                onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-black focus:ring-2 focus:ring-blue-500 outline-none"
-                                placeholder="https://..."
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleCoverUpload}
                             />
+
+                            {formData.cover_image ? (
+                                <div className="relative w-full h-48 rounded-xl overflow-hidden group border border-gray-200 dark:border-gray-800">
+                                    <img
+                                        src={formData.cover_image}
+                                        alt="Cover"
+                                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg backdrop-blur-sm transition-colors text-sm font-medium"
+                                        >
+                                            Change
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, cover_image: '' })}
+                                            className="p-2 bg-red-500/80 hover:bg-red-600/80 text-white rounded-lg backdrop-blur-sm transition-colors"
+                                        >
+                                            <FontAwesomeIcon icon={faTimes} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="w-full h-48 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 bg-gray-50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group"
+                                >
+                                    {uploadingCover ? (
+                                        <div className="flex flex-col items-center gap-2 text-blue-500">
+                                            <FontAwesomeIcon icon={faSpinner} className="animate-spin text-2xl" />
+                                            <span className="text-sm font-medium">Uploading...</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 flex items-center justify-center text-gray-400 group-hover:text-blue-500 transition-colors">
+                                                <FontAwesomeIcon icon={faCloudUploadAlt} className="text-xl" />
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Click to upload cover image</p>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">SVG, PNG, JPG or GIF (max 5MB)</p>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
 

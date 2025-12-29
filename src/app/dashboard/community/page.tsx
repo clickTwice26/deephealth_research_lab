@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { api, CommunityPost, Comment } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faComment, faPaperPlane, faUserCircle, faGlobeAmericas, faFire, faClock, faUser, faInfoCircle, faHashtag, faBolt } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faComment, faPaperPlane, faUserCircle, faGlobeAmericas, faFire, faClock, faUser, faInfoCircle, faHashtag, faBolt, faImage, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import ActiveUsersWidget from '@/components/ActiveUsersWidget';
 
@@ -58,6 +58,9 @@ export default function CommunityPage() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [isPosting, setIsPosting] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<{ file: File, preview: string }[]>([]);
+    const [isUploading, setIsUploading] = useState(false); // Can be reused or removed if instant upload is gone
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Filters
     const [sortBy, setSortBy] = useState<'latest' | 'popular'>('latest');
@@ -98,6 +101,13 @@ export default function CommunityPage() {
 
         fetchDetails();
     }, [selectedPostId]); // don't depend on posts to avoid loops, just ID change
+
+    // Cleanup object URLs to avoid memory leaks
+    useEffect(() => {
+        return () => {
+            selectedFiles.forEach(f => URL.revokeObjectURL(f.preview));
+        };
+    }, [selectedFiles]);
 
     // ... (rest of code)
 
@@ -171,15 +181,40 @@ export default function CommunityPage() {
     }, [page]);
 
 
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        const newFiles = Array.from(files).map(file => ({
+            file,
+            preview: URL.createObjectURL(file)
+        }));
+
+        setSelectedFiles(prev => [...prev, ...newFiles]);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const removeFile = (index: number) => {
+        setSelectedFiles(prev => {
+            const toRemove = prev[index];
+            URL.revokeObjectURL(toRemove.preview);
+            return prev.filter((_, i) => i !== index);
+        });
+    };
+
     const handleCreatePost = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newPostContent.trim()) return;
+        if (!newPostContent.trim() && selectedFiles.length === 0) return;
 
         setIsPosting(true);
         try {
-            const newPost = await api.createCommunityPost(newPostContent);
+            // Extract raw File objects
+            const filesToUpload = selectedFiles.map(f => f.file);
+            const newPost = await api.createCommunityPost(newPostContent, filesToUpload);
+
             setPosts([newPost, ...posts]);
             setNewPostContent('');
+            setSelectedFiles([]); // Previews cleaned up by effect
         } catch (error) {
             console.error('Failed to create post', error);
         } finally {
@@ -397,10 +432,49 @@ export default function CommunityPage() {
                                     placeholder="Share your latest findings or ask a question..."
                                     className="w-full bg-gray-50 dark:bg-gray-800/50 border-none rounded-xl p-3 focus:ring-2 focus:ring-blue-500/30 min-h-[80px] resize-none transition-all placeholder:text-gray-400"
                                 />
-                                <div className="flex justify-end mt-3">
+
+                                {/* Image Previews */}
+                                {selectedFiles.length > 0 && (
+                                    <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
+                                        {selectedFiles.map((item, idx) => (
+                                            <div key={idx} className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                                                <img src={item.preview} alt="preview" className="w-full h-full object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeFile(idx)}
+                                                    className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/50 text-white rounded-full flex items-center justify-center text-xs hover:bg-black/70 transition-colors"
+                                                >
+                                                    <FontAwesomeIcon icon={faTimes} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="flex justify-between items-center mt-3">
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleFileSelect}
+                                            className="hidden"
+                                            accept="image/*"
+                                            multiple
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={isPosting} // Disable only when posting
+                                            className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            title="Add Image"
+                                        >
+                                            <FontAwesomeIcon icon={faImage} />
+                                        </button>
+                                    </div>
+
                                     <button
                                         type="submit"
-                                        disabled={isPosting || !newPostContent.trim()}
+                                        disabled={isPosting || (!newPostContent.trim() && selectedFiles.length === 0)}
                                         className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm transition-all transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-blue-600/20"
                                     >
                                         <FontAwesomeIcon icon={faPaperPlane} />
@@ -489,6 +563,22 @@ export default function CommunityPage() {
                                                 <p className="mt-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed text-[15px]">
                                                     {post.content}
                                                 </p>
+
+                                                {/* Post Images */}
+                                                {post.images && post.images.length > 0 && (
+                                                    <div className={`mt-3 grid gap-2 ${post.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                                                        {post.images.slice(0, 4).map((img, idx) => (
+                                                            <div key={idx} className={`relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 aspect-video ${idx === 2 && post.images!.length > 3 ? 'opacity-50' : ''}`}>
+                                                                <img src={img} alt="Post image" className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform" onClick={() => setSelectedPostId(post._id)} />
+                                                                {idx === 2 && post.images!.length > 4 && (
+                                                                    <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl pointer-events-none">
+                                                                        +{post.images!.length - 4}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
@@ -639,6 +729,17 @@ export default function CommunityPage() {
                                     <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed text-base">
                                         {selectedPost.content}
                                     </p>
+
+                                    {/* Modal Images */}
+                                    {selectedPost.images && selectedPost.images.length > 0 && (
+                                        <div className="mt-4 space-y-2">
+                                            {selectedPost.images.map((img, idx) => (
+                                                <div key={idx} className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                                                    <img src={img} alt="Post detail" className="w-full h-auto" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
 
                                     <div className="py-4 mt-4 border-t border-gray-100 dark:border-gray-800/50 flex items-center justify-between text-sm font-medium text-gray-500">
                                         <div className="flex items-center gap-1">

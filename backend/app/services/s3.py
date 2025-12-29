@@ -51,11 +51,64 @@ class S3Service:
             url = f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{object_name}"
             return url
             
+
         except ClientError as e:
             logger.error(f"Failed to upload file to S3: {e}")
             raise e
         except Exception as e:
             logger.error(f"Unexpected error uploading to S3: {e}")
             raise e
+
+    def list_objects(self, prefix: str) -> list:
+        """
+        List objects in the bucket with a given prefix.
+        Returns a list of dicts with Key, Size, LastModified.
+        """
+        if not self.s3_client:
+            return []
+            
+        try:
+            response = self.s3_client.list_objects_v2(
+                Bucket=self.bucket_name,
+                Prefix=prefix
+            )
+            return response.get('Contents', [])
+        except Exception as e:
+            logger.error(f"Failed to list objects in S3: {e}")
+            return []
+
+    def delete_object(self, object_name: str) -> bool:
+        """
+        Delete an object from S3.
+        """
+        if not self.s3_client:
+            return False
+            
+        try:
+            self.s3_client.delete_object(
+                Bucket=self.bucket_name,
+                Key=object_name
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete object from S3: {e}")
+            return False
+    
+    def get_object_metadata(self, object_name: str) -> dict:
+        """
+        Get metadata (including ContentLength) of an object.
+        """
+        if not self.s3_client:
+            return None
+            
+        try:
+            return self.s3_client.head_object(
+                Bucket=self.bucket_name,
+                Key=object_name
+            )
+        except Exception as e:
+            logger.error(f"Failed to head object in S3: {e}")
+            return None
+
 
 s3_service = S3Service()

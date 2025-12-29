@@ -86,6 +86,7 @@ async def get_posts_with_authors(
             "likes": 1,
             "dislikes": 1,
             "comments_count": 1,
+            "images": 1,
             "author_name": "$author_info.full_name",
             "author_email": "$author_info.email"
         }
@@ -246,6 +247,7 @@ async def get_post_with_author(db: AsyncIOMotorDatabase, post_id: str) -> Option
                 "likes": 1,
                 "dislikes": 1,
                 "comments": 1,
+                "images": 1,
                 "author_name": "$author_info.full_name",
                 "author_email": "$author_info.email"
             }

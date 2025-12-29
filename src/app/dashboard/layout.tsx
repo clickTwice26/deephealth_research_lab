@@ -22,7 +22,11 @@ import {
     faMoon,
     faSun,
     faPaperPlane,
-    faPenNib
+    faPenNib,
+    faComments,
+    faNewspaper,
+    faUpload,
+    faHdd
 } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -166,6 +170,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     <SidebarLink icon={faBook} label="Publications" href="/dashboard/publications" />
                                     <SidebarLink icon={faBriefcase} label="Jobs / Careers" href="/dashboard/jobs" />
                                     <SidebarLink icon={faShieldAlt} label="User Management" href="/dashboard/users" />
+                                    <SidebarLink icon={faHdd} label="Cloud Bucket" href="/dashboard/bucket" />
                                 </div>
                             )}
                         </nav>

@@ -1,5 +1,19 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import items, auth, users, notifications, search, news, publications, jobs, community, research_groups, blog, upload
+from app.api.v1.endpoints import (
+    items,
+    auth,
+    users,
+    notifications,
+    search,
+    news,
+    publications,
+    jobs,
+    community,
+    research_groups,
+    blog,
+    upload,
+    bucket, # Added bucket to imports
+)
 
 api_router = APIRouter()
 api_router.include_router(items.router, prefix="/items", tags=["items"])
@@ -14,3 +28,4 @@ api_router.include_router(community.router, prefix="/community", tags=["communit
 api_router.include_router(research_groups.router, prefix="/research-groups", tags=["research-groups"])
 api_router.include_router(blog.router, prefix="/blog", tags=["blog"])
 api_router.include_router(upload.router, prefix="/upload", tags=["upload"])
+api_router.include_router(bucket.router, prefix="/bucket", tags=["bucket"]) # Added bucket router

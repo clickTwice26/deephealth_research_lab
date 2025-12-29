@@ -14,6 +14,7 @@ class Comment(BaseModel):
 
 class CommunityPostBase(BaseModel):
     content: str
+    images: List[str] = []
 
 class CommunityPostCreate(CommunityPostBase):
     pass
