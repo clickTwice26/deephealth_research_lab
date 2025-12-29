@@ -1,9 +1,10 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
-import { ChatMessage } from '@/lib/api';
+import { ChatMessage, api } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faSmile, faImage, faCircle, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faSmile, faImage, faCircle, faEllipsisV, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 
 interface ChatBoxProps {
     messages: ChatMessage[];
@@ -14,8 +15,41 @@ interface ChatBoxProps {
 export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBoxProps) {
     const { user } = useAuth();
     const [newMessage, setNewMessage] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [expandedImage, setExpandedImage] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const token = localStorage.getItem('token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+            const response = await axios.post(`${apiUrl}/upload/s3`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            const imageUrl = response.data.url;
+            onSendMessage(`![Image](${imageUrl})`);
+
+        } catch (error) {
+            console.error('Failed to upload image', error);
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
 
     // Auto-scroll
     useEffect(() => {
@@ -74,8 +108,8 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
                 <div className="flex items-center gap-3">
                     <h3 className="font-bold text-gray-900 dark:text-white text-lg">Chat</h3>
                     <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${isConnected
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                         }`}>
                         <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
                         {isConnected ? 'Live' : 'Disconnected'}
@@ -135,11 +169,20 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
                                             <div
                                                 key={msg._id || msgIdx}
                                                 className={`px-4 py-2 text-[15px] leading-relaxed break-words shadow-sm transition-all hover:brightness-95 ${isMe
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
                                                     } ${borderRadius}`}
                                             >
-                                                {msg.content}
+                                                {msg.content.startsWith('![Image](') && msg.content.endsWith(')') ? (
+                                                    <img
+                                                        src={msg.content.slice(9, -1)}
+                                                        alt="Shared image"
+                                                        className="max-w-[12rem] md:max-w-sm rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                                        onClick={() => setExpandedImage(msg.content.slice(9, -1))}
+                                                    />
+                                                ) : (
+                                                    msg.content
+                                                )}
                                             </div>
                                         );
                                     })}
@@ -159,9 +202,7 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
             <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
                 <div className="flex items-end gap-2 bg-gray-50 dark:bg-gray-800/50 p-2 rounded-3xl border border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-all">
                     {/* Addons (Visual only) */}
-                    <button className="p-2 text-gray-400 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <FontAwesomeIcon icon={faImage} />
-                    </button>
+
 
                     <textarea
                         ref={textareaRef}
@@ -174,22 +215,76 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
                         style={{ minHeight: '40px' }}
                     />
 
-                    <button className="p-2 text-gray-400 hover:text-yellow-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <FontAwesomeIcon icon={faSmile} />
-                    </button>
+                    <div className="flex items-center">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                        />
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                            className="p-2 text-gray-400 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title="Upload Image"
+                        >
+                            {uploading ? (
+                                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                            ) : (
+                                <FontAwesomeIcon icon={faImage} />
+                            )}
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-yellow-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <FontAwesomeIcon icon={faSmile} />
+                        </button>
+                    </div>
 
                     <button
                         onClick={() => handleSend()}
-                        disabled={!isConnected || !newMessage.trim()}
+                        disabled={!isConnected || (!newMessage.trim() && !uploading)}
                         className={`p-2 rounded-full transition-all duration-300 ${newMessage.trim()
-                                ? 'bg-blue-600 text-white shadow-lg hover:bg-blue-700 transform hover:scale-105'
-                                : 'bg-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                            ? 'bg-blue-600 text-white shadow-lg hover:bg-blue-700 transform hover:scale-105'
+                            : 'bg-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed'
                             }`}
                     >
                         <FontAwesomeIcon icon={faPaperPlane} />
                     </button>
                 </div>
             </div>
+
+            {/* Image Modal */}
+            <AnimatePresence>
+                {expandedImage && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setExpandedImage(null)}
+                        className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    >
+                        <motion.button
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            onClick={() => setExpandedImage(null)}
+                            className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
+                        >
+                            <FontAwesomeIcon icon={faTimes} />
+                        </motion.button>
+
+                        <motion.img
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            src={expandedImage}
+                            alt="Full size"
+                            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

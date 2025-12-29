@@ -305,6 +305,7 @@ export interface User {
     _id?: string; // Backend often returns _id for Mongo
     email: string;
     full_name?: string;
+    profile_image?: string;
     role: 'admin' | 'researcher' | 'member' | 'user';
     is_active: boolean;
     access_weight?: number;

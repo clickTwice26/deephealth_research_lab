@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faSave, faUserCircle, faCog, faMoon, faBell, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faSave, faUserCircle, faCog, faMoon, faBell, faShieldAlt, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from 'next-themes';
 
 export default function ProfilePage() {
@@ -15,6 +16,58 @@ export default function ProfilePage() {
     const [name, setName] = useState(user?.full_name || '');
     const [email, setEmail] = useState(user?.email || '');
     const [activeTab, setActiveTab] = useState('profile');
+
+    // Profile Picture Upload
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [uploading, setUploading] = useState(false);
+    // Use local state for avatar to update immediately before reload/context update
+    const [avatarUrl, setAvatarUrl] = useState(user?.profile_image);
+
+    // Update avatarUrl when user context updates (e.g. on mount/refresh)
+    useEffect(() => {
+        if (user?.profile_image) {
+            setAvatarUrl(user.profile_image);
+        }
+    }, [user]);
+
+    const handleFileClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            // Get token from localStorage assuming it's stored there by AuthContext
+            const token = localStorage.getItem('token');
+
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/upload/profile-picture`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Update local state and ideally trigger a user refresh
+            setAvatarUrl(response.data.url);
+            // Optionally reload page or re-fetch user profile
+            window.location.reload();
+        } catch (error) {
+            console.error('Upload failed:', error);
+            alert('Failed to upload profile picture');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     useEffect(() => {
         setMounted(true);
@@ -72,18 +125,26 @@ export default function ProfilePage() {
                     <div className="animate-fade-in">
                         {/* Avatar Section */}
                         <div className="flex items-center space-x-6 mb-8">
-                            <div className="relative group cursor-pointer">
+                            <div className="relative group cursor-pointer" onClick={handleFileClick}>
                                 <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-2xl font-bold text-white shadow-lg overflow-hidden">
-                                    {imgError ? (
-                                        user?.full_name?.charAt(0) || 'U'
+                                    {uploading ? (
+                                        <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                                    ) : avatarUrl ? (
+                                        <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
                                     ) : (
-                                        // Assuming we might have image later, but for now fallback
                                         user?.full_name?.charAt(0) || 'U'
                                     )}
                                 </div>
                                 <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <FontAwesomeIcon icon={faCamera} className="text-white" />
                                 </div>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                    accept="image/*"
+                                />
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">{user?.full_name}</h2>

@@ -173,8 +173,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                     <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
                         <Link href="/dashboard/profile" className="flex items-center space-x-3 mb-4 hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors group">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-blue-100 dark:group-hover:ring-blue-900 transition-all">
-                                {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-blue-100 dark:group-hover:ring-blue-900 transition-all overflow-hidden">
+                                {user.profile_image ? (
+                                    <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" />
+                                ) : (
+                                    user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()
+                                )}
                             </div>
                             <div className="overflow-hidden flex-1">
                                 <p className="text-xs font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{user.full_name}</p>

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status, WebSocket, WebSocketDisconnect, Query
+from fastapi import APIRouter, Depends, HTTPException, status, WebSocket, WebSocketDisconnect, Query, UploadFile, File
 from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 import uuid
+import os
 from datetime import datetime
 from jose import jwt, JWTError
 
@@ -15,6 +16,7 @@ from app.models.research_group import (
 )
 from app.models.user import User, UserRole
 from app.utils.email import send_email
+from app.services.s3 import s3_service
 
 router = APIRouter()
 
@@ -518,3 +520,50 @@ async def websocket_endpoint(
     except WebSocketDisconnect:
         manager.disconnect(websocket, group_id, str(user.id))
         await manager.broadcast_status(group_id)
+
+@router.post("/{group_id}/image", response_model=ResearchGroup)
+async def upload_group_image(
+    group_id: str,
+    file: UploadFile = File(...),
+    current_user: User = Depends(deps.get_current_active_user),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    try:
+        oid = ObjectId(group_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid ID")
+
+    group = await db["research_groups"].find_one({"_id": oid})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    # Permission check: Group Admin or System Admin
+    member_rec = next((m for m in group["members"] if m["user_id"] == str(current_user.id)), None)
+    is_group_admin = member_rec and member_rec["role"] == GroupRole.ADMIN
+    if not is_group_admin and current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Not authorized to update group image")
+
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    # Upload to S3
+    file_extension = os.path.splitext(file.filename)[1]
+    object_name = f"research_groups/{group_id}/{uuid.uuid4()}{file_extension}"
+    
+    try:
+        # Reset file pointer
+        await file.seek(0)
+        
+        image_url = s3_service.upload_file(file.file, object_name, file.content_type)
+    except Exception as e:
+        print(f"Group upload error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+    # Update group
+    await db["research_groups"].update_one(
+        {"_id": oid},
+        {"$set": {"image_url": image_url}}
+    )
+
+    updated_group = await db["research_groups"].find_one({"_id": oid})
+    return ResearchGroup(**await enrich_group_data(updated_group, db))

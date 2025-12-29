@@ -13,3 +13,5 @@ google-auth
 requests
 email-validator
 websockets
+certifi
+boto3

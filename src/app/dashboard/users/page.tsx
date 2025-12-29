@@ -250,8 +250,12 @@ export default function UsersPage() {
                                 <tr key={user.id || (user as any)._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold">
-                                                {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold overflow-hidden">
+                                                {user.profile_image ? (
+                                                    <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()
+                                                )}
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900 dark:text-white">{user.full_name}</p>

@@ -8,7 +8,8 @@ import MemberList from '@/components/research-groups/MemberList';
 import InviteMemberModal from '@/components/research-groups/InviteMemberModal';
 import GroupSettingsModal from '@/components/research-groups/GroupSettingsModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faArrowLeft, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faArrowLeft, faCog, faCamera } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
@@ -26,9 +27,48 @@ export default function GroupDetailPage() {
     const [loading, setLoading] = useState(true);
     const [isInviteOpen, setIsInviteOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // WS
     const wsRef = useRef<WebSocket | null>(null);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !group) return;
+
+        setUploadingImage(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const token = localStorage.getItem('token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+            await axios.post(`${apiUrl}/research-groups/${groupId}/image`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            // Refresh group data
+            const updated = await api.researchGroups.get(groupId);
+            setGroup(updated);
+
+        } catch (error) {
+            console.error('Failed to upload image', error);
+        } finally {
+            setUploadingImage(false);
+        }
+    };
+
+    const handleImageClick = () => {
+        console.log('Image clicked. isAdmin:', isAdmin, 'uploading:', uploadingImage);
+        if (isAdmin && !uploadingImage) {
+            fileInputRef.current?.click();
+        }
+    };
 
     // Initial Fetch
     useEffect(() => {
@@ -111,6 +151,14 @@ export default function GroupDetailPage() {
 
     const isAdmin = group.created_by === user?.id || group.members.some(m => m.user_id === user?.id && m.role === 'admin');
 
+    // Debug Logs
+    console.log('Group Details Debug:', {
+        userId: user?.id,
+        groupCreatedBy: group.created_by,
+        isAdmin,
+        members: group.members
+    });
+
     return (
         <div className="flex flex-col h-[calc(100vh-8rem)]">
             {/* Header */}
@@ -123,9 +171,36 @@ export default function GroupDetailPage() {
                         <FontAwesomeIcon icon={faArrowLeft} />
                     </Link>
                     <div className="flex items-center gap-4">
-                        {group.image_url && (
-                            <img src={group.image_url} alt={group.name} className="w-12 h-12 rounded-xl object-cover bg-gray-100 dark:bg-gray-800" />
-                        )}
+                        <div className="relative">
+                            <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700">
+                                {group.image_url ? (
+                                    <img src={group.image_url} alt={group.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="text-xl font-bold text-gray-400">{group.name.charAt(0)}</span>
+                                )}
+                            </div>
+
+                            {isAdmin && (
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="absolute -bottom-2 -right-2 w-6 h-6 bg-white dark:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-blue-600 hover:border-blue-200 shadow-sm transition-all z-20"
+                                    title="Change Image"
+                                >
+                                    {uploadingImage ? (
+                                        <FontAwesomeIcon icon={faSpinner} className="animate-spin text-[10px]" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faCamera} className="text-[10px]" />
+                                    )}
+                                </button>
+                            )}
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                            />
+                        </div>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                                 {group.name}

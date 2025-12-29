@@ -198,7 +198,7 @@ async def get_live_users(
     
     cursor = db["users"].find(
         {"last_active_at": {"$gte": threshold}},
-        {"_id": 1, "email": 1, "full_name": 1, "role": 1, "last_active_at": 1}
+        {"_id": 1, "email": 1, "full_name": 1, "role": 1, "last_active_at": 1, "profile_image": 1}
     )
     
     users = await cursor.to_list(length=100)
@@ -210,6 +210,7 @@ async def get_live_users(
         "email": u["email"],
         "role": u["role"],
         "last_active": u["last_active_at"],
+        "profile_image": u.get("profile_image"),
         "status": "online"
     } for u in users]
 

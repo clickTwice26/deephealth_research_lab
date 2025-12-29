@@ -11,6 +11,7 @@ interface LiveUser {
     email: string;
     role: string;
     last_active: string;
+    profile_image?: string;
     status: 'online' | 'offline';
 }
 
@@ -20,7 +21,7 @@ export default function ActiveUsersWidget() {
     useEffect(() => {
         const fetchLiveUsers = async () => {
             try {
-                const data = await api.getLiveUsers();
+                const data = await api.getLiveUsers() as any; // Type assertion since api return type update is not strictly enforced in frontend yet or needs api.ts update
                 setUsers(data);
             } catch (error) {
                 console.error('Failed to fetch live users', error);
@@ -51,8 +52,12 @@ export default function ActiveUsersWidget() {
                         <div key={user.id} className="flex items-center justify-between group">
                             <div className="flex items-center gap-3">
                                 <div className="relative">
-                                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs uppercase">
-                                        {user.name.charAt(0)}
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs uppercase overflow-hidden">
+                                        {user.profile_image ? (
+                                            <img src={user.profile_image} alt={user.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            user.name.charAt(0)
+                                        )}
                                     </div>
                                     <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center">
                                         <FontAwesomeIcon icon={faCircle} className="text-[8px] text-green-500" />

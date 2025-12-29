@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
     FRONTEND_URL: str
+    
+    # AWS Settings
+    AWS_ACCESS_KEY: Optional[str] = None
+    AWS_ACCESS_SECRET_KEY: Optional[str] = None
+    AWS_STORAGE_BUCKET_NAME: Optional[str] = None
+    AWS_S3_REGION_NAME: Optional[str] = None
     model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
