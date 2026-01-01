@@ -273,7 +273,11 @@ export default function BucketPage() {
                         className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
                     >
                         {filteredFiles.map(file => {
-                            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(file.filename.split('.').pop()?.toLowerCase() || '');
+                            const ext = file.filename.split('.').pop()?.toLowerCase() || '';
+                            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+                            const isPdf = ext === 'pdf';
+                            const isPreviewable = isImage || isPdf;
+
                             return (
                                 <div key={file.key} className="group bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden hover:shadow-lg transition-all hover:border-blue-500 dark:hover:border-blue-500">
                                     <div className="aspect-square bg-gray-50 dark:bg-gray-950 relative flex items-center justify-center overflow-hidden">
@@ -285,7 +289,7 @@ export default function BucketPage() {
 
                                         {/* Overlay Actions */}
                                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                            {isImage && (
+                                            {isPreviewable && (
                                                 <button onClick={() => setPreviewImage(file.url)} className="p-2 bg-white/20 hover:bg-white/40 text-white rounded-lg backdrop-blur-sm">
                                                     <FontAwesomeIcon icon={faEye} />
                                                 </button>

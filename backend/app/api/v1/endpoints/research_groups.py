@@ -409,7 +409,20 @@ async def get_messages(
 
     cursor = db["chat_messages"].find({"group_id": group_id}).sort("timestamp", -1).skip(skip).limit(limit)
     messages = await cursor.to_list(length=limit)
-    return [ChatMessage(**m) for m in messages][::-1]
+    
+    # Enrich with avatars
+    user_ids = list(set([m["user_id"] for m in messages]))
+    users = await db["users"].find({"_id": {"$in": [ObjectId(uid) for uid in user_ids]}}).to_list(None)
+    user_map = {str(u["_id"]): u for u in users}
+    
+    enriched_messages = []
+    for m in messages:
+        user = user_map.get(m["user_id"])
+        if user and user.get("profile_image"):
+            m["user_avatar"] = user["profile_image"]
+        enriched_messages.append(m)
+        
+    return [ChatMessage(**m) for m in enriched_messages][::-1]
 
 @router.post("/{group_id}/read")
 async def mark_messages_read(
@@ -503,6 +516,7 @@ async def websocket_endpoint(
                 group_id=group_id,
                 user_id=str(user.id),
                 user_name=user.full_name or user.email,
+                user_avatar=user.profile_image,
                 content=data
             )
             # Save

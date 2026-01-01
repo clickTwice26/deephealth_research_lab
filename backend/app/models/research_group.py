@@ -74,6 +74,7 @@ class ChatMessage(BaseModel):
     group_id: str
     user_id: str
     user_name: str # Cache name for easier display
+    user_avatar: Optional[str] = None
     content: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 

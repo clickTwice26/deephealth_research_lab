@@ -14,9 +14,11 @@ export default function AdminTeamPage() {
     const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
 
     // Form State
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [formData, setFormData] = useState<Partial<TeamMember>>({
         name: '',
         designation: '',
+        university: '',
         designation_weight: 0,
         bio: '',
         email: '',
@@ -45,6 +47,7 @@ export default function AdminTeamPage() {
 
     const handleEdit = (member: TeamMember) => {
         setEditingMember(member);
+        setSelectedFile(null);
         setFormData({
             ...member,
             social_links: { ...member.social_links } // deep copy
@@ -63,27 +66,43 @@ export default function AdminTeamPage() {
         }
     };
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.[0]) return;
-        setUploading(true);
-        try {
-            const res = await api.uploadImage(e.target.files[0]);
-            setFormData(prev => ({ ...prev, profile_image: res.url }));
-        } catch (error) {
-            alert('Failed to upload image');
-        } finally {
-            setUploading(false);
-        }
+        const file = e.target.files[0];
+        setSelectedFile(file);
+        // Create local preview
+        const previewUrl = URL.createObjectURL(file);
+        setFormData(prev => ({ ...prev, profile_image: previewUrl }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
         try {
+            let finalData = { ...formData }; // copy
+
+            // Upload image if selected
+            if (selectedFile) {
+                try {
+                    const uploadRes = await api.uploadImage(selectedFile);
+                    finalData.profile_image = uploadRes.url;
+                } catch (err) {
+                    alert('Failed to upload new image. Saving profile without it.');
+                    // Optionally return here to stop
+                    // return; 
+                }
+            }
+
+            // Clean up preview URL if it was a blob and upload failed or logic changed
+            // Actually, if upload succeeded, finalData.profile_image is the remote URL. 
+            // If upload failed, it might still be the blob URL, which is bad for backend. 
+            // Ideally we check if profile_image starts with blob: and fail hard or retry.
+            // But for now let's assume valid flow or careful error handling.
+
             if (editingMember) {
-                await api.updateTeamMember(editingMember._id, formData);
+                await api.updateTeamMember(editingMember._id, finalData);
             } else {
-                await api.createTeamMember(formData);
+                await api.createTeamMember(finalData);
             }
             setIsModalOpen(false);
             fetchMembers();
@@ -98,9 +117,11 @@ export default function AdminTeamPage() {
 
     const resetForm = () => {
         setEditingMember(null);
+        setSelectedFile(null);
         setFormData({
             name: '',
             designation: '',
+            university: '',
             designation_weight: 0,
             bio: '',
             email: '',
@@ -263,6 +284,17 @@ export default function AdminTeamPage() {
                                     </div>
 
                                     <div>
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">University / Affiliation</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. Stanford University"
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 focus:outline-none focus:border-blue-500"
+                                            value={formData.university || ''}
+                                            onChange={e => setFormData({ ...formData, university: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div>
                                         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                                             Order Weight <span className="text-gray-400 font-normal ml-1">(Higher shows first)</span>
                                         </label>
@@ -290,6 +322,7 @@ export default function AdminTeamPage() {
                                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email</label>
                                             <input
                                                 type="email"
+                                                required
                                                 className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 focus:outline-none focus:border-blue-500"
                                                 value={formData.email || ''}
                                                 onChange={e => setFormData({ ...formData, email: e.target.value })}

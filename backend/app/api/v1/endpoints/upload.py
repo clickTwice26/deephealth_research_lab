@@ -12,6 +12,35 @@ from bson import ObjectId
 
 router = APIRouter()
 
+@router.post("/", response_model=Dict[str, str])
+async def upload_file_root(
+    file: UploadFile = File(...),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Upload a generic file to S3 (Root Endpoint).
+    """
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    file_extension = os.path.splitext(file.filename)[1]
+    filename = f"{uuid.uuid4()}{file_extension}"
+    object_name = f"uploads/{current_user.id}/{filename}"
+    
+    try:
+        await file.seek(0)
+        url = s3_service.upload_file(
+            file.file, 
+            object_name, 
+            content_type=file.content_type
+        )
+        return {"url": url}
+
+    except Exception as e:
+        print(f"S3 Upload error: {e}")
+        raise HTTPException(status_code=500, detail=f"Could not upload file: {str(e)}")
+
+
 @router.post("/profile-picture", response_model=Dict[str, str])
 async def upload_profile_picture(
     file: UploadFile = File(...),

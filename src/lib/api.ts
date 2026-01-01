@@ -214,6 +214,7 @@ export interface TeamMember {
     _id: string;
     name: string;
     designation: string;
+    university?: string;
     designation_weight: number;
     bio?: string;
     email?: string;
@@ -256,6 +257,7 @@ export interface ChatMessage {
     group_id: string;
     user_id: string;
     user_name: string;
+    user_avatar?: string;
     content: string;
     timestamp: string;
 }

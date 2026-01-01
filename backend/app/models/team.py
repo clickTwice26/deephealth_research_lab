@@ -11,9 +11,10 @@ class SocialLinks(BaseModel):
 class TeamMemberBase(BaseModel):
     name: str = Field(..., min_length=1)
     designation: str = Field(..., min_length=1)
+    university: Optional[str] = None
     designation_weight: int = Field(0, description="Higher weight appears first")
     bio: Optional[str] = None
-    email: Optional[EmailStr] = None
+    email: EmailStr = Field(...)
     phone: Optional[str] = None
     profile_image: Optional[str] = None
     social_links: Optional[SocialLinks] = Field(default_factory=SocialLinks)
@@ -24,6 +25,7 @@ class TeamMemberCreate(TeamMemberBase):
 class TeamMemberUpdate(BaseModel):
     name: Optional[str] = None
     designation: Optional[str] = None
+    university: Optional[str] = None
     designation_weight: Optional[int] = None
     bio: Optional[str] = None
     email: Optional[EmailStr] = None

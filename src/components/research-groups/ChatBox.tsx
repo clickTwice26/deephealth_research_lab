@@ -138,9 +138,17 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
                                 {/* Avatar */}
                                 <div className={`flex flex-col justify-end pb-1 ${isMe ? 'items-end' : 'items-start'}`}>
                                     {!isMe && (
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white dark:ring-gray-900">
-                                            {group.user_name.charAt(0).toUpperCase()}
-                                        </div>
+                                        group.messages[0].user_avatar ? (
+                                            <img
+                                                src={group.messages[0].user_avatar}
+                                                alt={group.user_name}
+                                                className="w-8 h-8 rounded-full object-cover shadow-md ring-2 ring-white dark:ring-gray-900 border-2 border-white dark:border-gray-800"
+                                            />
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white dark:ring-gray-900">
+                                                {group.user_name.charAt(0).toUpperCase()}
+                                            </div>
+                                        )
                                     )}
                                 </div>
 
