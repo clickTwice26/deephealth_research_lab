@@ -28,11 +28,9 @@ const footerLinks = {
     { name: 'Tutorials', href: '#' },
   ],
   legal: [
-    { name: 'Terms', href: '#terms' },
-    { name: 'Privacy', href: '#privacy' },
-    { name: 'Cookies', href: '#' },
-    { name: 'Licenses', href: '#' },
-    { name: 'Settings', href: '#' },
+    { name: 'Terms', href: '/terms' },
+    { name: 'Privacy', href: '#' },
+    { name: 'Cookies', href: '/cookies' },
   ],
 };
 
@@ -161,11 +159,9 @@ export default function Footer() {
             © {new Date().getFullYear()} DeepHealth Research Lab. All Rights Reserved.
           </p>
           <div className="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-500 justify-center">
-            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms</a>
+            <a href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms</a>
             <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Cookies</a>
-            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Licenses</a>
-            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Settings</a>
+            <a href="/cookies" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Cookies</a>
           </div>
         </div>
       </div>

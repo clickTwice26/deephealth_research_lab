@@ -93,10 +93,7 @@ export default function Hero() {
                   <FontAwesomeIcon icon={faArrowRight} />
                 </button>
               </Link>
-              <button className="px-8 py-4 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-800 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 transition-all flex items-center gap-2">
-                <FontAwesomeIcon icon={faPlayCircle} className="text-blue-500" />
-                <span>View Demo</span>
-              </button>
+
             </div>
 
             <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-gray-400 dark:text-gray-500 text-sm font-medium">
