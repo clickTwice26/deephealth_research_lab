@@ -121,7 +121,6 @@ export const api = {
     // Community
     getCommunityPosts: (page = 1, size = 10, sort = 'latest', filter = 'all') => request<CommunityPostPagination>(`/community/?page=${page}&size=${size}&sort=${sort}&filter=${filter}`),
     getCommunityPost: (id: string) => request<CommunityPost>(`/community/${id}`),
-    getCommunityPost: (id: string) => request<CommunityPost>(`/community/${id}`),
     createCommunityPost: (content: string, files: File[] = []) => {
         const formData = new FormData();
         formData.append('content', content);
@@ -133,6 +132,8 @@ export const api = {
         });
     },
     likePost: (id: string) => request<CommunityPost>(`/community/${id}/like`, { method: 'POST' }),
+    dislikePost: (id: string) => request<CommunityPost>(`/community/${id}/dislike`, { method: 'POST' }),
+    commentPost: (id: string, content: string, parent_id?: string) => request<CommunityPost>(`/community/${id}/comment`, { method: 'POST', body: JSON.stringify({ content, parent_id }) }),
     // Research Groups
     researchGroups: {
         list: () => request<ResearchGroup[]>('/research-groups/'),
