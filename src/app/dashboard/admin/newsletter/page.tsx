@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { api, Subscriber } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTrash, faSpinner, faDownload, faEnvelope, faPaperPlane, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faTrash, faPaperPlane, faSpinner, faCheckCircle, faExclamationCircle, faSearch, faDownload, faTimes } from '@fortawesome/free-solid-svg-icons';
+import ConfirmModal from '@/components/ConfirmModal';
 import { motion } from 'framer-motion';
 import RichTextEditor from '@/components/RichTextEditor';
 
@@ -18,9 +19,23 @@ export default function AdminNewsletterPage() {
 
     // Modal State
     const [isComposeOpen, setIsComposeOpen] = useState(false);
-    const [mailSubject, setMailSubject] = useState('');
-    const [mailMessage, setMailMessage] = useState('');
+    const [subject, setSubject] = useState('');
+    const [message, setMessage] = useState('');
     const [sending, setSending] = useState(false);
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        variant?: 'confirm' | 'alert';
+        onConfirm: () => void;
+        isDestructive?: boolean;
+        icon?: React.ReactNode;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
 
     useEffect(() => {
         fetchSubscribers();
@@ -44,21 +59,36 @@ export default function AdminNewsletterPage() {
         }
     };
 
-    const handleDelete = async (id: string, email: string) => {
-        if (confirm(`Are you sure you want to remove ${email} from the newsletter?`)) {
-            try {
-                await api.deleteNewsletterSubscriber(id);
-                fetchSubscribers();
-            } catch (error) {
-                alert('Failed to delete subscriber');
+    const handleRemoveSubscriber = async (id: string, email: string) => {
+        setModalConfig({
+            isOpen: true,
+            title: 'Remove Subscriber',
+            message: `Are you sure you want to remove ${email} from the newsletter ? `,
+            variant: 'confirm',
+            isDestructive: true,
+            onConfirm: async () => {
+                setModalConfig(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.deleteNewsletterSubscriber(id);
+                    await fetchSubscribers();
+                } catch (err) {
+                    setModalConfig({
+                        isOpen: true,
+                        title: 'Error',
+                        message: 'Failed to delete subscriber',
+                        variant: 'alert',
+                        icon: <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 text-3xl" />,
+                        onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+                    });
+                }
             }
-        }
+        });
     };
 
     const handleExport = () => {
         const csvContent = "data:text/csv;charset=utf-8,"
             + "Email,Date\n"
-            + subscribers.map(s => `${s.email},${new Date(s.subscribed_at).toISOString()}`).join("\n");
+            + subscribers.map(s => `${s.email},${new Date(s.subscribed_at).toISOString()} `).join("\n");
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -72,14 +102,30 @@ export default function AdminNewsletterPage() {
         e.preventDefault();
         setSending(true);
         try {
-            await api.sendNewsletter(mailSubject, mailMessage);
-            alert('Newsletter queued successfully!');
-            setIsComposeOpen(false);
-            setMailSubject('');
-            setMailMessage('');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to send newsletter. Please try again.');
+            await api.sendNewsletter(subject, message);
+            setModalConfig({
+                isOpen: true,
+                title: 'Success',
+                message: 'Newsletter queued successfully!',
+                variant: 'alert',
+                icon: <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 text-3xl" />,
+                onConfirm: () => {
+                    setModalConfig(prev => ({ ...prev, isOpen: false }));
+                    setIsComposeOpen(false); // Close compose modal on success
+                }
+            });
+            setSubject('');
+            setMessage('');
+        } catch (err) {
+            console.error(err);
+            setModalConfig({
+                isOpen: true,
+                title: 'Error',
+                message: 'Failed to send newsletter. Please try again.',
+                variant: 'alert',
+                icon: <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 text-3xl" />,
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
             setSending(false);
         }
@@ -142,8 +188,8 @@ export default function AdminNewsletterPage() {
                                         <input
                                             type="text"
                                             className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
-                                            value={mailSubject}
-                                            onChange={(e) => setMailSubject(e.target.value)}
+                                            value={subject}
+                                            onChange={(e) => setSubject(e.target.value)}
                                             required
                                             placeholder="e.g. Monthly Research Updates"
                                         />
@@ -152,8 +198,8 @@ export default function AdminNewsletterPage() {
                                         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Message Body</label>
                                         <div className="prose-editor-wrapper">
                                             <RichTextEditor
-                                                content={mailMessage}
-                                                onChange={(html) => setMailMessage(html)}
+                                                content={message}
+                                                onChange={(html) => setMessage(html)}
                                             />
                                         </div>
                                     </div>
@@ -178,16 +224,16 @@ export default function AdminNewsletterPage() {
                                             </div>
                                         </div>
                                         <div className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                            {mailSubject || '(No Subject)'}
+                                            {subject || '(No Subject)'}
                                         </div>
                                     </div>
 
                                     {/* Mock Email Body */}
                                     <div className="p-6 min-h-[300px] bg-white dark:bg-black">
-                                        {mailMessage ? (
+                                        {message ? (
                                             <div
                                                 className="prose dark:prose-invert prose-sm max-w-none"
-                                                dangerouslySetInnerHTML={{ __html: mailMessage }}
+                                                dangerouslySetInnerHTML={{ __html: message }}
                                             />
                                         ) : (
                                             <div className="text-gray-400 text-sm italic text-center mt-10">
@@ -286,7 +332,7 @@ export default function AdminNewsletterPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
-                                                onClick={() => handleDelete(subscriber._id, subscriber.email)}
+                                                onClick={() => handleRemoveSubscriber(subscriber._id, subscriber.email)}
                                                 className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                                 title="Unsubscribe"
                                             >
@@ -319,6 +365,16 @@ export default function AdminNewsletterPage() {
                     </button>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                variant={modalConfig.variant}
+                isDestructive={modalConfig.isDestructive}
+            />
         </div>
     );
 }

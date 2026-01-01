@@ -9,6 +9,7 @@ import {
     faCopy, faEye, faDownload, faTimes, faList, faThLarge, faSearch, faFileAlt, faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmModal from '@/components/ConfirmModal';
 
 interface BucketFile {
     key: string;
@@ -30,6 +31,19 @@ export default function BucketPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [isDragging, setIsDragging] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        variant?: 'confirm' | 'alert';
+        onConfirm: () => void;
+        isDestructive?: boolean;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -72,7 +86,13 @@ export default function BucketPage() {
 
     const uploadFile = async (file: File) => {
         if (storageUsed + file.size > storageLimit) {
-            alert('Not enough storage space!');
+            setModalConfig({
+                isOpen: true,
+                title: 'Storage Limit Exceeded',
+                message: 'Not enough storage space!',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
             return;
         }
 
@@ -92,7 +112,13 @@ export default function BucketPage() {
             await fetchBucketData();
         } catch (error: any) {
             console.error('Upload failed', error);
-            alert('Upload failed: ' + (error.response?.data?.detail || error.message));
+            setModalConfig({
+                isOpen: true,
+                title: 'Upload Failed',
+                message: error.response?.data?.detail || error.message || 'Unknown error',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
             setUploading(false);
         }
@@ -118,23 +144,47 @@ export default function BucketPage() {
             // Based on previous code, it uploads one. Let's upload the first one.
             await uploadFile(files[0]);
             if (files.length > 1) {
-                alert('Only single file upload is currently supported via UI.');
+                setModalConfig({
+                    isOpen: true,
+                    title: 'Multiple Files Detected',
+                    message: 'Only single file upload is currently supported via UI. Uploading the first file.',
+                    variant: 'alert',
+                    onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+                });
             }
         }
     }, [storageUsed, storageLimit]); // eslint-disable-line
 
     const handleDelete = async (filename: string) => {
-        if (!confirm(`Are you sure you want to delete ${filename}?`)) return;
-        try {
-            const token = localStorage.getItem('token');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-            await axios.delete(`${apiUrl}/bucket/${filename}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            await fetchBucketData();
-        } catch (error) {
-            alert('Delete failed');
-        }
+        setModalConfig({
+            isOpen: true,
+            title: 'Delete File',
+            message: `Are you sure you want to delete ${filename}?`,
+            variant: 'confirm',
+            isDestructive: true,
+            onConfirm: async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+                    await axios.delete(`${apiUrl}/bucket/${filename}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    await fetchBucketData();
+                    setModalConfig(prev => ({ ...prev, isOpen: false }));
+                } catch (error) {
+                    // Close the confirm modal first, then show alert, or just change the modal content
+                    setModalConfig(prev => ({
+                        ...prev,
+                        isOpen: true,
+                        title: 'Error',
+                        message: 'Delete failed',
+                        variant: 'alert',
+                        isDestructive: false,
+                        onConfirm: () => setModalConfig(p => ({ ...p, isOpen: false }))
+                    }));
+                }
+            }
+        });
     };
 
     const formatSize = (bytes: number) => {
@@ -380,6 +430,17 @@ export default function BucketPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+
+            {/* Confirm Modal */}
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                variant={modalConfig.variant}
+                isDestructive={modalConfig.isDestructive}
+            />
+        </div >
     );
 }

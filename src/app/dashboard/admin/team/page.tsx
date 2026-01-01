@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { api, TeamMember, SocialLinks } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faUser, faSort, faSpinner, faTimes, faUpload, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faUpload, faUser, faSpinner, faTimes, faSearch } from '@fortawesome/free-solid-svg-icons';
+import ConfirmModal from '@/components/ConfirmModal';
 import { faGoogle, faLinkedin, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,6 +15,20 @@ export default function AdminTeamPage() {
     const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
 
     // Form State
+    const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        variant?: 'confirm' | 'alert';
+        onConfirm: () => void;
+        isDestructive?: boolean;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [formData, setFormData] = useState<Partial<TeamMember>>({
         name: '',
@@ -55,15 +70,33 @@ export default function AdminTeamPage() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (confirm('Are you sure you want to delete this member?')) {
-            try {
-                await api.deleteTeamMember(id);
-                fetchMembers();
-            } catch (error) {
-                alert('Failed to delete member');
+    const handleDelete = async (id: string, name: string) => {
+        setModalConfig({
+            isOpen: true,
+            title: 'Delete Team Member',
+            message: `Are you sure you want to delete ${name}?`,
+            variant: 'confirm',
+            isDestructive: true,
+            onConfirm: async () => {
+                setDeleteLoading(id);
+                setModalConfig(prev => ({ ...prev, isOpen: false })); // Close confirm modal
+                try {
+                    await api.deleteTeamMember(id);
+                    await fetchMembers();
+                } catch (error) {
+                    console.error(error);
+                    setModalConfig({
+                        isOpen: true,
+                        title: 'Error',
+                        message: 'Failed to delete member',
+                        variant: 'alert',
+                        onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+                    });
+                } finally {
+                    setDeleteLoading(null);
+                }
             }
-        }
+        });
     };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +120,13 @@ export default function AdminTeamPage() {
                     const uploadRes = await api.uploadImage(selectedFile);
                     finalData.profile_image = uploadRes.url;
                 } catch (err) {
-                    alert('Failed to upload new image. Saving profile without it.');
+                    setModalConfig({
+                        isOpen: true,
+                        title: 'Upload Failed',
+                        message: 'Failed to upload new image. Saving profile without it.',
+                        variant: 'alert',
+                        onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+                    });
                     // Optionally return here to stop
                     // return; 
                 }
@@ -109,7 +148,13 @@ export default function AdminTeamPage() {
             resetForm();
         } catch (error) {
             console.error(error);
-            alert('Failed to save member');
+            setModalConfig({
+                isOpen: true,
+                title: 'Error',
+                message: 'Failed to save member',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
             setSubmitting(false);
         }

@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faSave, faUserCircle, faCog, faMoon, faBell, faShieldAlt, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faPhone, faCamera, faSave, faSpinner, faMapMarkerAlt, faBuilding, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import ConfirmModal from '@/components/ConfirmModal';
 import { useTheme } from 'next-themes';
 
 export default function ProfilePage() {
@@ -14,6 +15,20 @@ export default function ProfilePage() {
 
     // In a real app, you would use state to manage form fields
     const [name, setName] = useState(user?.full_name || '');
+    const [saving, setSaving] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        variant?: 'confirm' | 'alert';
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
     const [email, setEmail] = useState(user?.email || '');
     const [activeTab, setActiveTab] = useState('profile');
 
@@ -59,11 +74,17 @@ export default function ProfilePage() {
 
             // Update local state and ideally trigger a user refresh
             setAvatarUrl(response.data.url);
-            // Optionally reload page or re-fetch user profile
-            window.location.reload();
+            // Refresh user data (if api stores token/user state, might need reload or context update)
+            // window.location.reload();
         } catch (error) {
             console.error('Upload failed:', error);
-            alert('Failed to upload profile picture');
+            setModalConfig({
+                isOpen: true,
+                title: 'Upload Failed',
+                message: 'Failed to upload profile picture',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
             setUploading(false);
         }
@@ -267,6 +288,15 @@ export default function ProfilePage() {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                variant={modalConfig.variant}
+            />
         </div>
     );
 }

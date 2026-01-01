@@ -258,6 +258,7 @@ export interface ChatMessage {
     user_id: string;
     user_name: string;
     user_avatar?: string;
+    audio_url?: string;
     content: string;
     timestamp: string;
 }

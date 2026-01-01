@@ -9,6 +9,8 @@ import {
     faArrowRight, faCheck
 } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
+import Modal from '@/components/Modal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 // Icon mapper for selection
 const ICON_OPTIONS = [
@@ -33,7 +35,21 @@ const COLOR_PALETTES = [
 
 export default function AdminResearchAreasPage() {
     const [areas, setAreas] = useState<ResearchArea[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        variant?: 'confirm' | 'alert';
+        onConfirm: () => void;
+        isDestructive?: boolean;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,21 +79,42 @@ export default function AdminResearchAreasPage() {
                 setTotalPages(Math.ceil(data.total / 10));
             }
         } catch (error) {
-            console.error(error);
+            setModalConfig({
+                isOpen: true,
+                title: 'Error',
+                message: 'Operation failed',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
             setLoading(false);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm('Are you sure you want to delete this research area?')) {
-            try {
-                await api.deleteResearchArea(id);
-                fetchAreas();
-            } catch (error) {
-                alert('Failed to delete');
+        setModalConfig({
+            isOpen: true,
+            title: 'Delete Research Area',
+            message: 'Are you sure you want to delete this research area?',
+            variant: 'confirm',
+            isDestructive: true,
+            onConfirm: async () => {
+                setModalConfig(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.deleteResearchArea(id);
+                    await fetchAreas();
+                    // if (selectedArea && selectedArea._id === id) setSelectedArea(null); // Optional
+                } catch (error) {
+                    setModalConfig({
+                        isOpen: true,
+                        title: 'Error',
+                        message: 'Failed to delete research area',
+                        variant: 'alert',
+                        onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+                    });
+                }
             }
-        }
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -94,7 +131,13 @@ export default function AdminResearchAreasPage() {
             fetchAreas();
         } catch (error) {
             console.error(error);
-            alert('Operation failed');
+            setModalConfig({
+                isOpen: true,
+                title: 'Error',
+                message: 'Operation failed',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         }
     };
 
@@ -194,7 +237,7 @@ export default function AdminResearchAreasPage() {
 
             {/* Enhanced Modal with Live Preview */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingArea ? 'Edit Research Area' : 'New Research Area'}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -338,8 +381,18 @@ export default function AdminResearchAreasPage() {
                             </div>
                         </div>
                     </motion.div>
-                </div>
+                </Modal>
             )}
+
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                variant={modalConfig.variant}
+                isDestructive={modalConfig.isDestructive}
+            />
         </div>
     );
 }

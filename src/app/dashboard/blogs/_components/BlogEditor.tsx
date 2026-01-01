@@ -6,6 +6,7 @@ import { api, BlogPost } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faArrowLeft, faSpinner, faImage, faTimes, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import RichTextEditor from '@/components/RichTextEditor';
+import ConfirmModal from '@/components/ConfirmModal';
 import axios from 'axios';
 
 interface BlogEditorProps {
@@ -15,9 +16,21 @@ interface BlogEditorProps {
 
 export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(!isNew);
-    const [isSaving, setIsSaving] = useState(false);
+    const [loading, setLoading] = useState(!!slug);
+    const [saving, setSaving] = useState(false);
     const [uploadingCover, setUploadingCover] = useState(false);
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        variant?: 'confirm' | 'alert';
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState<Partial<BlogPost>>({
@@ -37,6 +50,8 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
     useEffect(() => {
         if (!isNew && slug) {
             fetchPost();
+        } else {
+            setLoading(false); // If it's a new post, no initial loading is needed
         }
     }, [slug, isNew]);
 
@@ -45,10 +60,16 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
             const post = await api.getBlogPost(slug!);
             setFormData(post);
         } catch (error) {
-            console.error('Failed to fetch post', error);
-            alert('Failed to load post');
+            console.error('Failed to load post', error);
+            setModalConfig({
+                isOpen: true,
+                title: 'Error',
+                message: 'Failed to load post',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
@@ -104,16 +125,23 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
 
             setFormData({ ...formData, cover_image: response.data.url });
         } catch (error) {
-            console.error('Failed to upload cover image', error);
-            alert('Failed to upload image');
+            console.error('Failed to upload image', error);
+            setModalConfig({
+                isOpen: true,
+                title: 'Error',
+                message: 'Failed to upload image',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
             setUploadingCover(false);
+            e.target.value = ''; // Reset input
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSaving(true);
+        setSaving(true);
         try {
             if (isNew) {
                 await api.createBlogPost(formData);
@@ -124,13 +152,19 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
             }
         } catch (error) {
             console.error('Failed to save post', error);
-            alert('Failed to save post. Please ensure slug is unique.');
+            setModalConfig({
+                isOpen: true,
+                title: 'Error',
+                message: 'Failed to save post. Please ensure slug is unique.',
+                variant: 'alert',
+                onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+            });
         } finally {
-            setIsSaving(false);
+            setSaving(false);
         }
     };
 
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
@@ -351,14 +385,23 @@ export default function BlogEditor({ slug, isNew = false }: BlogEditorProps) {
                     </button>
                     <button
                         type="submit"
-                        disabled={isSaving}
+                        disabled={saving}
                         className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
-                        {isSaving && <FontAwesomeIcon icon={faSpinner} className="animate-spin" />}
-                        {isSaving ? 'Saving...' : 'Save Post'}
+                        {saving && <FontAwesomeIcon icon={faSpinner} className="animate-spin" />}
+                        {saving ? 'Saving...' : 'Save Post'}
                     </button>
                 </div>
             </form>
+
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={modalConfig.onConfirm}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                variant={modalConfig.variant}
+            />
         </div>
     );
 }

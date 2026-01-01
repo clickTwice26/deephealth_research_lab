@@ -510,20 +510,36 @@ async def websocket_endpoint(
     
     try:
         while True:
-            data = await websocket.receive_text()
+            data_str = await websocket.receive_text()
+            
+            # Identify message structure
+            import json
+            content = data_str
+            audio_url = None
+            
+            try:
+                # check if valid json
+                parsed = json.loads(data_str)
+                if isinstance(parsed, dict):
+                    content = parsed.get("content", "")
+                    audio_url = parsed.get("audio_url")
+            except json.JSONDecodeError:
+                # Plain text message
+                pass
+
             # Construct message
             msg = ChatMessage(
                 group_id=group_id,
                 user_id=str(user.id),
                 user_name=user.full_name or user.email,
                 user_avatar=user.profile_image,
-                content=data
+                content=content,
+                audio_url=audio_url
             )
             # Save
             await db["chat_messages"].insert_one(msg.model_dump())
             
             # Broadcast
-            import json
             # We want to broadcast the message structure
             payload_json = msg.model_dump_json()
             # Wrap in type for client to distinguish from status updates

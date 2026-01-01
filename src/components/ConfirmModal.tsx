@@ -12,6 +12,7 @@ interface ConfirmModalProps {
     cancelText?: string;
     isDestructive?: boolean;
     isLoading?: boolean;
+    variant?: 'confirm' | 'alert';
 }
 
 export default function ConfirmModal({
@@ -20,10 +21,11 @@ export default function ConfirmModal({
     onConfirm,
     title,
     message,
-    confirmText = 'Confirm',
+    confirmText = 'OK',
     cancelText = 'Cancel',
     isDestructive = false,
-    isLoading = false
+    isLoading = false,
+    variant = 'confirm'
 }: ConfirmModalProps) {
     return (
         <Modal
@@ -31,14 +33,16 @@ export default function ConfirmModal({
             onClose={onClose}
             title={title}
             footer={
-                <>
-                    <button
-                        onClick={onClose}
-                        disabled={isLoading}
-                        className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
-                    >
-                        {cancelText}
-                    </button>
+                <div className="flex justify-end gap-2 w-full">
+                    {variant === 'confirm' && (
+                        <button
+                            onClick={onClose}
+                            disabled={isLoading}
+                            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                        >
+                            {cancelText}
+                        </button>
+                    )}
                     <button
                         onClick={onConfirm}
                         disabled={isLoading}
@@ -52,7 +56,7 @@ export default function ConfirmModal({
                         )}
                         {confirmText}
                     </button>
-                </>
+                </div>
             }
         >
             <p className="text-gray-600 dark:text-gray-300">

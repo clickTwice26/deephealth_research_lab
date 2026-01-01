@@ -20,8 +20,8 @@ async def upload_file_root(
     """
     Upload a generic file to S3 (Root Endpoint).
     """
-    if not file.content_type.startswith('image/'):
-        raise HTTPException(status_code=400, detail="File must be an image")
+    if not (file.content_type.startswith('image/') or file.content_type.startswith('audio/')):
+        raise HTTPException(status_code=400, detail="File must be an image or audio")
     
     file_extension = os.path.splitext(file.filename)[1]
     filename = f"{uuid.uuid4()}{file_extension}"
@@ -95,8 +95,8 @@ async def upload_file_s3(
     """
     Upload a generic file to S3.
     """
-    if not file.content_type.startswith('image/'):
-        raise HTTPException(status_code=400, detail="File must be an image")
+    if not (file.content_type.startswith('image/') or file.content_type.startswith('audio/')):
+        raise HTTPException(status_code=400, detail="File must be an image or audio")
     
     # Generate organized object name: uploads/<user_id>/<uuid>.<ext>
     file_extension = os.path.splitext(file.filename)[1]

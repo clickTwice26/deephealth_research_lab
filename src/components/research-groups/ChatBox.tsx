@@ -1,14 +1,15 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
 import { ChatMessage, api } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faSmile, faImage, faCircle, faEllipsisV, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faSmile, faImage, faCircle, faEllipsisV, faSpinner, faTimes, faMicrophone, faStop, faWifi, faRedo } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import VoiceMessageBubble from './VoiceMessageBubble';
 
 interface ChatBoxProps {
     messages: ChatMessage[];
-    onSendMessage: (content: string) => void;
+    onSendMessage: (content: string, audioUrl?: string) => void;
     isConnected: boolean;
 }
 
@@ -16,10 +17,97 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
     const { user } = useAuth();
     const [newMessage, setNewMessage] = useState('');
     const [uploading, setUploading] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordingTime, setRecordingTime] = useState(0);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+    const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
     const [expandedImage, setExpandedImage] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' }); // or audio/wav
+                await uploadAudio(audioBlob);
+
+                // Stop tracks
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+            setRecordingTime(0);
+            timerIntervalRef.current = setInterval(() => {
+                setRecordingTime(prev => prev + 1);
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            alert('Could not access microphone');
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+                timerIntervalRef.current = null;
+            }
+        }
+    };
+
+    const uploadAudio = async (audioBlob: Blob) => {
+        setUploading(true);
+        const formData = new FormData();
+        // Create a unique filename for the audio
+        const filename = `voice-message-${Date.now()}.webm`;
+        const file = new File([audioBlob], filename, { type: 'audio/webm' });
+        formData.append('file', file);
+
+        try {
+            const token = localStorage.getItem('token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+            const response = await axios.post(`${apiUrl}/upload/s3`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            const audioUrl = response.data.url;
+            onSendMessage('', audioUrl); // Send empty text content for voice messages
+
+        } catch (error) {
+            console.error('Failed to upload audio', error);
+            alert('Failed to send voice message');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -188,6 +276,8 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
                                                         className="max-w-[12rem] md:max-w-sm rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
                                                         onClick={() => setExpandedImage(msg.content.slice(9, -1))}
                                                     />
+                                                ) : msg.audio_url ? (
+                                                    <VoiceMessageBubble audioUrl={msg.audio_url} isMe={isMe} />
                                                 ) : (
                                                     msg.content
                                                 )}
@@ -208,57 +298,124 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
 
             {/* Input Area */}
             <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-                <div className="flex items-end gap-2 bg-gray-50 dark:bg-gray-800/50 p-2 rounded-3xl border border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-all">
-                    {/* Addons (Visual only) */}
-
-
-                    <textarea
-                        ref={textareaRef}
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Aa"
-                        rows={1}
-                        className="flex-1 max-h-32 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border-none focus:ring-0 p-2 resize-none leading-normal scrollbar-hide"
-                        style={{ minHeight: '40px' }}
-                    />
-
-                    <div className="flex items-center">
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                        />
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={uploading}
-                            className="p-2 text-gray-400 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-                            title="Upload Image"
+                <AnimatePresence mode="wait">
+                    {isRecording ? (
+                        <motion.div
+                            key="recording-ui"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            className="flex items-center gap-4 bg-gray-50 dark:bg-gray-800/50 p-2 rounded-3xl border border-red-200 dark:border-red-900/30"
                         >
-                            {uploading ? (
-                                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                            ) : (
-                                <FontAwesomeIcon icon={faImage} />
-                            )}
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-yellow-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <FontAwesomeIcon icon={faSmile} />
-                        </button>
-                    </div>
+                            <div className="flex items-center gap-3 pl-4 flex-1">
+                                <motion.div
+                                    className="w-3 h-3 bg-red-500 rounded-full"
+                                    animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
+                                    transition={{ repeat: Infinity, duration: 1.5 }}
+                                />
+                                <span className="text-red-500 font-mono font-medium min-w-[50px]">
+                                    {formatTime(recordingTime)}
+                                </span>
+                                {/* Recording Wave Visualization */}
+                                <div className="flex items-center gap-1 h-8 flex-1 opacity-50 overflow-hidden">
+                                    {Array.from({ length: 15 }).map((_, i) => (
+                                        <motion.div
+                                            key={i}
+                                            className="w-1 bg-red-400 rounded-full"
+                                            animate={{ height: [4, Math.random() * 24 + 4, 4] }}
+                                            transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
 
-                    <button
-                        onClick={() => handleSend()}
-                        disabled={!isConnected || (!newMessage.trim() && !uploading)}
-                        className={`p-2 rounded-full transition-all duration-300 ${newMessage.trim()
-                            ? 'bg-blue-600 text-white shadow-lg hover:bg-blue-700 transform hover:scale-105'
-                            : 'bg-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                            }`}
-                    >
-                        <FontAwesomeIcon icon={faPaperPlane} />
-                    </button>
-                </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => {
+                                        if (mediaRecorderRef.current) {
+                                            mediaRecorderRef.current.stream.getTracks().forEach(t => t.stop()); // Stop stream
+                                            setIsRecording(false);
+                                            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+                                        }
+                                    }}
+                                    className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all"
+                                    title="Cancel"
+                                >
+                                    <FontAwesomeIcon icon={faTimes} />
+                                </button>
+                                <button
+                                    onClick={stopRecording} // stopRecording triggers onstop which uploads and sends
+                                    className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-lg transform hover:scale-105 transition-all"
+                                    title="Send Voice Message"
+                                >
+                                    <FontAwesomeIcon icon={faPaperPlane} />
+                                </button>
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="text-ui"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="flex items-end gap-2 bg-gray-50 dark:bg-gray-800/50 p-2 rounded-3xl border border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-all"
+                        >
+                            <textarea
+                                ref={textareaRef}
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Aa"
+                                rows={1}
+                                className="flex-1 max-h-32 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border-none focus:ring-0 p-2 resize-none leading-normal scrollbar-hide"
+                                style={{ minHeight: '40px' }}
+                            />
+
+                            <div className="flex items-center">
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                />
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={uploading}
+                                    className="p-2 text-gray-400 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    title="Upload Image"
+                                >
+                                    {uploading ? (
+                                        <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faImage} />
+                                    )}
+                                </button>
+                                <button className="p-2 text-gray-400 hover:text-yellow-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <FontAwesomeIcon icon={faSmile} />
+                                </button>
+                            </div>
+
+                            {newMessage.trim() ? (
+                                <button
+                                    onClick={() => handleSend()}
+                                    disabled={!isConnected || !newMessage.trim()}
+                                    className="p-2 rounded-full transition-all duration-300 bg-blue-600 text-white shadow-lg hover:bg-blue-700 transform hover:scale-105"
+                                >
+                                    <FontAwesomeIcon icon={faPaperPlane} />
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={startRecording}
+                                    className="p-2 rounded-full transition-all duration-300 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                    title="Record Voice Message"
+                                >
+                                    <FontAwesomeIcon icon={faMicrophone} />
+                                </button>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Image Modal */}
@@ -290,6 +447,40 @@ export default function ChatBox({ messages, onSendMessage, isConnected }: ChatBo
                             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
                             onClick={(e) => e.stopPropagation()}
                         />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            {/* Disconnected Overlay */}
+            <AnimatePresence>
+                {!isConnected && (
+                    <motion.div
+                        initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                        animate={{ opacity: 1, backdropFilter: "blur(4px)" }}
+                        exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                        className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-gray-900/60"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center gap-4 max-w-sm mx-4 text-center"
+                        >
+                            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-2">
+                                <FontAwesomeIcon icon={faWifi} className="text-2xl text-red-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Connection Lost</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Oops! It seems you are disconnected from the chat server.
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
+                            >
+                                <FontAwesomeIcon icon={faRedo} />
+                                <span>Refresh Page</span>
+                            </button>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>

@@ -133,9 +133,13 @@ export default function GroupDetailPage() {
         }
     }, [groupId]);
 
-    const sendMessage = (content: string) => {
+    const sendMessage = (content: string, audioUrl?: string) => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            wsRef.current.send(content);
+            const payload = JSON.stringify({
+                content: content,
+                audio_url: audioUrl
+            });
+            wsRef.current.send(payload);
         }
     };
 
