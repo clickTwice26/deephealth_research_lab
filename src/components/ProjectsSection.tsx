@@ -1,28 +1,33 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-
-const projects = [
-  {
-    title: 'Xolver: Multi-Agent Reasoning',
-    description: 'A multi-agent, training-free reasoning framework that enhances LLMs by integrating holistic experiences such as tool usage, collaboration, and iterative refinement, enabling them to perform expert-level reasoning.',
-    tags: ['Multi-Agent', 'LLM', 'Reasoning'],
-  },
-  {
-    title: 'HoloInteract',
-    description: 'An advanced Human-Computer Interaction project that uses augmented reality (AR) to create immersive, user-friendly interfaces, enhancing experiences in education and training.',
-    tags: ['AR', 'HCI', 'Education'],
-  },
-  {
-    title: 'VisionX',
-    description: 'A computer vision system that detects and classifies objects in real-time, optimized for healthcare and autonomous navigation, leveraging Explainable AI to interpret visual data.',
-    tags: ['Computer Vision', 'Healthcare', 'XAI'],
-  },
-];
+import { api } from '@/lib/api';
 
 export default function ProjectsSection() {
+  const [projectsList, setProjectsList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await api.getProjects();
+        if (data && data.length > 0) {
+          setProjectsList(data);
+        }
+      } catch (e) {
+        console.error("Failed to fetch projects", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  if (!loading && projectsList.length === 0) return null;
+
   return (
     <section id="projects" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 scroll-mt-24">
       {/* Background */}
@@ -61,9 +66,9 @@ export default function ProjectsSection() {
 
         {/* Project Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 2xl:gap-10">
-          {projects.map((project, index) => (
+          {projectsList.map((project, index) => (
             <motion.div
-              key={project.title}
+              key={project._id || project.title}
               className="glass-strong rounded-xl p-6 border border-blue-500/30 dark:border-blue-500/20 hover:border-blue-500/60 dark:hover:border-blue-500/40 transition-all group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -88,7 +93,7 @@ export default function ProjectsSection() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-4">
-                {project.tags.map((tag) => (
+                {project.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full"
@@ -99,10 +104,17 @@ export default function ProjectsSection() {
               </div>
 
               {/* See Project Button */}
-              <button className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2">
-                <span>See Project</span>
-                <FontAwesomeIcon icon={faExternalLinkAlt} className="text-sm" />
-              </button>
+              {project.link && (
+                <a href={project.link} target="_blank" className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2">
+                  <span>See Project</span>
+                  <FontAwesomeIcon icon={faExternalLinkAlt} className="text-sm" />
+                </a>
+              )}
+              {!project.link && (
+                <button disabled className="w-full px-6 py-3 bg-gray-400 cursor-not-allowed rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2">
+                  <span>Coming Soon</span>
+                </button>
+              )}
             </motion.div>
           ))}
         </div>

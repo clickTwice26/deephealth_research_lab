@@ -167,6 +167,24 @@ export const api = {
     // Users
     getPublicProfile: (userId: string) => request<any>(`/users/${userId}/public`),
 
+    // Research Areas
+    getResearchAreas: (page = 1, size = 20) => request<{ items: ResearchArea[], total: number }>(`/research-areas/?page=${page}&size=${size}`),
+    createResearchArea: (data: any) => request<ResearchArea>('/research-areas/', { method: 'POST', body: JSON.stringify(data) }),
+    updateResearchArea: (id: string, data: any) => request<ResearchArea>(`/research-areas/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteResearchArea: (id: string) => request<boolean>(`/research-areas/${id}`, { method: 'DELETE' }),
+
+    // Projects
+    getProjects: () => request<Project[]>('/projects/'),
+    createProject: (data: any) => request<Project>('/projects/', { method: 'POST', body: JSON.stringify(data) }),
+    updateProject: (id: string, data: any) => request<Project>(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteProject: (id: string) => request<boolean>(`/projects/${id}`, { method: 'DELETE' }),
+
+    // Newsletter
+    subscribeNewsletter: (email: string) => request<Subscriber>('/newsletter/subscribe', { method: 'POST', body: JSON.stringify({ email }) }),
+    getNewsletterSubscribers: (page = 1, size = 20) => request<{ items: Subscriber[], total: number }>(`/newsletter/subscribers?page=${page}&size=${size}`),
+    deleteNewsletterSubscriber: (id: string) => request<boolean>(`/newsletter/subscribers/${id}`, { method: 'DELETE' }),
+    sendNewsletter: (subject: string, message: string) => request<{ status: string }>('/newsletter/send', { method: 'POST', body: JSON.stringify({ subject, message }) }),
+
     uploadImage: (file: File) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -175,7 +193,33 @@ export const api = {
             body: formData,
         });
     },
+
+    // Team Management
+    getTeamMembers: () => request<TeamMember[]>('/team/'),
+    createTeamMember: (data: Partial<TeamMember>) => request<TeamMember>('/team/', { method: 'POST', body: JSON.stringify(data) }),
+    updateTeamMember: (id: string, data: Partial<TeamMember>) => request<TeamMember>(`/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteTeamMember: (id: string) => request<boolean>(`/team/${id}`, { method: 'DELETE' }),
 };
+
+export interface SocialLinks {
+    google_scholar?: string;
+    linkedin?: string;
+    twitter?: string;
+    website?: string;
+    github?: string;
+}
+
+export interface TeamMember {
+    _id: string;
+    name: string;
+    designation: string;
+    designation_weight: number;
+    bio?: string;
+    email?: string;
+    phone?: string;
+    profile_image?: string;
+    social_links?: SocialLinks;
+}
 
 export interface GroupMember {
     user_id: string;
@@ -371,4 +415,32 @@ export interface BlogPost {
     updated_at: string;
     author_name?: string;
     author_avatar?: string;
+}
+
+export interface ResearchArea {
+    _id: string;
+    title: string;
+    description: string;
+    icon: string;
+    color: string;
+    bg_color: string;
+    number: string;
+}
+
+export interface Project {
+    _id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    image_url?: string;
+    link?: string;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface Subscriber {
+    _id: string;
+    email: string;
+    is_active: boolean;
+    subscribed_at: string;
 }

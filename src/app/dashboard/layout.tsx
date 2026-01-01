@@ -26,7 +26,8 @@ import {
     faComments,
     faNewspaper,
     faUpload,
-    faHdd
+    faHdd,
+    faIdCard
 } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -133,10 +134,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 {/* Sidebar */}
                 <aside className={`
-                fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 ease-in-out
+                fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 ease-in-out flex flex-col
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                    <div className="p-6">
+                    <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
                                 Research Lab
@@ -146,7 +147,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             </button>
                         </div>
 
-                        <nav className="space-y-2">
+                        <nav className="space-y-2 pb-20">
                             <SidebarLink icon={faChartLine} label="Dashboard" href="/dashboard" />
                             <SidebarLink icon={faFlask} label="Experiments" href="/dashboard/experiments" />
 
@@ -167,6 +168,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     <SidebarLink icon={faChartLine} label="Overview" href="/dashboard/admin" />
                                     <SidebarLink icon={faPaperPlane} label="Notifications" href="/dashboard/admin/notifications" badge={unreadNotifications} />
                                     <SidebarLink icon={faBullhorn} label="News / Content" href="/dashboard/news" />
+                                    <SidebarLink icon={faFlask} label="Research Areas" href="/dashboard/admin/research-areas" />
+                                    <SidebarLink icon={faNewspaper} label="Newsletter" href="/dashboard/admin/newsletter" />
+                                    <SidebarLink icon={faIdCard} label="Team Management" href="/dashboard/admin/team" />
                                     <SidebarLink icon={faBook} label="Publications" href="/dashboard/publications" />
                                     <SidebarLink icon={faBriefcase} label="Jobs / Careers" href="/dashboard/jobs" />
                                     <SidebarLink icon={faShieldAlt} label="User Management" href="/dashboard/users" />
@@ -176,7 +180,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </nav>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                    <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
                         <Link href="/dashboard/profile" className="flex items-center space-x-3 mb-4 hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors group">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-blue-100 dark:group-hover:ring-blue-900 transition-all overflow-hidden">
                                 {user.profile_image ? (

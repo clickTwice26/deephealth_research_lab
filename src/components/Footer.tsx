@@ -62,26 +62,26 @@ export default function Footer() {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                DeepHealth<span className="text-cyan-600 dark:text-cyan-400"> Research Lab</span>
+                DeepHealth <span className="text-blue-600 dark:text-blue-400">Research Lab</span>
               </h3>
             </motion.div>
 
-            <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed text-sm lg:text-base pr-4">
+            <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed text-sm max-w-sm">
               Pioneering explainable AI and interpretable technology in healthcare.
               We bridge the gap between complex algorithms and clinical understanding.
             </p>
 
-            <div className="space-y-3 mb-8">
-              <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 text-sm">
-                <FontAwesomeIcon icon={faMapMarkerAlt} className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="space-y-4 mb-8">
+              <div className="flex items-start gap-4 text-gray-600 dark:text-gray-400 text-sm">
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                 <span>123 Innovation Drive, Tech City, TC 90210</span>
               </div>
-              <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 text-sm">
-                <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <a href="mailto:contact@deephealth.ai" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">contact@deephealth.ai</a>
+              <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-sm">
+                <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <a href="mailto:contact@deephealth.ai" className="hover:text-blue-600 transition-colors">contact@deephealth.ai</a>
               </div>
-              <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 text-sm">
-                <FontAwesomeIcon icon={faPhone} className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-sm">
+                <FontAwesomeIcon icon={faPhone} className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span>+1 (555) 123-4567</span>
               </div>
             </div>
@@ -156,14 +156,16 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 dark:text-gray-500 text-sm text-center md:text-left">
-            © {new Date().getFullYear()} DeepHealth Lab AI LLC. All Rights Reserved.
+        <div className="pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 dark:text-gray-500 text-sm">
+            © {new Date().getFullYear()} DeepHealth Research Lab. All Rights Reserved.
           </p>
-          <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-500">
-            <a href="#" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Cookies Settings</a>
+          <div className="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-500 justify-center">
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms</a>
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Cookies</a>
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Licenses</a>
+            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Settings</a>
           </div>
         </div>
       </div>

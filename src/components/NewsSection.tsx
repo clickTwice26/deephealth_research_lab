@@ -25,8 +25,8 @@ const MOCK_NEWS = [
 ];
 
 export default function NewsSection() {
-  const [newsItems, setNewsItems] = useState<any[]>(MOCK_NEWS);
-  const [isUsingMock, setIsUsingMock] = useState(true);
+  const [newsItems, setNewsItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -42,14 +42,17 @@ export default function NewsSection() {
             cta_link: item.cta_link
           }));
           setNewsItems(formatted);
-          setIsUsingMock(false);
         }
       } catch (error) {
-        console.error("Failed to load news, falling back to static content");
+        console.error("Failed to load news");
+      } finally {
+        setLoading(false);
       }
     };
     fetchNews();
   }, []);
+
+  if (!loading && newsItems.length === 0) return null;
 
   return (
     <section id="news" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 scroll-mt-24">

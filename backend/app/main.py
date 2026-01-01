@@ -28,6 +28,15 @@ app.add_middleware(
 from app.middleware.audit import AuditMiddleware
 app.add_middleware(AuditMiddleware)
 
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.core.ratelimit import limiter
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
 # Include Router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 

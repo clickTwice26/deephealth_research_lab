@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBrain, faRobot, faEye, faUserMd, faArrowRight, faNetworkWired, faLanguage } from '@fortawesome/free-solid-svg-icons';
+import { api } from '@/lib/api';
 
-const researchAreas = [
+const MOCK_RESEARCH_AREAS = [
   {
     number: '01',
     title: 'Generative AI',
@@ -82,7 +84,40 @@ const itemVariants = {
   }
 };
 
+const ICON_MAP: Record<string, any> = {
+  faBrain, faRobot, faEye, faUserMd, faNetworkWired, faLanguage
+};
+
 export default function ResearchAreasSection() {
+  const [researchAreas, setResearchAreas] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAreas = async () => {
+      try {
+        const response = await api.getResearchAreas();
+        // Handle generic or paginated response
+        const items = (response as any).items || (Array.isArray(response) ? response : []);
+
+        if (items && items.length > 0) {
+          const formatted = items.map((area: any) => ({
+            ...area,
+            // Use icon from backend (string) mapped to object, or fallback to mock/default
+            icon: ICON_MAP[area.icon] || MOCK_RESEARCH_AREAS.find(m => m.title === area.title)?.icon || faBrain
+          }));
+          setResearchAreas(formatted);
+        }
+      } catch (e) {
+        console.error("Failed to fetch research areas", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAreas();
+  }, []);
+
+  if (!loading && researchAreas.length === 0) return null;
+
   return (
     <section id="research" className="relative py-24 bg-white dark:bg-gray-950 overflow-hidden transition-colors duration-300 scroll-mt-24">
       {/* Background Decor */}
@@ -117,34 +152,54 @@ export default function ResearchAreasSection() {
         >
           {researchAreas.map((area) => (
             <motion.div
-              key={area.number}
+              key={area.number || area._id}
               variants={itemVariants}
-              className="group relative bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="relative group"
             >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${area.bgColor} dark:bg-opacity-10 ${area.color} dark:text-opacity-90`}>
-                <FontAwesomeIcon icon={area.icon} className="text-xl" />
-              </div>
+              <div className="absolute inset-0 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1" />
 
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {area.title}
-              </h3>
-
-              <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                {area.description}
-              </p>
-
-              <div className="flex items-center justify-between mt-auto">
-                <span className="text-4xl font-bold text-gray-200 dark:text-gray-800 select-none group-hover:text-gray-300 dark:group-hover:text-gray-700 transition-colors">
-                  {area.number}
-                </span>
-                <button className="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-400 dark:text-gray-500 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                  <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
-                </button>
-              </div>
+              {/* Card Content - Wrapped in Link if available, otherwise just div */}
+              {area.link ? (
+                <a href={area.link} className="relative block p-8 z-10 h-full">
+                  <CardContent area={area} />
+                </a>
+              ) : (
+                <div className="relative p-8 z-10 h-full">
+                  <CardContent area={area} />
+                </div>
+              )}
             </motion.div>
           ))}
         </motion.div>
       </div>
     </section>
+  );
+}
+
+// Extracted for reuse
+function CardContent({ area }: { area: any }) {
+  return (
+    <>
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${area.bg_color || area.bgColor} ${area.color} bg-opacity-20`}>
+        <FontAwesomeIcon icon={area.icon} className="text-xl" />
+      </div>
+
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        {area.title}
+      </h3>
+
+      <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
+        {area.description}
+      </p>
+
+      <div className="flex items-center justify-between mt-auto">
+        <span className="text-4xl font-bold text-gray-200 dark:text-gray-800 select-none group-hover:text-gray-300 dark:group-hover:text-gray-700 transition-colors">
+          {area.number}
+        </span>
+        <div className={`w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-400 dark:text-gray-500 ${area.link ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all`}>
+          <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
+        </div>
+      </div>
+    </>
   );
 }

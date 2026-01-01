@@ -26,8 +26,8 @@ const MOCK_PUBLICATIONS = [
 ];
 
 export default function PublicationsSection() {
-  const [publications, setPublications] = useState<any[]>(MOCK_PUBLICATIONS);
-  const [isUsingMock, setIsUsingMock] = useState(true);
+  const [publications, setPublications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPublications = async () => {
@@ -44,15 +44,18 @@ export default function PublicationsSection() {
             url: pub.url
           }));
           setPublications(formatted);
-          setIsUsingMock(false);
         }
       } catch (error) {
         console.error('Failed to fetch publications:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPublications();
   }, []);
+
+  if (!loading && publications.length === 0) return null;
 
   return (
     <section id="publications" className="relative py-16 overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 scroll-mt-24">

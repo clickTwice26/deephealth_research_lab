@@ -12,7 +12,11 @@ from app.api.v1.endpoints import (
     research_groups,
     blog,
     upload,
-    bucket, # Added bucket to imports
+    bucket,
+    research_areas,
+    projects,
+    newsletter,
+    team,
 )
 
 api_router = APIRouter()
@@ -28,4 +32,8 @@ api_router.include_router(community.router, prefix="/community", tags=["communit
 api_router.include_router(research_groups.router, prefix="/research-groups", tags=["research-groups"])
 api_router.include_router(blog.router, prefix="/blog", tags=["blog"])
 api_router.include_router(upload.router, prefix="/upload", tags=["upload"])
-api_router.include_router(bucket.router, prefix="/bucket", tags=["bucket"]) # Added bucket router
+api_router.include_router(bucket.router, prefix="/bucket", tags=["bucket"])
+api_router.include_router(research_areas.router, prefix="/research-areas", tags=["research-areas"])
+api_router.include_router(projects.router, prefix="/projects", tags=["projects"])
+api_router.include_router(newsletter.router, prefix="/newsletter", tags=["newsletter"])
+api_router.include_router(team.router, prefix="/team", tags=["team"])

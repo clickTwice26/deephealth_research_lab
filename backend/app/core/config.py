@@ -29,7 +29,9 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool = False
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
+    VALIDATE_CERTS: bool = True
     FRONTEND_URL: str
+    BACKEND_URL: str = "http://localhost:9191"
     
     # AWS Settings
     AWS_ACCESS_KEY: Optional[str] = None
