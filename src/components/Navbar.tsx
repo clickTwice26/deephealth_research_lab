@@ -52,10 +52,7 @@ export default function Navbar() {
           isScrolled ? 'glass-strong shadow-lg' : 'glass'
         )}
       >
-        {/* Development Banner */}
-        <div className="bg-gray-900/95 text-white/90 text-[10px] sm:text-xs py-2 text-center font-medium tracking-wide">
-          <span className="opacity-80">🚧 Development Preview:</span>  Data and metrics shown are simulated for demonstration purposes.
-        </div>
+
 
         {/* Navbar Container */}
         <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-16 2xl:px-24">
