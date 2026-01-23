@@ -673,7 +673,7 @@ export default function CommunityPage() {
 
                     {/* Footer Info */}
                     <div className="text-xs text-gray-400 text-center">
-                        <p>&copy; 2024 DeepHealth Lab. All rights reserved.</p>
+                        <p>&copy; 2026 DeepHealth Lab. All rights reserved.</p>
                         <p className="mt-1">Community Guidelines • Privacy Policy</p>
                     </div>
                 </div>
