@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api, TeamMember, SocialLinks } from '@/lib/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faUpload, faUser, faSpinner, faTimes, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faUpload, faUser, faSpinner, faTimes, faSearch, faSave } from '@fortawesome/free-solid-svg-icons';
 import ConfirmModal from '@/components/ConfirmModal';
 import { faGoogle, faLinkedin, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -239,7 +239,7 @@ export default function AdminTeamPage() {
                                                 <FontAwesomeIcon icon={faEdit} />
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(member._id)}
+                                                onClick={() => handleDelete(member._id, member.name)}
                                                 className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                             >
                                                 <FontAwesomeIcon icon={faTrash} />

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faPhone, faCamera, faSave, faSpinner, faMapMarkerAlt, faBuilding, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faPhone, faCamera, faSave, faSpinner, faMapMarkerAlt, faBuilding, faCheckCircle, faUserCircle, faCog, faMoon, faBell, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useTheme } from 'next-themes';
 
