@@ -76,7 +76,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-sm">
                 <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                <a href="mailto:contact@deephealth.ai" className="hover:text-blue-600 transition-colors">contact@deephealth.ai</a>
+                <a href="mailto:lab@deephealthlab.com" className="hover:text-blue-600 transition-colors">lab@deephealthlab.com</a>
               </div>
               <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-sm">
                 <FontAwesomeIcon icon={faPhone} className="w-5 h-5 text-blue-600 dark:text-blue-400" />
