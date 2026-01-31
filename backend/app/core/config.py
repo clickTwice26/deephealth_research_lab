@@ -33,11 +33,12 @@ class Settings(BaseSettings):
     FRONTEND_URL: str
     BACKEND_URL: str = "http://localhost:9191"
     
-    # AWS Settings
-    AWS_ACCESS_KEY: Optional[str] = None
-    AWS_ACCESS_SECRET_KEY: Optional[str] = None
-    AWS_STORAGE_BUCKET_NAME: Optional[str] = None
-    AWS_S3_REGION_NAME: Optional[str] = None
+    # DigitalOcean Spaces Settings
+    SPACES_ACCESS_KEY: Optional[str] = None
+    SPACES_SECRET_KEY: Optional[str] = None
+    SPACES_BUCKET_NAME: Optional[str] = None
+    SPACES_REGION_NAME: Optional[str] = None
+    SPACES_ENDPOINT_URL: Optional[str] = None
     model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()

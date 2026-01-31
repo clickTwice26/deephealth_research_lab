@@ -36,7 +36,7 @@ async def list_bucket_files(
             "filename": os.path.basename(f.get("Key")),
             "size": size,
             "last_modified": f.get("LastModified"),
-            "url": f"https://{s3_service.bucket_name}.s3.{s3_service.region}.amazonaws.com/{f.get('Key')}"
+            "url": s3_service.get_file_url(f.get('Key'))
         })
     
     # Sync storage usage if mismatch
